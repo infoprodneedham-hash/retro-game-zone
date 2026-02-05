@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
+            --space-black: #050505;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--space-black);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            background-image: radial-gradient(circle, #1b2735 0%, #090a0f 100%);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--neon-pink);
+        }
+
+        nav a {
+            color: var(--neon-blue);
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .contact-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            color: var(--neon-pink);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--neon-blue);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            box-sizing: border-box; /* Prevents input from spilling out */
+            border-radius: 4px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .status-msg {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Main Terminal</a>
+    </nav>
+
+    <div class="contact-container">
+        <h1>TRANSMIT MESSAGE TO COMMAND</h1>
+        
+        <form action="#">
+            <div class="form-group">
+                <label>Pilot Name</label>
+                <input type="text" placeholder="Enter ID..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Frequency (Email)</label>
+                <input type="email" placeholder="user@galaxy.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Message Text</label>
+                <textarea rows="5" placeholder="Your transmission here..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">SEND SIGNAL</button>
+        </form>
+
+        <p class="status-msg">Encryption level: 128-bit Neon</p>
+    </div>
+
+</body>
+</html>
