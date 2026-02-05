@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroSpace Gaming Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
+            --space-black: #050505;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--space-black);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            background-image: radial-gradient(circle, #1b2735 0%, #090a0f 100%);
+            overflow-x: hidden;
+        }
+
+        /* Banner Style */
+        header {
+            background: linear-gradient(180deg, #120458 0%, #000 100%);
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 4px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--neon-blue);
+        }
+
+        nav a {
+            color: var(--neon-blue);
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 8px var(--neon-pink);
+        }
+
+        /* Grid Layout */
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* Game Cards */
+        .game-card {
+            background: #111;
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px var(--neon-blue);
+            border-color: var(--neon-pink);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #222; /* Fallback color */
+        }
+
+        .game-card h3 {
+            padding: 15px;
+            margin: 0;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 20px;
+            padding: 10px 25px;
+            background: transparent;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.2rem; }
+            .container { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SPACE ARCADE</h1>
+        <p>THE FUTURE IS NEON</p>
+    </header>
+
+    <nav>
+        <a href="#about">About</a>
+        <a href="#games">Games</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="container" id="games">
+        
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80" alt="Silly Gamer">
+            <h3>Silly Gamer</h3>
+            <p>Unleash the chaos.</p>
+            <a href="https://silly-gamer.vercel.app/" class="btn">PLAY NOW</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=400&q=80" alt="Star Ship Adventure">
+            <h3>Star Ship Adventure</h3>
+            <p>Explore the final frontier.</p>
+            <a href="https://star-ship-adventure.vercel.app/" class="btn">LAUNCH</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=400&q=80" alt="Alien Destroyer">
+            <h3>Alien Destroyer</h3>
+            <p>Defend the planet.</p>
+            <a href="https://alien-destroyer.vercel.app/" class="btn">ENGAGE</a>
+        </div>
+
+    </div>
+
+    <section id="about" style="text-align: center; padding: 50px;">
+        <h2>ABOUT THE HUB</h2>
+        <p>Curating the finest 8-bit experiences across the galaxy.</p>
+    </section>
+
+    <footer id="contact">
+        <p>Contact: mission-control@spaceage.com</p>
+        <p>&copy; 2026 RetroSpace Terminal</p>
+    </footer>
+
+</body>
+</html>
