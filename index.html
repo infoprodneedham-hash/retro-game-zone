@@ -22,7 +22,6 @@
             overflow-x: hidden;
         }
 
-        /* Banner Style */
         header {
             background: linear-gradient(180deg, #120458 0%, #000 100%);
             height: 250px;
@@ -42,7 +41,6 @@
             letter-spacing: 4px;
         }
 
-        /* Navigation */
         nav {
             background: rgba(0, 0, 0, 0.8);
             padding: 15px;
@@ -67,18 +65,17 @@
             text-shadow: 0 0 8px var(--neon-pink);
         }
 
-       /* Grid Layout Adjusted for 4 Columns */
-.container {
-    max-width: 1400px; /* Increased width to give them more room */
-    margin: 50px auto;
-    padding: 20px;
-    display: grid;
-    /* We changed 300px to 250px to allow 4 to fit side-by-side */
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: 20px;
-}
+        /* Adjusted for exactly 4 columns */
+        .container {
+            max-width: 1400px;
+            margin: 50px auto;
+            padding: 20px;
+            display: grid;
+            /* This forces 4 columns side-by-side */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 25px;
+        }
 
-        /* Game Cards */
         .game-card {
             background: #111;
             border: 2px solid var(--neon-blue);
@@ -86,6 +83,8 @@
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
             text-align: center;
+            display: flex;
+            flex-direction: column;
         }
 
         .game-card:hover {
@@ -96,26 +95,33 @@
 
         .game-card img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
-            background: #222; /* Fallback color */
+            background: #222;
         }
 
         .game-card h3 {
-            padding: 15px;
+            padding: 15px 10px 5px 10px;
             margin: 0;
-            background: rgba(0,0,0,0.5);
+            font-size: 1.1rem;
+        }
+
+        .game-card p {
+            font-size: 0.8rem;
+            padding: 0 10px;
+            flex-grow: 1;
         }
 
         .btn {
             display: inline-block;
-            margin: 20px;
-            padding: 10px 25px;
+            margin: 15px auto 20px auto;
+            padding: 8px 20px;
             background: transparent;
             color: var(--neon-pink);
             border: 2px solid var(--neon-pink);
             text-decoration: none;
             font-weight: bold;
+            font-size: 0.8rem;
             border-radius: 5px;
             transition: 0.3s;
         }
@@ -133,10 +139,13 @@
             color: #666;
         }
 
-        /* Responsive adjustments */
+        /* Responsive: drop to 2 columns on tablets, 1 on mobile */
+        @media (max-width: 1100px) {
+            .container { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 600px) {
             header h1 { font-size: 1.2rem; }
-            .container { padding: 10px; }
+            .container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -148,80 +157,70 @@
     </header>
 
     <nav>
-        <a href="/about.html">About</a>
-        <a href="/index.html">Games</a>
-        <a href="/contact.html">Contact</a>
+        <a href="#">About</a>
+        <a href="#">Games</a>
+        <a href="#">Contact</a>
     </nav>
 
     <div class="container" id="games">
-    
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80" alt="Silly Gamer">
-        <h3>Silly Gamer</h3>
-        <p>Unleash the chaos.</p>
-        <a href="https://silly-gamer.vercel.app/" class="btn" target="_blank">PLAY NOW</a>
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80" alt="Silly Gamer">
+            <h3>Silly Gamer</h3>
+            <p>Unleash the chaos.</p>
+            <a href="https://silly-gamer.vercel.app/" class="btn" target="_blank">PLAY NOW</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=400&q=80" alt="Star Ship Adventure">
+            <h3>Star Ship Adventure</h3>
+            <p>Explore the final frontier.</p>
+            <a href="https://star-ship-adventure.vercel.app/" class="btn" target="_blank">LAUNCH</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=400&q=80" alt="Alien Destroyer">
+            <h3>Alien Destroyer</h3>
+            <p>Defend the planet.</p>
+            <a href="https://alien-destroyer.vercel.app/" class="btn" target="_blank">ENGAGE</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80" alt="Keep Running">
+            <h3>Keep Running</h3>
+            <p>Don't stop. Don't look back.</p>
+            <a href="https://keep-running-nu.vercel.app/" class="btn" target="_blank">RUN</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=400&q=80" alt="Math Darts">
+            <h3>Math Darts</h3>
+            <p>Precision meets calculation.</p>
+            <a href="https://dart-fun.vercel.app/" class="btn" target="_blank">THROW</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1595231712325-9fecd0397554?auto=format&fit=crop&w=400&q=80" alt="Sniper Dude">
+            <h3>Sniper Dude</h3>
+            <p>One shot. One mission.</p>
+            <a href="https://snipe-dude.vercel.app/" class="btn" target="_blank">AIM</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" alt="Jumpy Platform">
+            <h3>Jumpy Platform</h3>
+            <p>Don't fall into the void.</p>
+            <a href="https://jumpy-platform.vercel.app/" class="btn" target="_blank">JUMP</a>
+        </div>
+
+        <div class="game-card">
+            <img src="https://images.unsplash.com/photo-1614715838608-dd527c46231d?auto=format&fit=crop&w=400&q=80" alt="Sword Wars">
+            <h3>Sword Wars</h3>
+            <p>Master the neon blade.</p>
+            <a href="https://sword-wars.vercel.app/" class="btn" target="_blank">DUEL</a>
+        </div>
     </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=400&q=80" alt="Star Ship Adventure">
-        <h3>Star Ship Adventure</h3>
-        <p>Explore the final frontier.</p>
-        <a href="https://star-ship-adventure.vercel.app/" class="btn" target="_blank">LAUNCH</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=400&q=80" alt="Alien Destroyer">
-        <h3>Alien Destroyer</h3>
-        <p>Defend the planet.</p>
-        <a href="https://alien-destroyer.vercel.app/" class="btn" target="_blank">ENGAGE</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80" alt="Keep Running">
-        <h3>Keep Running</h3>
-        <p>Don't stop. Don't look back.</p>
-        <a href="https://keep-running-nu.vercel.app/" class="btn" target="_blank">RUN</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=400&q=80" alt="Math Darts">
-        <h3>Math Darts</h3>
-        <p>Precision meets calculation.</p>
-        <a href="https://dart-fun.vercel.app/" class="btn" target="_blank">THROW</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1595231712325-9fecd0397554?auto=format&fit=crop&w=400&q=80" alt="Sniper Dude">
-        <h3>Sniper Dude</h3>
-        <p>One shot. One mission.</p>
-        <a href="https://snipe-dude.vercel.app/" class="btn" target="_blank">AIM</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" alt="Jumpy Platform">
-        <h3>Jumpy Platform</h3>
-        <p>Don't fall into the void.</p>
-        <a href="https://jumpy-platform.vercel.app/" class="btn" target="_blank">JUMP</a>
-    </div>
-
-    <div class="game-card">
-        <img src="https://images.unsplash.com/photo-1614715838608-dd527c46231d?auto=format&fit=crop&w=400&q=80" alt="Sword Wars">
-        <h3>Sword Wars</h3>
-        <p>Master the neon blade.</p>
-        <a href="https://sword-wars.vercel.app/" class="btn" target="_blank">DUEL</a>
-    </div>
-
-</div>
-
-</div>
-
-    <section id="about" style="text-align: center; padding: 50px;">
-        <h2>ABOUT THE HUB</h2>
-        <p>Curating the finest 8-bit experiences across the galaxy.</p>
-    </section>
 
     <footer id="contact">
-        
         <p>&copy; 2026 RetroSpace Terminal</p>
     </footer>
 
