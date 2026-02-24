@@ -12,11 +12,10 @@
             --space-black: #050505;
         }
 
-        /* Set up Flexbox on the body to push the footer/video to the bottom */
         body, html {
             margin: 0;
             padding: 0;
-            min-height: 100vh; /* Ensures the page is at least as tall as the screen */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             background-color: var(--space-black);
@@ -42,7 +41,6 @@
             font-size: 0.9rem;
         }
 
-        /* This wrapper flexes to take up available space, pushing the video down */
         .main-content {
             flex: 1;
         }
@@ -90,12 +88,12 @@
             color: var(--neon-pink);
         }
 
-        /* --- VIDEO PLAYER STYLES (Themed for RetroSpace) --- */
+        /* --- VIDEO PLAYER & BUTTON STYLES --- */
         .video-wrapper {
             display: flex;
             justify-content: center;
             width: 100%;
-            padding-bottom: 20px; /* Space at the very bottom */
+            padding-bottom: 20px;
             margin-top: 40px;
         }
 
@@ -104,10 +102,42 @@
             max-width: 800px;
             box-shadow: 0 -5px 25px rgba(0, 255, 255, 0.2);
             border-radius: 12px 12px 0 0;
-            border: 1px solid var(--neon-blue); /* Neon border */
+            border: 1px solid var(--neon-blue);
             border-bottom: none;
             overflow: hidden;
             background: #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Video Selection Buttons */
+        .video-menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px;
+            background: #111;
+            border-bottom: 1px solid var(--neon-pink);
+        }
+
+        .vid-btn {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            padding: 10px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .vid-btn:hover, .vid-btn.active {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-blue);
         }
 
         video {
@@ -153,15 +183,43 @@
 
     <div class="video-wrapper">
         <div class="video-container">
-            <video controls>
-                <source src="Cyberpunk.mp4" type="video/mp4">
+            
+            <div class="video-menu">
+                <button class="vid-btn active" onclick="loadVideo('Cyberpunk.mp4', 'Video Title 1', this)">Video 1</button>
+                <button class="vid-btn" onclick="loadVideo('High_Speed.mp4', 'Video Title 2', this)">Video 2</button>
+                <button class="vid-btn" onclick="loadVideo('Boy_With_Fireworks.mp4', 'Video Title 3', this)">Video 3</button>
+            </div>
+
+            <video id="retro-player" controls src="video-1.mp4">
                 Your browser does not support the video tag.
             </video>
-            <div class="player-info">
-                Now Playing: your-video.mp4
+            
+            <div class="player-info" id="now-playing-text">
+                Now Playing: Video Title 1
             </div>
+
         </div>
     </div>
+
+    <script>
+        function loadVideo(filename, title, clickedButton) {
+            // 1. Get the video player and the text container
+            const videoPlayer = document.getElementById('retro-player');
+            const playingText = document.getElementById('now-playing-text');
+            
+            // 2. Update the video source and text
+            videoPlayer.src = filename;
+            playingText.innerHTML = "Now Playing: " + title;
+            
+            // 3. Play the video automatically when a button is clicked
+            videoPlayer.play();
+
+            // 4. Update the button styles so the clicked one lights up
+            const allButtons = document.querySelectorAll('.vid-btn');
+            allButtons.forEach(btn => btn.classList.remove('active')); // Turn off all buttons
+            clickedButton.classList.add('active'); // Turn on the clicked button
+        }
+    </script>
 
 </body>
 </html>
