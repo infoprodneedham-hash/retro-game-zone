@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F-18 Desert Storm: Heat Seekers</title>
+    <title>F-18 Desert Storm: Fixed Missiles</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Consolas', monospace; touch-action: none; user-select: none; -webkit-user-select: none; }
         #game-container { position: relative; width: 100vw; height: 100vh; }
@@ -22,7 +22,7 @@
         .pitch-line { width: 100%; height: 1px; background: rgba(0, 255, 0, 0.3); position: absolute; display: flex; justify-content: space-between; }
         .pitch-line::before, .pitch-line::after { content: ''; width: 10px; height: 4px; border-top: 1px solid #0f0; display: block; }
         .zero-line { background: rgba(0, 255, 0, 0.6); width: 140px; left: 30px; } 
-        #target-box { position: absolute; width: 40px; height: 40px; border: 2px solid #0f0; box-sizing: border-box; transform: translate(-50%, -50%); display: none; transition: border-color 0.1s; }
+        #target-box { position: absolute; width: 50px; height: 50px; border: 2px solid #0f0; box-sizing: border-box; transform: translate(-50%, -50%); display: none; transition: border-color 0.1s; }
         #target-label { position: absolute; bottom: -15px; width: 100%; text-align: center; font-size: 10px; color: #0f0; }
 
         /* --- CONTROLS --- */
@@ -84,7 +84,7 @@
 
         <!-- Menu -->
         <div id="overlay">
-            <h1>SKY STRIKER V4</h1>
+            <h1>SKY STRIKER V5</h1>
             <p>
                 <b>MOBILE:</b> Left Stick to fly, Slider for speed.<br>
                 <b>DESKTOP:</b> <span class="key">Arrows</span> Pitch/Roll | <span class="key">Space</span> Thrust | <span class="key">L-Ctrl</span> Brake | <span class="key">Shift</span> Flaps | <span class="key">N</span> Gun | <span class="key">M</span> Missile
@@ -94,28 +94,8 @@
     </div>
 
     <script>
-        const CONFIG = {
-            turnSpeed: 1.2,
-            maxSpeed: 3.5,
-            stallSpeed: 0.8,
-            mapScale: 5000,
-            camLag: 0.1
-        };
-
-        const state = {
-            flying: false,
-            speed: 0,
-            throttle: 0,
-            inputs: { x: 0, y: 0 },
-            keys: { up: false, down: false, left: false, right: false, space: false, ctrl: false, n: false },
-            flaps: false,
-            playerObj: null,
-            enemies: [],
-            bullets: [],
-            missiles: [],
-            particles: [],
-            lockedTarget: null
-        };
+        const CONFIG = { turnSpeed: 1.2, maxSpeed: 4.0, stallSpeed: 0.8, mapScale: 5000, camLag: 0.1 };
+        const state = { flying: false, speed: 0, throttle: 0, inputs: { x: 0, y: 0 }, keys: { up: false, down: false, left: false, right: false, space: false, ctrl: false, n: false }, flaps: false, playerObj: null, enemies: [], bullets: [], missiles: [], particles: [], lockedTarget: null, missilesFired: 0 };
 
         // --- THREE JS SETUP ---
         const container = document.getElementById('game-container');
@@ -129,41 +109,24 @@
         renderer.shadowMap.enabled = true;
         container.insertBefore(renderer.domElement, document.getElementById('hud-layer'));
 
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xdcb286, 0.8);
-        scene.add(hemiLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.position.set(100, 500, 200);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xdcb286, 0.8); scene.add(hemiLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(100, 500, 200); dirLight.castShadow = true; scene.add(dirLight);
 
         // --- ASSETS ---
         // Terrain
         const groundGeo = new THREE.PlaneGeometry(CONFIG.mapScale, CONFIG.mapScale, 64, 64);
         const pos = groundGeo.attributes.position;
-        for(let i=0; i<pos.count; i++){
-            const x = pos.getX(i); const y = pos.getY(i);
-            const z = (Math.sin(x/200) * Math.cos(y/200) * 20) + (Math.random()*2);
-            pos.setZ(i, z);
-        }
+        for(let i=0; i<pos.count; i++){ pos.setZ(i, (Math.sin(pos.getX(i)/200) * Math.cos(pos.getY(i)/200) * 20) + (Math.random()*2)); }
         groundGeo.computeVertexNormals();
         
-        const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#dcb286'; ctx.fillRect(0,0,512,512);
-        ctx.strokeStyle = '#cda175'; ctx.lineWidth = 2; ctx.strokeRect(0,0,512,512);
-        ctx.beginPath();
-        for(let i=0; i<=512; i+=64) { ctx.moveTo(i,0); ctx.lineTo(i,512); ctx.moveTo(0,i); ctx.lineTo(512,i); }
-        ctx.stroke();
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(40, 40);
-        
-        const ground = new THREE.Mesh(groundGeo, new THREE.MeshLambertMaterial({ map: tex }));
-        ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+        const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512; const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#dcb286'; ctx.fillRect(0,0,512,512); ctx.strokeStyle = '#cda175'; ctx.lineWidth = 2; ctx.strokeRect(0,0,512,512);
+        ctx.beginPath(); for(let i=0; i<=512; i+=64) { ctx.moveTo(i,0); ctx.lineTo(i,512); ctx.moveTo(0,i); ctx.lineTo(512,i); } ctx.stroke();
+        const tex = new THREE.CanvasTexture(canvas); tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(40, 40);
+        const ground = new THREE.Mesh(groundGeo, new THREE.MeshLambertMaterial({ map: tex })); ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+        const runway = new THREE.Mesh(new THREE.PlaneGeometry(80, 1000), new THREE.MeshLambertMaterial({ color: 0x333333 })); runway.rotation.x = -Math.PI/2; runway.position.set(0, 0.5, 0); runway.receiveShadow = true; scene.add(runway);
 
-        const runway = new THREE.Mesh(new THREE.PlaneGeometry(80, 1000), new THREE.MeshLambertMaterial({ color: 0x333333 }));
-        runway.rotation.x = -Math.PI/2; runway.position.set(0, 0.5, 0); runway.receiveShadow = true; scene.add(runway);
-
-        // Player
+        // Player F-18
         function createF18() {
             const group = new THREE.Group();
             const grey = new THREE.MeshPhongMaterial({color: 0x777777, shininess: 50});
@@ -173,8 +136,7 @@
             const wings = new THREE.Mesh(new THREE.BoxGeometry(10, 0.2, 4), grey); wings.position.set(0, 0, 1); group.add(wings);
             const tailL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.5, 2), grey); tailL.position.set(1.5, 1, 3.5); tailL.rotation.z = Math.PI/8; group.add(tailL);
             const tailR = tailL.clone(); tailR.position.set(-1.5, 1, 3.5); tailR.rotation.z = -Math.PI/8; group.add(tailR);
-            const exL = new THREE.Object3D(); exL.position.set(0.8, 0, 5); group.add(exL);
-            const exR = new THREE.Object3D(); exR.position.set(-0.8, 0, 5); group.add(exR);
+            const exL = new THREE.Object3D(); exL.position.set(0.8, 0, 5); group.add(exL); const exR = new THREE.Object3D(); exR.position.set(-0.8, 0, 5); group.add(exR);
             group.castShadow = true; group.userData = { exhausts: [exL, exR] };
             return group;
         }
@@ -197,80 +159,69 @@
         createTarget('tower', 0, -1500); createTarget('bogie', -500, -800); createTarget('bogie', 500, -1200); createTarget('bogie', -800, -2000);
 
         // --- INPUT HANDLING ---
-        
         window.addEventListener('keydown', (e) => {
             if(e.repeat) return;
-            switch(e.key) {
-                case 'ArrowUp': state.keys.up = true; break;
-                case 'ArrowDown': state.keys.down = true; break;
-                case 'ArrowLeft': state.keys.left = true; break;
-                case 'ArrowRight': state.keys.right = true; break;
-                case ' ': state.keys.space = true; break;
-                case 'Control': state.keys.ctrl = true; break;
-                case 'n': case 'N': state.keys.n = true; break;
-                case 'm': case 'M': fireMissile(); break;
-                case 'Shift': toggleFlaps(); break;
-            }
+            switch(e.key) { case 'ArrowUp': state.keys.up = true; break; case 'ArrowDown': state.keys.down = true; break; case 'ArrowLeft': state.keys.left = true; break; case 'ArrowRight': state.keys.right = true; break; case ' ': state.keys.space = true; break; case 'Control': state.keys.ctrl = true; break; case 'n': case 'N': state.keys.n = true; break; case 'm': case 'M': fireMissile(); break; case 'Shift': toggleFlaps(); break; }
         });
-
         window.addEventListener('keyup', (e) => {
-            switch(e.key) {
-                case 'ArrowUp': state.keys.up = false; break;
-                case 'ArrowDown': state.keys.down = false; break;
-                case 'ArrowLeft': state.keys.left = false; break;
-                case 'ArrowRight': state.keys.right = false; break;
-                case ' ': state.keys.space = false; break;
-                case 'Control': state.keys.ctrl = false; break;
-                case 'n': case 'N': state.keys.n = false; break;
-            }
+            switch(e.key) { case 'ArrowUp': state.keys.up = false; break; case 'ArrowDown': state.keys.down = false; break; case 'ArrowLeft': state.keys.left = false; break; case 'ArrowRight': state.keys.right = false; break; case ' ': state.keys.space = false; break; case 'Control': state.keys.ctrl = false; break; case 'n': case 'N': state.keys.n = false; break; }
         });
 
-        const stick = document.getElementById('stick');
-        const stickArea = document.getElementById('joystick-area');
-        let joyTouchId = null;
-
+        const stick = document.getElementById('stick'); const stickArea = document.getElementById('joystick-area'); let joyTouchId = null;
         stickArea.addEventListener('touchstart', e => { e.preventDefault(); joyTouchId = e.changedTouches[0].identifier; handleJoy(e.changedTouches[0].clientX, e.changedTouches[0].clientY); }, {passive:false});
         stickArea.addEventListener('touchmove', e => { e.preventDefault(); for(let t of e.changedTouches) if(t.identifier===joyTouchId) handleJoy(t.clientX, t.clientY); }, {passive:false});
         stickArea.addEventListener('touchend', e => { for(let t of e.changedTouches) if(t.identifier===joyTouchId) { joyTouchId=null; state.inputs.x=0; state.inputs.y=0; stick.style.transform=`translate(-50%,-50%)`; } });
 
         function handleJoy(cx, cy) {
-            const rect = stickArea.getBoundingClientRect();
-            let dx = cx - (rect.left + rect.width/2);
-            let dy = cy - (rect.top + rect.height/2);
-            const dist = Math.sqrt(dx*dx+dy*dy);
-            const maxR = 40;
-            if (dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
-            stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-            state.inputs.x = dx / maxR; state.inputs.y = dy / maxR;
+            const rect = stickArea.getBoundingClientRect(); let dx = cx - (rect.left + rect.width/2); let dy = cy - (rect.top + rect.height/2);
+            const dist = Math.sqrt(dx*dx+dy*dy); const maxR = 40; if (dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
+            stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; state.inputs.x = dx / maxR; state.inputs.y = dy / maxR;
         }
 
         const throttleEl = document.getElementById('throttle-slider');
-        throttleEl.addEventListener('touchmove', e => {
-            e.preventDefault();
-            const rect = throttleEl.getBoundingClientRect();
-            let val = 1.0 - ((e.touches[0].clientY - rect.top) / rect.height);
-            setThrottle(Math.max(0, Math.min(1, val)));
-        }, {passive:false});
-
-        function setThrottle(val) {
-            state.throttle = val;
-            document.getElementById('throttle-bar').style.height = (val*100)+'%';
-            document.getElementById('throttle-knob').style.bottom = (val*100)+'%';
-            document.getElementById('hud-thr').innerText = Math.floor(val*100);
-        }
-
-        function toggleFlaps() {
-            state.flaps = !state.flaps;
-            document.getElementById('hud-flaps').innerText = state.flaps ? "ON" : "OFF";
-            document.getElementById('btn-flaps').style.background = state.flaps ? '#00aa00' : '';
-        }
+        throttleEl.addEventListener('touchmove', e => { e.preventDefault(); const rect = throttleEl.getBoundingClientRect(); let val = 1.0 - ((e.touches[0].clientY - rect.top) / rect.height); setThrottle(Math.max(0, Math.min(1, val))); }, {passive:false});
+        function setThrottle(val) { state.throttle = val; document.getElementById('throttle-bar').style.height = (val*100)+'%'; document.getElementById('throttle-knob').style.bottom = (val*100)+'%'; document.getElementById('hud-thr').innerText = Math.floor(val*100); }
+        function toggleFlaps() { state.flaps = !state.flaps; document.getElementById('hud-flaps').innerText = state.flaps ? "ON" : "OFF"; document.getElementById('btn-flaps').style.background = state.flaps ? '#00aa00' : ''; }
+        
         document.getElementById('btn-flaps').addEventListener('click', toggleFlaps);
-        document.getElementById('btn-fire').addEventListener('touchstart', (e)=>{ e.preventDefault(); state.keys.n = true; });
-        document.getElementById('btn-fire').addEventListener('touchend', (e)=>{ e.preventDefault(); state.keys.n = false; });
+        document.getElementById('btn-fire').addEventListener('touchstart', (e)=>{ e.preventDefault(); state.keys.n = true; }); document.getElementById('btn-fire').addEventListener('touchend', (e)=>{ e.preventDefault(); state.keys.n = false; });
         document.getElementById('btn-missile').addEventListener('click', fireMissile);
         document.getElementById('start-btn').addEventListener('click', () => { document.getElementById('overlay').style.display = 'none'; state.flying = true; });
 
         // --- GAME LOGIC ---
+
+        // 1. Fixed Particle System
+        function createParticle(pos, type) {
+            const isTrail = type === 'trail';
+            const isFire = type === 'fire';
+            
+            // Sizes: Trail is small tight flame, Fire/Smoke is larger explosion
+            const size = isTrail ? 2 : (isFire ? 6 : 5);
+            const geo = new THREE.PlaneGeometry(size, size);
+            
+            const mat = new THREE.MeshBasicMaterial({ 
+                color: isTrail ? 0xffcc00 : (isFire ? 0xffaa00 : 0xaaaaaa), 
+                transparent: true, 
+                opacity: 0.8, 
+                side: THREE.DoubleSide,
+                depthWrite: false // CRITICAL: Fixes transparency overlapping bugs (the "giant flare")
+            });
+            
+            // Additive blending for fire/trail makes it glow rather than block vision
+            if (isTrail || isFire) mat.blending = THREE.AdditiveBlending;
+
+            const mesh = new THREE.Mesh(geo, mat); 
+            mesh.position.copy(pos); 
+            
+            scene.add(mesh);
+            state.particles.push({ 
+                mesh: mesh, 
+                life: isTrail ? 10 : (isFire ? 20 : 40), 
+                maxLife: isTrail ? 10 : (isFire ? 20 : 40), 
+                // CRITICAL: Trail shrinks (-0.1) instead of expanding massively
+                scaleDelta: isTrail ? -0.1 : (isFire ? 0.05 : 0.02) 
+            });
+        }
 
         function fireGun() {
             if(!state.flying) return;
@@ -283,69 +234,63 @@
         function fireMissile() {
             if(!state.flying || !state.lockedTarget) return;
             
-            // Build a visible Heat Seeker Missile
+            // 2. Clearer Missile Model (Bigger, distinctly shaped)
             const mGroup = new THREE.Group();
             
-            // Body (White Cylinder)
-            const bodyGeo = new THREE.CylinderGeometry(0.2, 0.2, 2.5, 8);
-            bodyGeo.rotateX(Math.PI/2); // Make cylinder point forward (-Z)
+            const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 4, 8); // Scaled up significantly
+            bodyGeo.rotateX(Math.PI/2); 
             const body = new THREE.Mesh(bodyGeo, new THREE.MeshLambertMaterial({color: 0xdddddd}));
             
-            // Nose (Red Cone)
-            const noseGeo = new THREE.ConeGeometry(0.2, 0.6, 8);
+            const noseGeo = new THREE.ConeGeometry(0.4, 1.2, 8);
             noseGeo.rotateX(Math.PI/2);
             const nose = new THREE.Mesh(noseGeo, new THREE.MeshBasicMaterial({color: 0xff0000}));
-            nose.position.z = -1.55; // Move nose to the front of the body
+            nose.position.z = -2.6; // Positioned correctly in front
             
-            mGroup.add(body, nose);
+            // Add stabilizing fins for visibility
+            const finGeo = new THREE.BoxGeometry(2.5, 2.5, 0.1);
+            const fins1 = new THREE.Mesh(finGeo, new THREE.MeshLambertMaterial({color: 0x333333}));
+            fins1.position.z = 1.5;
+            const fins2 = fins1.clone();
+            fins2.rotation.z = Math.PI/2;
+
+            mGroup.add(body, nose, fins1, fins2);
             
-            // Spawn location (slightly below the plane)
+            // Start at plane position
             mGroup.position.copy(state.playerObj.position); 
             mGroup.quaternion.copy(state.playerObj.quaternion); 
-            mGroup.translateY(-1.5); 
             
+            // Drop below plane and alternate Left/Right wing
+            mGroup.translateY(-1.5); 
+            mGroup.translateX(state.missilesFired % 2 === 0 ? 2 : -2);
+            state.missilesFired++;
+
             scene.add(mGroup);
             
             state.missiles.push({ 
                 mesh: mGroup, 
                 target: state.lockedTarget, 
-                speed: state.speed, // Starts at plane's speed and accelerates
-                turnRate: 0.08, // The "homing" factor
+                speed: state.speed + 0.5, // Initial boost
+                turnRate: 0.12, // Increased homing turning sharpness
                 life: 300 
             });
         }
 
-        function createParticle(pos, type) {
-            const geo = new THREE.PlaneGeometry(type==='fire'?4:2, type==='fire'?4:2); // Make trail slightly larger
-            const mat = new THREE.MeshBasicMaterial({ color: type==='fire'?0xffaa00:0xaaaaaa, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-            const mesh = new THREE.Mesh(geo, mat); mesh.position.copy(pos); mesh.lookAt(camera.position); scene.add(mesh);
-            state.particles.push({ mesh: mesh, life: type==='fire'?20:40, maxLife: type==='fire'?20:40, scaleDelta: type==='fire'?0.5:0.1 });
-        }
-
         function updatePhysics() {
             const jet = state.playerObj;
-
-            let rollInput = state.inputs.x;
-            let pitchInput = state.inputs.y;
-
+            let rollInput = state.inputs.x; let pitchInput = state.inputs.y;
             if (state.keys.left) rollInput = -1; else if (state.keys.right) rollInput = 1;
             if (state.keys.up) pitchInput = 1; else if (state.keys.down) pitchInput = -1;
 
             if(state.keys.space && state.throttle < 1.0) setThrottle(state.throttle + 0.01);
             if(state.keys.ctrl && state.throttle > 0.0) setThrottle(state.throttle - 0.01);
-
             if(state.keys.n && Math.random() > 0.5) fireGun(); 
 
             const targetSpd = state.throttle * CONFIG.maxSpeed;
             if (state.speed < targetSpd) state.speed += 0.02; else state.speed -= 0.01;
             if(state.flaps) state.speed *= 0.99;
 
-            jet.rotateZ(-rollInput * 0.04);
-            jet.rotateX(-pitchInput * 0.03);
-            jet.translateZ(-state.speed);
-
-            const lift = (state.speed * state.speed) * (state.flaps ? 0.3 : 0.15);
-            jet.position.y -= (0.4 - lift); 
+            jet.rotateZ(-rollInput * 0.04); jet.rotateX(-pitchInput * 0.03); jet.translateZ(-state.speed);
+            const lift = (state.speed * state.speed) * (state.flaps ? 0.3 : 0.15); jet.position.y -= (0.4 - lift); 
 
             if (jet.position.y < 2) {
                 jet.position.y = 2; jet.rotation.x *= 0.9; jet.rotation.z *= 0.9;
@@ -361,8 +306,7 @@
             state.enemies.forEach(t => {
                 if(t.userData.hp <= 0) return;
                 const dir = new THREE.Vector3().subVectors(t.position, jet.position).normalize();
-                const a = fwd.angleTo(dir);
-                if(a < minA) { minA=a; best=t; }
+                if(fwd.angleTo(dir) < minA) { minA=fwd.angleTo(dir); best=t; }
             });
             state.lockedTarget = best;
             
@@ -370,67 +314,49 @@
             if(best) {
                 const p = best.position.clone().project(camera);
                 if(p.z < 1) {
-                    box.style.display = 'block';
-                    box.style.left = ((p.x*0.5+0.5)*container.clientWidth)+'px';
-                    box.style.top = (-(p.y*0.5-0.5)*container.clientHeight)+'px';
-                    box.style.borderColor = (minA<0.1)?'red':'lime';
-                    document.getElementById('hud-tgt').innerText = best.userData.name;
-                    document.getElementById('hud-dist').innerText = Math.floor(jet.position.distanceTo(best.position));
+                    box.style.display = 'block'; box.style.left = ((p.x*0.5+0.5)*container.clientWidth)+'px'; box.style.top = (-(p.y*0.5-0.5)*container.clientHeight)+'px';
+                    box.style.borderColor = (minA<0.15)?'red':'lime';
+                    document.getElementById('hud-tgt').innerText = best.userData.name; document.getElementById('hud-dist').innerText = Math.floor(jet.position.distanceTo(best.position));
                 } else box.style.display = 'none';
             } else { box.style.display = 'none'; document.getElementById('hud-tgt').innerText="NONE"; }
 
-            // --- BULLETS ---
+            // Update Bullets
             for(let i=state.bullets.length-1; i>=0; i--) {
-                const b = state.bullets[i];
-                b.mesh.translateZ(-10);
-                b.life--;
-                
+                const b = state.bullets[i]; b.mesh.translateZ(-15); b.life--;
                 let hit = false;
                 state.enemies.forEach(e => {
                     if(!hit && e.userData.hp > 0 && e.position.distanceTo(b.mesh.position) < 15) {
-                        createParticle(e.position, 'fire');
-                        e.userData.hp -= 10;
-                        if(e.userData.hp<=0) destroyTarget(e);
-                        hit=true;
+                        createParticle(e.position, 'fire'); e.userData.hp -= 10; if(e.userData.hp<=0) destroyTarget(e); hit=true;
                     }
                 });
                 if(b.life<=0 || hit) { scene.remove(b.mesh); state.bullets.splice(i,1); }
             }
 
-            // --- MISSILES (HEAT SEEKERS) ---
+            // Update Missiles
             for(let i=state.missiles.length-1; i>=0; i--) {
                 const m = state.missiles[i];
                 
-                // 1. Move Missile Forward (Along its local -Z axis)
-                m.speed += 0.05; // Accelerate rocket engine
+                // Acceleration
+                m.speed += 0.08; 
                 m.mesh.translateZ(-m.speed); 
                 
-                // 2. Add thick smoke/fire trail at the tail
-                const tailPos = new THREE.Vector3(0, 0, 1.25).applyMatrix4(m.mesh.matrixWorld);
-                createParticle(tailPos, 'fire');
-                createParticle(tailPos, 'smoke');
+                // Add tight engine trail (shrinking particles)
+                const tailPos = new THREE.Vector3(0, 0, 2).applyMatrix4(m.mesh.matrixWorld);
+                createParticle(tailPos, 'trail');
                 
-                // 3. Homing Logic
+                // Homing Slerp
                 if(m.target && m.target.parent) {
                     const targetPos = m.target.position.clone();
-                    
-                    // Create a dummy object to calculate the look rotation
-                    const dummy = new THREE.Object3D();
-                    dummy.position.copy(m.mesh.position);
-                    dummy.lookAt(targetPos);
-                    
-                    // Smoothly rotate (Slerp) the missile towards the target
+                    const dummy = new THREE.Object3D(); dummy.position.copy(m.mesh.position); dummy.lookAt(targetPos);
                     m.mesh.quaternion.slerp(dummy.quaternion, m.turnRate);
                 }
                 
                 m.life--;
                 let hit = false;
                 state.enemies.forEach(e => {
-                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 20) {
-                        createParticle(e.position, 'fire');
-                        e.userData.hp -= 100;
-                        if(e.userData.hp<=0) destroyTarget(e);
-                        hit=true;
+                    // Increased collision check radius to 35 to prevent fast missiles phasing through
+                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 35) {
+                        createParticle(e.position, 'fire'); e.userData.hp -= 150; if(e.userData.hp<=0) destroyTarget(e); hit=true;
                     }
                 });
                 
@@ -439,10 +365,15 @@
         }
 
         function destroyTarget(e) {
-            for(let k=0; k<15; k++) createParticle(e.position, 'fire');
+            for(let k=0; k<20; k++) {
+                // Spread explosion particles
+                const p = e.position.clone();
+                p.x += (Math.random()-0.5)*20; p.y += (Math.random()-0.5)*20; p.z += (Math.random()-0.5)*20;
+                createParticle(p, 'fire');
+                createParticle(p, 'smoke');
+            }
             scene.remove(e);
-            document.getElementById('msg-center').style.display='block';
-            document.getElementById('msg-center').innerText="DESTROYED: "+e.userData.name;
+            document.getElementById('msg-center').style.display='block'; document.getElementById('msg-center').innerText="DESTROYED: "+e.userData.name;
             setTimeout(()=>document.getElementById('msg-center').style.display='none', 2000);
         }
 
@@ -452,24 +383,32 @@
             if(state.flying) {
                 updatePhysics();
                 
-                const rel = new THREE.Vector3(0, 8, 25).applyMatrix4(state.playerObj.matrixWorld);
-                camera.position.lerp(rel, CONFIG.camLag);
-                camTarget.position.lerp(new THREE.Vector3(0,0,-50).applyMatrix4(state.playerObj.matrixWorld), CONFIG.camLag);
-                camera.lookAt(camTarget.position);
+                const rel = new THREE.Vector3(0, 8, 25).applyMatrix4(state.playerObj.matrixWorld); camera.position.lerp(rel, CONFIG.camLag);
+                camTarget.position.lerp(new THREE.Vector3(0,0,-50).applyMatrix4(state.playerObj.matrixWorld), CONFIG.camLag); camera.lookAt(camTarget.position);
 
                 updateCombat();
                 
+                // Player Exhaust
                 if(state.speed>0.5) state.playerObj.userData.exhausts.forEach(ex => { const p=new THREE.Vector3(); ex.getWorldPosition(p); createParticle(p.addScalar((Math.random()-0.5)), 'smoke'); });
+                
+                // Update all particles (Fixed scaling logic)
                 state.particles.forEach((p,i) => {
-                    p.life--; p.mesh.scale.setScalar(1+((p.maxLife-p.life)*p.scaleDelta)); p.mesh.material.opacity=p.life/p.maxLife;
+                    p.mesh.lookAt(camera.position); // Always face camera
+                    p.life--; 
+                    
+                    let newScale = 1 + ((p.maxLife-p.life)*p.scaleDelta);
+                    if(newScale < 0.1) newScale = 0.1; // Prevent negative scaling errors
+                    p.mesh.scale.setScalar(newScale); 
+                    
+                    p.mesh.material.opacity=p.life/p.maxLife;
                     if(p.life<=0){ scene.remove(p.mesh); state.particles.splice(i,1); }
                 });
 
+                // HUD updates
                 const euler = new THREE.Euler().setFromQuaternion(state.playerObj.quaternion);
                 document.getElementById('horizon-container').style.transform = `translate(-50%,-50%) rotate(${euler.z * (180/Math.PI)}deg)`;
                 document.getElementById('pitch-ladder').style.transform = `translateY(${euler.x * (180/Math.PI) * 8}px)`;
-                document.getElementById('hud-spd').innerText = Math.floor(state.speed*200);
-                document.getElementById('hud-alt').innerText = Math.floor(state.playerObj.position.y*10);
+                document.getElementById('hud-spd').innerText = Math.floor(state.speed*200); document.getElementById('hud-alt').innerText = Math.floor(state.playerObj.position.y*10);
 
                 state.enemies.forEach(e => { if(e.userData.type==='bogie') { e.translateZ(1.0); if(e.position.length()>3000) e.lookAt(0,200,0); } });
             }
