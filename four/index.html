@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F-18 Desert Storm: Perfect Homing</title>
+    <title>F-18 Desert Storm: Absolute Lock</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Consolas', monospace; touch-action: none; user-select: none; -webkit-user-select: none; }
         #game-container { position: relative; width: 100vw; height: 100vh; }
@@ -22,8 +22,10 @@
         .pitch-line { width: 100%; height: 1px; background: rgba(0, 255, 0, 0.3); position: absolute; display: flex; justify-content: space-between; }
         .pitch-line::before, .pitch-line::after { content: ''; width: 10px; height: 4px; border-top: 1px solid #0f0; display: block; }
         .zero-line { background: rgba(0, 255, 0, 0.6); width: 140px; left: 30px; } 
-        #target-box { position: absolute; width: 50px; height: 50px; border: 2px solid #0f0; box-sizing: border-box; transform: translate(-50%, -50%); display: none; transition: border-color 0.1s; }
-        #target-label { position: absolute; bottom: -15px; width: 100%; text-align: center; font-size: 10px; color: #0f0; }
+        
+        /* Enhanced Target Box */
+        #target-box { position: absolute; width: 60px; height: 60px; border: 2px dashed #0f0; box-sizing: border-box; transform: translate(-50%, -50%); display: none; transition: border-color 0.1s; }
+        #target-label { position: absolute; bottom: -18px; width: 100%; text-align: center; font-size: 12px; color: #0f0; font-weight: bold; background: rgba(0,0,0,0.5); }
 
         /* --- CONTROLS --- */
         .control-layer { position: absolute; bottom: 20px; width: 100%; height: 140px; pointer-events: auto; display: flex; justify-content: space-between; padding: 0 30px; box-sizing: border-box; }
@@ -84,7 +86,7 @@
 
         <!-- Menu -->
         <div id="overlay">
-            <h1>SKY STRIKER V7</h1>
+            <h1>SKY STRIKER V8</h1>
             <p>
                 <b>MOBILE:</b> Left Stick to fly, Slider for speed.<br>
                 <b>DESKTOP:</b> <span class="key">Arrows</span> Pitch/Roll | <span class="key">Space</span> Thrust | <span class="key">L-Ctrl</span> Brake | <span class="key">Shift</span> Flaps | <span class="key">N</span> Gun | <span class="key">M</span> Missile
@@ -190,7 +192,7 @@
         // --- GAME LOGIC ---
         function createParticle(pos, type) {
             const isTrail = type === 'trail';
-            const size = isTrail ? 2.5 : 6;
+            const size = isTrail ? 3 : 6;
             const mat = new THREE.MeshBasicMaterial({ 
                 color: isTrail ? 0xffaa00 : (type==='fire' ? 0xff5500 : 0x888888), 
                 transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false 
@@ -203,8 +205,8 @@
             
             state.particles.push({ 
                 mesh: mesh, 
-                life: isTrail ? 8 : 40, maxLife: isTrail ? 8 : 40, // Trail fades faster
-                scaleDelta: isTrail ? -0.1 : 0.05 // Trail shrinks, explosion grows
+                life: isTrail ? 8 : 40, maxLife: isTrail ? 8 : 40, 
+                scaleDelta: isTrail ? -0.1 : 0.05 
             });
         }
 
@@ -238,14 +240,22 @@
 
             mGroup.add(body, nose, fins1, fins2);
             
-            // Spawn exactly relative to the jet without inheriting complex offsets
+            // Set starting position based on plane
             mGroup.position.copy(state.playerObj.position);
-            mGroup.quaternion.copy(state.playerObj.quaternion);
             
-            // Translate locally (safest way to offset)
-            mGroup.translateY(-0.5); // Drop below wing slightly
-            mGroup.translateX(state.missilesFired % 2 === 0 ? 3 : -3); // Left or right wing
-            mGroup.translateZ(-2); // Start slightly forward
+            // Drop slightly and move to wing
+            const isLeftWing = state.missilesFired % 2 === 0;
+            const startOffset = new THREE.Vector3(isLeftWing ? 3 : -3, -1, -2);
+            startOffset.applyQuaternion(state.playerObj.quaternion);
+            mGroup.position.add(startOffset);
+
+            // Set initial velocity vector based on exactly where the plane is pointing
+            const initialVelocity = new THREE.Vector3(0, 0, -1);
+            initialVelocity.applyQuaternion(state.playerObj.quaternion);
+            initialVelocity.normalize();
+            
+            // Point the visual model to match velocity
+            mGroup.lookAt(mGroup.position.clone().add(initialVelocity));
 
             state.missilesFired++;
             scene.add(mGroup);
@@ -253,7 +263,8 @@
             state.missiles.push({ 
                 mesh: mGroup, 
                 target: state.lockedTarget, 
-                speed: state.speed + 1.0, 
+                speed: state.speed + 2.0, // Instantly faster than plane
+                velocity: initialVelocity, // New pure-math movement vector
                 life: 300,
                 age: 0
             });
@@ -284,7 +295,9 @@
 
         function updateCombat() {
             const jet = state.playerObj;
-            let best=null, minA=0.4;
+            
+            // INCREASED LOCKING CONE: 0.8 radians = ~45 degrees (much easier to lock on)
+            let best=null, minA=0.8; 
             const fwd = new THREE.Vector3(0,0,-1).applyQuaternion(jet.quaternion);
             
             state.enemies.forEach(t => {
@@ -299,8 +312,9 @@
                 const p = best.position.clone().project(camera);
                 if(p.z < 1) {
                     box.style.display = 'block'; box.style.left = ((p.x*0.5+0.5)*container.clientWidth)+'px'; box.style.top = (-(p.y*0.5-0.5)*container.clientHeight)+'px';
-                    box.style.borderColor = (minA<0.15)?'red':'lime';
+                    box.style.borderColor = (minA<0.3)?'red':'lime';
                     document.getElementById('hud-tgt').innerText = best.userData.name; document.getElementById('hud-dist').innerText = Math.floor(jet.position.distanceTo(best.position));
+                    document.getElementById('target-label').innerText = best.userData.name;
                 } else box.style.display = 'none';
             } else { box.style.display = 'none'; document.getElementById('hud-tgt').innerText="NONE"; }
 
@@ -321,30 +335,28 @@
                 const m = state.missiles[i];
                 m.age++;
                 
-                // Acceleration
-                m.speed += 0.15; 
-                if (m.speed > 10) m.speed = 10; // High top speed to catch targets
+                // Accelerate smoothly to a very high top speed
+                m.speed += 0.5; 
+                if (m.speed > 25) m.speed = 25; 
                 
-                // ----------------------------------------------------
-                // FIXED HOMING MATH (Vector interpolation instead of Slerp)
-                // This guarantees the missile nose aims precisely without rolling wildly
-                // ----------------------------------------------------
-                if(m.age > 10 && m.target && m.target.parent) {
-                    // 1. Get the exact direction to the target
+                // --- PURE VECTOR HOMING MATH (Immune to roll/gimbal lock) ---
+                if(m.target && m.target.parent) {
+                    // Get exact direction to target
                     const dirToTarget = new THREE.Vector3().subVectors(m.target.position, m.mesh.position).normalize();
-                    // 2. Get the missile's current forward direction (-Z axis)
-                    const currentForward = new THREE.Vector3(0, 0, -1).applyQuaternion(m.mesh.quaternion);
-                    // 3. Smoothly pull the forward direction toward the target direction (0.15 = turning sharpness)
-                    currentForward.lerp(dirToTarget, 0.15).normalize();
-                    // 4. Force the missile to look along this newly calculated forward line
-                    const newLookTarget = m.mesh.position.clone().add(currentForward);
-                    m.mesh.lookAt(newLookTarget);
+                    
+                    // Smoothly blend the current velocity vector towards the target vector
+                    // 0.08 is the turning sharpness. 
+                    m.velocity.lerp(dirToTarget, 0.08).normalize();
                 }
 
-                // Move forward after adjusting heading
-                m.mesh.translateZ(-m.speed); 
+                // 1. Move the missile mathematically along the vector
+                const moveVector = m.velocity.clone().multiplyScalar(m.speed);
+                m.mesh.position.add(moveVector);
                 
-                // Clean Exhaust flame
+                // 2. Visually point the 3D model exactly in the direction of movement
+                m.mesh.lookAt(m.mesh.position.clone().add(m.velocity));
+
+                // Add exhaust flame at the back
                 if (m.age % 2 === 0) { 
                     const tailPos = new THREE.Vector3(0, 0, 1.5).applyMatrix4(m.mesh.matrixWorld);
                     createParticle(tailPos, 'trail');
@@ -352,8 +364,10 @@
                 
                 m.life--;
                 let hit = false;
+                
+                // HUGE Hitbox checking (50 units) ensures high-speed missiles trigger properly
                 state.enemies.forEach(e => {
-                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 30) {
+                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 50) {
                         e.userData.hp -= 200; if(e.userData.hp<=0) destroyTarget(e); hit=true;
                     }
                 });
@@ -388,7 +402,6 @@
 
                 updateCombat();
                 
-                // --- DRAMATICALLY REDUCED JET SMOKE (10% CHANCE) ---
                 if(state.speed > 0.5 && Math.random() < 0.10) { 
                     state.playerObj.userData.exhausts.forEach(ex => { 
                         const p=new THREE.Vector3(); 
