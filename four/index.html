@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F-18 Desert Storm: Fixed Missiles</title>
+    <title>F-18 Desert Storm: Perfect Strike</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Consolas', monospace; touch-action: none; user-select: none; -webkit-user-select: none; }
         #game-container { position: relative; width: 100vw; height: 100vh; }
@@ -84,7 +84,7 @@
 
         <!-- Menu -->
         <div id="overlay">
-            <h1>SKY STRIKER V5</h1>
+            <h1>SKY STRIKER V6</h1>
             <p>
                 <b>MOBILE:</b> Left Stick to fly, Slider for speed.<br>
                 <b>DESKTOP:</b> <span class="key">Arrows</span> Pitch/Roll | <span class="key">Space</span> Thrust | <span class="key">L-Ctrl</span> Brake | <span class="key">Shift</span> Flaps | <span class="key">N</span> Gun | <span class="key">M</span> Missile
@@ -149,7 +149,7 @@
             if (type === 'tower') {
                 const base = new THREE.Mesh(new THREE.BoxGeometry(15, 60, 15), new THREE.MeshPhongMaterial({color: 0x555555})); base.position.y = 30;
                 const dish = new THREE.Mesh(new THREE.CylinderGeometry(1, 8, 5, 8), new THREE.MeshPhongMaterial({color: 0xaa0000})); dish.rotation.x = Math.PI/2; dish.position.y = 60;
-                obj.add(base, dish); obj.userData = { hp: 500, type: 'tower', name: 'COMMS TOWER' };
+                obj.add(base, dish); obj.userData = { hp: 200, type: 'tower', name: 'COMMS TOWER' };
             } else {
                 const jet = createF18(); jet.children.forEach(c => { if(c.material) c.material = new THREE.MeshPhongMaterial({color: 0x882222}); });
                 obj.add(jet); obj.userData = { hp: 50, type: 'bogie', speed: 1.5, name: 'BOGIE' }; obj.position.y = 200;
@@ -190,36 +190,23 @@
 
         // --- GAME LOGIC ---
 
-        // 1. Fixed Particle System
         function createParticle(pos, type) {
             const isTrail = type === 'trail';
-            const isFire = type === 'fire';
-            
-            // Sizes: Trail is small tight flame, Fire/Smoke is larger explosion
-            const size = isTrail ? 2 : (isFire ? 6 : 5);
-            const geo = new THREE.PlaneGeometry(size, size);
-            
+            const size = isTrail ? 2 : 5;
             const mat = new THREE.MeshBasicMaterial({ 
-                color: isTrail ? 0xffcc00 : (isFire ? 0xffaa00 : 0xaaaaaa), 
-                transparent: true, 
-                opacity: 0.8, 
-                side: THREE.DoubleSide,
-                depthWrite: false // CRITICAL: Fixes transparency overlapping bugs (the "giant flare")
+                color: isTrail ? 0xffaa00 : (type==='fire' ? 0xff5500 : 0xaaaaaa), 
+                transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false 
             });
-            
-            // Additive blending for fire/trail makes it glow rather than block vision
-            if (isTrail || isFire) mat.blending = THREE.AdditiveBlending;
+            if (isTrail || type === 'fire') mat.blending = THREE.AdditiveBlending;
 
-            const mesh = new THREE.Mesh(geo, mat); 
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat); 
             mesh.position.copy(pos); 
-            
             scene.add(mesh);
+            
             state.particles.push({ 
                 mesh: mesh, 
-                life: isTrail ? 10 : (isFire ? 20 : 40), 
-                maxLife: isTrail ? 10 : (isFire ? 20 : 40), 
-                // CRITICAL: Trail shrinks (-0.1) instead of expanding massively
-                scaleDelta: isTrail ? -0.1 : (isFire ? 0.05 : 0.02) 
+                life: isTrail ? 15 : 40, maxLife: isTrail ? 15 : 40, 
+                scaleDelta: isTrail ? -0.05 : 0.05 // Trail shrinks, explosion grows
             });
         }
 
@@ -234,44 +221,48 @@
         function fireMissile() {
             if(!state.flying || !state.lockedTarget) return;
             
-            // 2. Clearer Missile Model (Bigger, distinctly shaped)
             const mGroup = new THREE.Group();
             
-            const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 4, 8); // Scaled up significantly
+            // Body (3 units long, correctly oriented along -Z axis)
+            const bodyGeo = new THREE.CylinderGeometry(0.3, 0.3, 3, 8);
             bodyGeo.rotateX(Math.PI/2); 
-            const body = new THREE.Mesh(bodyGeo, new THREE.MeshLambertMaterial({color: 0xdddddd}));
+            const body = new THREE.Mesh(bodyGeo, new THREE.MeshLambertMaterial({color: 0xffffff}));
             
-            const noseGeo = new THREE.ConeGeometry(0.4, 1.2, 8);
-            noseGeo.rotateX(Math.PI/2);
+            // Nose Cone (pointing to -Z)
+            const noseGeo = new THREE.ConeGeometry(0.3, 1, 8);
+            noseGeo.rotateX(-Math.PI/2); 
             const nose = new THREE.Mesh(noseGeo, new THREE.MeshBasicMaterial({color: 0xff0000}));
-            nose.position.z = -2.6; // Positioned correctly in front
+            nose.position.z = -1.5; // Attach to front of cylinder
             
-            // Add stabilizing fins for visibility
-            const finGeo = new THREE.BoxGeometry(2.5, 2.5, 0.1);
+            // Fins
+            const finGeo = new THREE.BoxGeometry(2, 2, 0.1);
             const fins1 = new THREE.Mesh(finGeo, new THREE.MeshLambertMaterial({color: 0x333333}));
-            fins1.position.z = 1.5;
+            fins1.position.z = 1.0; // Attach near the back
             const fins2 = fins1.clone();
             fins2.rotation.z = Math.PI/2;
 
             mGroup.add(body, nose, fins1, fins2);
             
-            // Start at plane position
-            mGroup.position.copy(state.playerObj.position); 
-            mGroup.quaternion.copy(state.playerObj.quaternion); 
+            // Perfect rail-firing logic (Start exactly aligned with plane)
+            mGroup.position.copy(state.playerObj.position);
+            mGroup.quaternion.copy(state.playerObj.quaternion);
             
-            // Drop below plane and alternate Left/Right wing
-            mGroup.translateY(-1.5); 
-            mGroup.translateX(state.missilesFired % 2 === 0 ? 2 : -2);
+            // Calculate wing offset safely
+            const isLeftWing = state.missilesFired % 2 === 0;
+            const offset = new THREE.Vector3(isLeftWing ? 3 : -3, -0.5, -2);
+            offset.applyQuaternion(state.playerObj.quaternion);
+            mGroup.position.add(offset);
+            
             state.missilesFired++;
-
             scene.add(mGroup);
             
             state.missiles.push({ 
                 mesh: mGroup, 
                 target: state.lockedTarget, 
-                speed: state.speed + 0.5, // Initial boost
-                turnRate: 0.12, // Increased homing turning sharpness
-                life: 300 
+                speed: state.speed, 
+                turnRate: 0.05, // Smooth tracking
+                life: 300,
+                age: 0 // Age tracks how long it's been flying
             });
         }
 
@@ -335,38 +326,48 @@
             // Update Missiles
             for(let i=state.missiles.length-1; i>=0; i--) {
                 const m = state.missiles[i];
+                m.age++;
                 
-                // Acceleration
-                m.speed += 0.08; 
+                // Accelerate smoothly
+                m.speed += 0.1; 
+                if (m.speed > 8) m.speed = 8; // Max missile speed cap
+                
                 m.mesh.translateZ(-m.speed); 
                 
-                // Add tight engine trail (shrinking particles)
-                const tailPos = new THREE.Vector3(0, 0, 2).applyMatrix4(m.mesh.matrixWorld);
-                createParticle(tailPos, 'trail');
-                
-                // Homing Slerp
-                if(m.target && m.target.parent) {
+                // Homing kicks in after 10 frames so it shoots straight off the rail first
+                if(m.age > 10 && m.target && m.target.parent) {
                     const targetPos = m.target.position.clone();
-                    const dummy = new THREE.Object3D(); dummy.position.copy(m.mesh.position); dummy.lookAt(targetPos);
+                    const dummy = new THREE.Object3D(); 
+                    dummy.position.copy(m.mesh.position); 
+                    dummy.lookAt(targetPos);
                     m.mesh.quaternion.slerp(dummy.quaternion, m.turnRate);
+                }
+
+                // Tight exhaust flame
+                if (m.age % 2 === 0) { // Limit trail spawn rate slightly
+                    const tailPos = new THREE.Vector3(0, 0, 1.5).applyMatrix4(m.mesh.matrixWorld);
+                    createParticle(tailPos, 'trail');
                 }
                 
                 m.life--;
                 let hit = false;
                 state.enemies.forEach(e => {
-                    // Increased collision check radius to 35 to prevent fast missiles phasing through
-                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 35) {
-                        createParticle(e.position, 'fire'); e.userData.hp -= 150; if(e.userData.hp<=0) destroyTarget(e); hit=true;
+                    // Collision check (30 unit radius ensures it hits wings/towers)
+                    if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 30) {
+                        e.userData.hp -= 200; if(e.userData.hp<=0) destroyTarget(e); hit=true;
                     }
                 });
                 
-                if(m.life<=0 || hit) { scene.remove(m.mesh); state.missiles.splice(i,1); }
+                // Explode if life ends or hits target
+                if(m.life<=0 || hit) { 
+                    createParticle(m.mesh.position, 'fire'); 
+                    scene.remove(m.mesh); state.missiles.splice(i,1); 
+                }
             }
         }
 
         function destroyTarget(e) {
-            for(let k=0; k<20; k++) {
-                // Spread explosion particles
+            for(let k=0; k<25; k++) {
                 const p = e.position.clone();
                 p.x += (Math.random()-0.5)*20; p.y += (Math.random()-0.5)*20; p.z += (Math.random()-0.5)*20;
                 createParticle(p, 'fire');
@@ -377,7 +378,7 @@
             setTimeout(()=>document.getElementById('msg-center').style.display='none', 2000);
         }
 
-        // --- LOOP ---
+        // --- MAIN ANIMATION LOOP ---
         function animate() {
             requestAnimationFrame(animate);
             if(state.flying) {
@@ -388,23 +389,27 @@
 
                 updateCombat();
                 
-                // Player Exhaust
-                if(state.speed>0.5) state.playerObj.userData.exhausts.forEach(ex => { const p=new THREE.Vector3(); ex.getWorldPosition(p); createParticle(p.addScalar((Math.random()-0.5)), 'smoke'); });
+                // --- 75% REDUCTION IN JET EXHAUST SMOKE ---
+                // Only spawn smoke on roughly 25% of the frames
+                if(state.speed > 0.5 && Math.random() < 0.25) { 
+                    state.playerObj.userData.exhausts.forEach(ex => { 
+                        const p=new THREE.Vector3(); 
+                        ex.getWorldPosition(p); 
+                        createParticle(p.addScalar((Math.random()-0.5)), 'smoke'); 
+                    }); 
+                }
                 
-                // Update all particles (Fixed scaling logic)
+                // Update all particles
                 state.particles.forEach((p,i) => {
-                    p.mesh.lookAt(camera.position); // Always face camera
+                    p.mesh.lookAt(camera.position);
                     p.life--; 
-                    
                     let newScale = 1 + ((p.maxLife-p.life)*p.scaleDelta);
-                    if(newScale < 0.1) newScale = 0.1; // Prevent negative scaling errors
+                    if(newScale < 0.1) newScale = 0.1; 
                     p.mesh.scale.setScalar(newScale); 
-                    
-                    p.mesh.material.opacity=p.life/p.maxLife;
+                    p.mesh.material.opacity = p.life/p.maxLife;
                     if(p.life<=0){ scene.remove(p.mesh); state.particles.splice(i,1); }
                 });
 
-                // HUD updates
                 const euler = new THREE.Euler().setFromQuaternion(state.playerObj.quaternion);
                 document.getElementById('horizon-container').style.transform = `translate(-50%,-50%) rotate(${euler.z * (180/Math.PI)}deg)`;
                 document.getElementById('pitch-ladder').style.transform = `translateY(${euler.x * (180/Math.PI) * 8}px)`;
