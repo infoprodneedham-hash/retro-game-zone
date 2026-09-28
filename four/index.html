@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F-18 Desert Storm: Perfect Strike</title>
+    <title>F-18 Desert Storm: Perfect Homing</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Consolas', monospace; touch-action: none; user-select: none; -webkit-user-select: none; }
         #game-container { position: relative; width: 100vw; height: 100vh; }
@@ -84,7 +84,7 @@
 
         <!-- Menu -->
         <div id="overlay">
-            <h1>SKY STRIKER V6</h1>
+            <h1>SKY STRIKER V7</h1>
             <p>
                 <b>MOBILE:</b> Left Stick to fly, Slider for speed.<br>
                 <b>DESKTOP:</b> <span class="key">Arrows</span> Pitch/Roll | <span class="key">Space</span> Thrust | <span class="key">L-Ctrl</span> Brake | <span class="key">Shift</span> Flaps | <span class="key">N</span> Gun | <span class="key">M</span> Missile
@@ -113,7 +113,6 @@
         const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(100, 500, 200); dirLight.castShadow = true; scene.add(dirLight);
 
         // --- ASSETS ---
-        // Terrain
         const groundGeo = new THREE.PlaneGeometry(CONFIG.mapScale, CONFIG.mapScale, 64, 64);
         const pos = groundGeo.attributes.position;
         for(let i=0; i<pos.count; i++){ pos.setZ(i, (Math.sin(pos.getX(i)/200) * Math.cos(pos.getY(i)/200) * 20) + (Math.random()*2)); }
@@ -189,12 +188,11 @@
         document.getElementById('start-btn').addEventListener('click', () => { document.getElementById('overlay').style.display = 'none'; state.flying = true; });
 
         // --- GAME LOGIC ---
-
         function createParticle(pos, type) {
             const isTrail = type === 'trail';
-            const size = isTrail ? 2 : 5;
+            const size = isTrail ? 2.5 : 6;
             const mat = new THREE.MeshBasicMaterial({ 
-                color: isTrail ? 0xffaa00 : (type==='fire' ? 0xff5500 : 0xaaaaaa), 
+                color: isTrail ? 0xffaa00 : (type==='fire' ? 0xff5500 : 0x888888), 
                 transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false 
             });
             if (isTrail || type === 'fire') mat.blending = THREE.AdditiveBlending;
@@ -205,8 +203,8 @@
             
             state.particles.push({ 
                 mesh: mesh, 
-                life: isTrail ? 15 : 40, maxLife: isTrail ? 15 : 40, 
-                scaleDelta: isTrail ? -0.05 : 0.05 // Trail shrinks, explosion grows
+                life: isTrail ? 8 : 40, maxLife: isTrail ? 8 : 40, // Trail fades faster
+                scaleDelta: isTrail ? -0.1 : 0.05 // Trail shrinks, explosion grows
             });
         }
 
@@ -223,46 +221,41 @@
             
             const mGroup = new THREE.Group();
             
-            // Body (3 units long, correctly oriented along -Z axis)
             const bodyGeo = new THREE.CylinderGeometry(0.3, 0.3, 3, 8);
             bodyGeo.rotateX(Math.PI/2); 
             const body = new THREE.Mesh(bodyGeo, new THREE.MeshLambertMaterial({color: 0xffffff}));
             
-            // Nose Cone (pointing to -Z)
             const noseGeo = new THREE.ConeGeometry(0.3, 1, 8);
             noseGeo.rotateX(-Math.PI/2); 
             const nose = new THREE.Mesh(noseGeo, new THREE.MeshBasicMaterial({color: 0xff0000}));
-            nose.position.z = -1.5; // Attach to front of cylinder
+            nose.position.z = -1.5; 
             
-            // Fins
             const finGeo = new THREE.BoxGeometry(2, 2, 0.1);
             const fins1 = new THREE.Mesh(finGeo, new THREE.MeshLambertMaterial({color: 0x333333}));
-            fins1.position.z = 1.0; // Attach near the back
+            fins1.position.z = 1.0; 
             const fins2 = fins1.clone();
             fins2.rotation.z = Math.PI/2;
 
             mGroup.add(body, nose, fins1, fins2);
             
-            // Perfect rail-firing logic (Start exactly aligned with plane)
+            // Spawn exactly relative to the jet without inheriting complex offsets
             mGroup.position.copy(state.playerObj.position);
             mGroup.quaternion.copy(state.playerObj.quaternion);
             
-            // Calculate wing offset safely
-            const isLeftWing = state.missilesFired % 2 === 0;
-            const offset = new THREE.Vector3(isLeftWing ? 3 : -3, -0.5, -2);
-            offset.applyQuaternion(state.playerObj.quaternion);
-            mGroup.position.add(offset);
-            
+            // Translate locally (safest way to offset)
+            mGroup.translateY(-0.5); // Drop below wing slightly
+            mGroup.translateX(state.missilesFired % 2 === 0 ? 3 : -3); // Left or right wing
+            mGroup.translateZ(-2); // Start slightly forward
+
             state.missilesFired++;
             scene.add(mGroup);
             
             state.missiles.push({ 
                 mesh: mGroup, 
                 target: state.lockedTarget, 
-                speed: state.speed, 
-                turnRate: 0.05, // Smooth tracking
+                speed: state.speed + 1.0, 
                 life: 300,
-                age: 0 // Age tracks how long it's been flying
+                age: 0
             });
         }
 
@@ -328,23 +321,31 @@
                 const m = state.missiles[i];
                 m.age++;
                 
-                // Accelerate smoothly
-                m.speed += 0.1; 
-                if (m.speed > 8) m.speed = 8; // Max missile speed cap
+                // Acceleration
+                m.speed += 0.15; 
+                if (m.speed > 10) m.speed = 10; // High top speed to catch targets
                 
-                m.mesh.translateZ(-m.speed); 
-                
-                // Homing kicks in after 10 frames so it shoots straight off the rail first
+                // ----------------------------------------------------
+                // FIXED HOMING MATH (Vector interpolation instead of Slerp)
+                // This guarantees the missile nose aims precisely without rolling wildly
+                // ----------------------------------------------------
                 if(m.age > 10 && m.target && m.target.parent) {
-                    const targetPos = m.target.position.clone();
-                    const dummy = new THREE.Object3D(); 
-                    dummy.position.copy(m.mesh.position); 
-                    dummy.lookAt(targetPos);
-                    m.mesh.quaternion.slerp(dummy.quaternion, m.turnRate);
+                    // 1. Get the exact direction to the target
+                    const dirToTarget = new THREE.Vector3().subVectors(m.target.position, m.mesh.position).normalize();
+                    // 2. Get the missile's current forward direction (-Z axis)
+                    const currentForward = new THREE.Vector3(0, 0, -1).applyQuaternion(m.mesh.quaternion);
+                    // 3. Smoothly pull the forward direction toward the target direction (0.15 = turning sharpness)
+                    currentForward.lerp(dirToTarget, 0.15).normalize();
+                    // 4. Force the missile to look along this newly calculated forward line
+                    const newLookTarget = m.mesh.position.clone().add(currentForward);
+                    m.mesh.lookAt(newLookTarget);
                 }
 
-                // Tight exhaust flame
-                if (m.age % 2 === 0) { // Limit trail spawn rate slightly
+                // Move forward after adjusting heading
+                m.mesh.translateZ(-m.speed); 
+                
+                // Clean Exhaust flame
+                if (m.age % 2 === 0) { 
                     const tailPos = new THREE.Vector3(0, 0, 1.5).applyMatrix4(m.mesh.matrixWorld);
                     createParticle(tailPos, 'trail');
                 }
@@ -352,13 +353,11 @@
                 m.life--;
                 let hit = false;
                 state.enemies.forEach(e => {
-                    // Collision check (30 unit radius ensures it hits wings/towers)
                     if(!hit && e.userData.hp > 0 && e.position.distanceTo(m.mesh.position) < 30) {
                         e.userData.hp -= 200; if(e.userData.hp<=0) destroyTarget(e); hit=true;
                     }
                 });
                 
-                // Explode if life ends or hits target
                 if(m.life<=0 || hit) { 
                     createParticle(m.mesh.position, 'fire'); 
                     scene.remove(m.mesh); state.missiles.splice(i,1); 
@@ -389,9 +388,8 @@
 
                 updateCombat();
                 
-                // --- 75% REDUCTION IN JET EXHAUST SMOKE ---
-                // Only spawn smoke on roughly 25% of the frames
-                if(state.speed > 0.5 && Math.random() < 0.25) { 
+                // --- DRAMATICALLY REDUCED JET SMOKE (10% CHANCE) ---
+                if(state.speed > 0.5 && Math.random() < 0.10) { 
                     state.playerObj.userData.exhausts.forEach(ex => { 
                         const p=new THREE.Vector3(); 
                         ex.getWorldPosition(p); 
@@ -399,7 +397,6 @@
                     }); 
                 }
                 
-                // Update all particles
                 state.particles.forEach((p,i) => {
                     p.mesh.lookAt(camera.position);
                     p.life--; 
