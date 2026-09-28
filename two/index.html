@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pro Snooker Mobile</title>
+    <style>
+        /* Ensure the app takes up exactly the height of the screen */
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            background: #1a1a1a; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', sans-serif; 
+            touch-action: none;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Pushes content to top and bottom */
+        }
+
+        #top-msg { 
+            color: #fff; 
+            padding-top: 15px;
+            font-weight: bold; 
+            text-shadow: 1px 1px 2px #000; 
+            letter-spacing: 1px;
+            height: 30px;
+        }
+
+        #game-container { 
+            flex-grow: 1; /* Allow table to take available space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        canvas { 
+            background: #2e7d32; 
+            border: 8px solid #3e2723; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 25px rgba(0,0,0,0.7); 
+            max-height: 70vh; /* Prevent it from pushing UI off screen */
+            max-width: 95vw;
+        }
+
+        #bottom-ui { 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 450px; 
+            padding-bottom: 30px; /* Safety margin for mobile home bars */
+            padding-top: 10px;
+            color: white; 
+        }
+
+        .stat-card { 
+            background: rgba(255,255,255,0.05); 
+            padding: 5px 10px; 
+            border-radius: 10px; 
+            text-align: center; 
+            min-width: 70px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
+
+        .stat-label { font-size: 9px; text-transform: uppercase; opacity: 0.7; }
+        .stat-value { font-size: 18px; font-weight: bold; color: #ffca28; }
+
+        button { 
+            padding: 10px 20px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            border: none; 
+            background: #f44336; 
+            color: white; 
+            box-shadow: 0 3px #b71c1c; 
+            cursor: pointer; 
+        }
+        button:active { transform: translateY(2px); box-shadow: 0 1px #b71c1c; }
+    </style>
+</head>
+<body>
+
+<div id="top-msg">Target: Ball 1</div>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+</div>
+
+<div id="bottom-ui">
+    <div class="stat-card">
+        <div class="stat-label">Shots</div>
+        <div id="shotCount" class="stat-value">0</div>
+    </div>
+    <button onclick="resetGame()">RESET</button>
+    <div class="stat-card">
+        <div class="stat-label">Next</div>
+        <div id="nextBall" class="stat-value">1</div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const shotDisplay = document.getElementById('shotCount');
+const targetDisplay = document.getElementById('nextBall');
+const msgDisplay = document.getElementById('top-msg');
+
+// Audio Setup
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq, type, duration, vol) {
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+
+const BALL_RADIUS = 9; // Slightly smaller balls for better fit
+const FRICTION = 0.985;
+const WALL_BOUNCE = 0.6;
+const POCKET_RADIUS = 22;
+
+let balls = [];
+let cueBall;
+let isDragging = false;
+let dragEnd = { x: 0, y: 0 };
+let shots = 0;
+let nextRequired = 1;
+
+function resize() {
+    // Calculate available space
+    const uiHeight = 150; 
+    const availableWidth = window.innerWidth - 30;
+    const availableHeight = window.innerHeight - uiHeight;
+    
+    // Maintain a 1:1.8 aspect ratio but fit within screen
+    canvas.width = Math.min(availableWidth, availableHeight / 1.8);
+    canvas.height = canvas.width * 1.8;
+}
+
+window.addEventListener('resize', () => {
+    resize();
+    resetGame();
+});
+
+function resetGame() {
+    balls = []; shots = 0; nextRequired = 1;
+    updateUI();
+    msgDisplay.innerText = "Target: Ball 1";
+    
+    cueBall = { x: canvas.width / 2, y: canvas.height * 0.75, vx: 0, vy: 0, color: 'white', num: 0, mass: 1 };
+    
+    let startX = canvas.width / 2;
+    let startY = canvas.height * 0.25;
+    let count = 1;
+    for (let row = 0; row < 5; row++) {
+        for (let col = 0; col <= row; col++) {
+            if (count > 15) break;
+            balls.push({
+                x: startX + (col * (BALL_RADIUS*2+2)) - (row * (BALL_RADIUS+1)),
+                y: startY - (row * (BALL_RADIUS*2)),
+                vx: 0, vy: 0,
+                color: `hsl(${count * 24}, 80%, 50%)`,
+                num: count++,
+                mass: 1
+            });
+        }
+    }
+    balls.push(cueBall);
+}
+
+function updateUI() {
+    shotDisplay.innerText = shots;
+    targetDisplay.innerText = nextRequired;
+}
+
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e.touches[0]); }, {passive: false});
+window.addEventListener('touchmove', (e) => { e.preventDefault(); drag(e.touches[0]); }, {passive: false});
+window.addEventListener('touchend', endDrag);
+
+canvas.addEventListener('mousedown', startDrag);
+window.addEventListener('mousemove', drag);
+window.addEventListener('mouseup', endDrag);
+
+function startDrag(e) {
+    if (!allStopped()) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+    
+    if (Math.hypot(mx - cueBall.x, my - cueBall.y) < 50) {
+        isDragging = true;
+        dragEnd.x = mx;
+        dragEnd.y = my;
+    }
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    const rect = canvas.getBoundingClientRect();
+    dragEnd.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    dragEnd.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+}
+
+function endDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+    let dx = cueBall.x - dragEnd.x;
+    let dy = cueBall.y - dragEnd.y;
+    let power = Math.min(Math.hypot(dx, dy) * 0.12, 14);
+    let angle = Math.atan2(dy, dx);
+    
+    if (power > 0.4) {
+        cueBall.vx = Math.cos(angle) * power;
+        cueBall.vy = Math.sin(angle) * power;
+        shots++;
+        updateUI();
+        playSound(150, 'triangle', 0.1, 0.2);
+    }
+}
+
+function allStopped() {
+    return balls.every(b => Math.abs(b.vx) < 0.1 && Math.abs(b.vy) < 0.1);
+}
+
+function resolveCollision(b1, b2) {
+    const dx = b2.x - b1.x;
+    const dy = b2.y - b1.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < BALL_RADIUS * 2) {
+        const overlap = BALL_RADIUS * 2 - dist;
+        const nx = dx / dist; const ny = dy / dist;
+        b1.x -= nx * overlap / 2; b1.y -= ny * overlap / 2;
+        b2.x += nx * overlap / 2; b2.y += ny * overlap / 2;
+        const v1n = b1.vx * nx + b1.vy * ny;
+        const v2n = b2.vx * nx + b2.vy * ny;
+        if (v1n - v2n < 0) return;
+        const impulse = (2 * (v1n - v2n)) / (b1.mass + b2.mass);
+        b1.vx -= impulse * b2.mass * nx; b1.vy -= impulse * b2.mass * ny;
+        b2.vx += impulse * b1.mass * nx; b2.vy += impulse * b1.mass * ny;
+        playSound(400, 'sine', 0.05, 0.1);
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Pockets
+    ctx.fillStyle = '#000';
+    [ [0,0], [canvas.width,0], [0, canvas.height/2], [canvas.width, canvas.height/2], [0, canvas.height], [canvas.width, canvas.height] ].forEach(p => {
+        ctx.beginPath(); ctx.arc(p[0], p[1], POCKET_RADIUS, 0, Math.PI * 2); ctx.fill();
+    });
+
+    if (isDragging) {
+        let dx = cueBall.x - dragEnd.x;
+        let dy = cueBall.y - dragEnd.y;
+        let angle = Math.atan2(dy, dx);
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.beginPath(); ctx.moveTo(cueBall.x, cueBall.y);
+        ctx.lineTo(cueBall.x + Math.cos(angle) * 150, cueBall.y + Math.sin(angle) * 150);
+        ctx.stroke(); ctx.setLineDash([]);
+        let powerRatio = Math.min(Math.hypot(dx, dy) / 100, 1);
+        ctx.fillStyle = `rgb(${powerRatio * 255}, ${255 - (powerRatio * 255)}, 0)`;
+        ctx.fillRect(cueBall.x - 20, cueBall.y + 25, 40 * powerRatio, 5);
+    }
+
+    for (let i = 0; i < balls.length; i++) {
+        let b = balls[i];
+        b.x += b.vx; b.y += b.vy;
+        b.vx *= FRICTION; b.vy *= FRICTION;
+
+        if (b.x < BALL_RADIUS || b.x > canvas.width - BALL_RADIUS) { b.vx *= -WALL_BOUNCE; b.x = b.x < BALL_RADIUS ? BALL_RADIUS : canvas.width - BALL_RADIUS; }
+        if (b.y < BALL_RADIUS || b.y > canvas.height - BALL_RADIUS) { b.vy *= -WALL_BOUNCE; b.y = b.y < BALL_RADIUS ? BALL_RADIUS : canvas.height - BALL_RADIUS; }
+
+        [ [0,0], [canvas.width,0], [0, canvas.height/2], [canvas.width, canvas.height/2], [0, canvas.height], [canvas.width, canvas.height] ].forEach(p => {
+            if (Math.hypot(b.x - p[0], b.y - p[1]) < POCKET_RADIUS) {
+                if (b.num === 0) {
+                    b.x = canvas.width / 2; b.y = canvas.height * 0.75; b.vx = 0; b.vy = 0;
+                } else if (b.num === nextRequired) {
+                    balls.splice(i, 1); nextRequired++; updateUI();
+                    playSound(300, 'sine', 0.4, 0.2);
+                    msgDisplay.innerText = nextRequired > 15 ? "YOU PLAYED WELL!" : "Target: Ball " + nextRequired;
+                } else {
+                    b.vx = 0; b.vy = 0; b.x = Math.random() * (canvas.width-40)+20; b.y = 100;
+                    msgDisplay.innerText = "Wrong Ball!";
+                    setTimeout(() => { if(nextRequired <= 15) msgDisplay.innerText = "Target: Ball " + nextRequired; }, 1000);
+                }
+            }
+        });
+
+        for (let j = i + 1; j < balls.length; j++) resolveCollision(b, balls[j]);
+
+        ctx.fillStyle = b.color;
+        ctx.beginPath(); ctx.arc(b.x, b.y, BALL_RADIUS, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.stroke();
+        if (b.num > 0) {
+            ctx.fillStyle = 'white'; ctx.font = 'bold 9px Arial'; ctx.textAlign = 'center';
+            ctx.fillText(b.num, b.x, b.y + 3);
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+resize();
+animate();
+</script>
+</body>
+</html>

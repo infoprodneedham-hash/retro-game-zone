@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Night Strike: 198X Elite</title>
+    <style>
+        body { background: #050505; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: #0f0; font-family: 'Courier New', Courier, monospace; overflow-x: hidden; }
+        canvas { border: 4px solid #444; box-shadow: 0 0 25px #0033ff; background: #000011; cursor: none; }
+        #ui { width: 800px; display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; font-size: 1.2em; }
+        #instructions { margin-top: 15px; color: #aaa; text-align: center; line-height: 1.4; }
+        .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; text-shadow: 4px 4px #000; display: none; pointer-events: none; text-align: center; }
+        
+        /* Touch Controls Styles */
+        #touch-controls {
+            width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        .touch-btn {
+            background: #111;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .touch-btn:active {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        /* Grid mapping for D-Pad positioning */
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+        
+        .action-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            font-size: 1em;
+        }
+        #btn-rocket {
+            border-color: #f80;
+            color: #f80;
+        }
+        #btn-rocket:active {
+            background: #f80;
+            color: #000;
+            box-shadow: 0 0 15px #f80;
+        }
+
+        /* Responsive scaling down for smaller mobile screens */
+        @media (max-width: 820px) {
+            #ui, canvas, #touch-controls { width: 95vw; }
+            canvas { height: calc(95vw * 0.5); }
+            #touch-controls { padding: 0 10px; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div>LIVES: <span id="lives">3</span></div>
+        <div>ROCKETS: <span id="rockets">6</span></div>
+        <div>TIME: <span id="timer">3:00</span></div>
+    </div>
+    
+    <div style="position: relative;">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="msgOverlay" class="overlay"></div>
+    </div>
+
+    <div id="touch-controls">
+        <div class="dpad">
+            <button id="btn-up" class="touch-btn">▲</button>
+            <button id="btn-left" class="touch-btn">◀</button>
+            <button id="btn-right" class="touch-btn">▶</button>
+            <button id="btn-down" class="touch-btn">▼</button>
+        </div>
+        <div class="action-buttons">
+            <button id="btn-fire" class="touch-btn action-btn">GUN</button>
+            <button id="btn-rocket" class="touch-btn action-btn">ROCKET</button>
+        </div>
+    </div>
+
+    <div id="instructions">
+        [ARROWS] MOVE | [SPACE] GUNS | [X] AOE ROCKETS<br>
+        <span style="color: #ff0;">YELLOW CRAFT RESTORES ROCKETS</span> | SURVIVE 3 MINUTES TO LAND
+    </div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const msgOverlay = document.getElementById('msgOverlay');
+
+let gameActive = true;
+let missionTime = 180;
+let lives = 3;
+let rockets = 6;
+let frameCount = 0;
+let phase = 'flying'; 
+let stars = Array.from({length: 100}, () => ({ x: Math.random()*800, y: Math.random()*400, s: Math.random()*2 }));
+
+let player = { x: 50, y: 200, w: 50, h: 20, speed: 5 };
+let bullets = [];
+let enemies = [];
+let explosions = [];
+let platform = { x: 900, y: 320, w: 250, h: 20 };
+
+const keys = {};
+window.onkeydown = (e) => {
+    keys[e.code] = true;
+    if(e.code === 'Space' && phase === 'flying' && gameActive) shoot(false);
+    if(e.code === 'KeyX' && phase === 'flying' && gameActive) shoot(true);
+};
+window.onkeyup = (e) => keys[e.code] = false;
+
+// Setup Touch/Pointer event listeners for the mobile UI panel
+function setupTouchControls() {
+    const bindDirection = (elementId, keyCode) => {
+        const el = document.getElementById(elementId);
+        
+        // Triggers when finger/mouse presses down
+        el.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            keys[keyCode] = true;
+        });
+        
+        // Triggers when finger/mouse lifts up or slides off the button
+        const stopMovement = (e) => {
+            e.preventDefault();
+            keys[keyCode] = false;
+        };
+        el.addEventListener('pointerup', stopMovement);
+        el.addEventListener('pointercancel', stopMovement);
+        el.addEventListener('pointerleave', stopMovement);
+    };
+
+    // Bind D-Pad to existing movement key configurations
+    bindDirection('btn-up', 'ArrowUp');
+    bindDirection('btn-down', 'ArrowDown');
+    bindDirection('btn-left', 'ArrowLeft');
+    bindDirection('btn-right', 'ArrowRight');
+
+    // Bind action buttons for immediate fire response
+    document.getElementById('btn-fire').addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if(phase === 'flying' && gameActive) shoot(false);
+    });
+
+    document.getElementById('btn-rocket').addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if(phase === 'flying' && gameActive) shoot(true);
+    });
+}
+setupTouchControls();
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq, type, duration, vol=0.1) {
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+
+function showMsg(text, color, dur) {
+    msgOverlay.innerText = text;
+    msgOverlay.style.color = color;
+    msgOverlay.style.display = 'block';
+    if(dur) setTimeout(() => msgOverlay.style.display = 'none', dur);
+}
+
+function shoot(isRocket) {
+    if(isRocket && rockets <= 0) return;
+    bullets.push({ x: player.x + 40, y: player.y + 10, speed: isRocket ? 6 : 10, type: isRocket ? 'rocket' : 'bullet' });
+    if(isRocket) {
+        rockets--;
+        document.getElementById('rockets').innerText = rockets;
+        playSound(80, 'sawtooth', 0.6, 0.2);
+    } else {
+        playSound(600, 'square', 0.05, 0.05);
+    }
+}
+
+function update() {
+    if (!gameActive) return;
+
+    stars.forEach(s => { s.x -= 0.5; if(s.x < 0) s.x = 800; });
+
+    if (phase === 'flying') {
+        frameCount++;
+        let difficulty = 1 - (missionTime / 180); 
+        if (frameCount % 60 === 0 && missionTime > 0) {
+            missionTime--;
+            document.getElementById('timer').innerText = `${Math.floor(missionTime/60)}:${(missionTime%60).toString().padStart(2,'0')}`;
+            if (missionTime === 0) { phase = 'landing'; showMsg("APPROACHING BASE", "#0ff", 3000); }
+        }
+
+        if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
+        if (keys['ArrowDown'] && player.y < 380) player.y += player.speed;
+        if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+        if (keys['ArrowRight'] && player.x < 400) player.x += player.speed;
+
+        // Normal UFO Spawning
+        if (Math.random() < 0.02 + (difficulty * 0.06)) {
+            enemies.push({ x: 850, y: Math.random() * 350, w: 35, h: 20, speed: 2 + (difficulty * 5), type: 'ufo' });
+        }
+        // Rare Supply Ship Spawning
+        if (Math.random() < 0.003) {
+            enemies.push({ x: 850, y: Math.random() * 350, w: 60, h: 30, speed: 2, type: 'supply' });
+        }
+    } else if (phase === 'landing') {
+        platform.x -= 2;
+        player.x += (player.x < platform.x + 20) ? 1.5 : -1.5;
+        player.y += (player.y < platform.y - 20) ? 1 : -1;
+        if (Math.abs(player.x - (platform.x + 20)) < 5 && Math.abs(player.y - (platform.y - 20)) < 5) phase = 'walking';
+    } else if (phase === 'walking') {
+        if (keys['ArrowRight']) player.x += 2;
+        if (player.x > 750) { gameActive = false; showMsg("MISSION COMPLETE", "#0f0"); setTimeout(() => location.reload(), 3000); }
+    }
+
+    bullets.forEach((b, bi) => {
+        b.x += b.speed;
+        enemies.forEach((e, ei) => {
+            // Hitbox slightly larger than sprite for easier hits
+            if (b.x > e.x - 5 && b.x < e.x + e.w + 5 && b.y > e.y - 5 && b.y < e.y + e.h + 5) {
+                if(b.type === 'rocket') {
+                    explosions.push({x: b.x, y: b.y, r: 10, maxR: 120});
+                    playSound(40, 'sawtooth', 0.8, 0.3);
+                } else {
+                    if(e.type === 'supply') { 
+                        rockets = 6; 
+                        document.getElementById('rockets').innerText = rockets;
+                        playSound(800, 'triangle', 0.5, 0.2); 
+                    }
+                    enemies.splice(ei, 1);
+                    playSound(150, 'sine', 0.1);
+                }
+                bullets.splice(bi, 1);
+            }
+        });
+    });
+
+    explosions.forEach((exp, expI) => {
+        exp.r += 5;
+        enemies.forEach((e, ei) => {
+            let dist = Math.hypot(e.x - exp.x, e.y - exp.y);
+            if(dist < exp.r) {
+                if(e.type === 'supply') { rockets = 6; document.getElementById('rockets').innerText = rockets; }
+                enemies.splice(ei, 1);
+            }
+        });
+        if(exp.r > exp.maxR) explosions.splice(expI, 1);
+    });
+
+    enemies.forEach((e, ei) => {
+        e.x -= e.speed;
+        if (phase === 'flying' && player.x < e.x + e.w && player.x + player.w > e.x && player.y < e.y + e.h && player.y + player.h > e.y) {
+            lives--;
+            document.getElementById('lives').innerText = lives;
+            enemies.splice(ei, 1);
+            playSound(30, 'sawtooth', 0.5, 0.4);
+            if (lives <= 0) {
+                gameActive = false;
+                showMsg("GAME OVER", "#f00");
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                showMsg("LIFE LOST", "#f80", 1000);
+            }
+        }
+    });
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => { ctx.fillStyle = "#fff"; ctx.fillRect(s.x, s.y, s.s, s.s); });
+
+    // Draw F-16
+    if(phase === 'walking') {
+        ctx.fillStyle = "#fff"; ctx.fillRect(player.x, platform.y - 30, 15, 30); // Pilot
+    } else {
+        ctx.fillStyle = "#99aabc"; 
+        ctx.beginPath(); ctx.moveTo(player.x, player.y + 10); ctx.lineTo(player.x + 50, player.y + 12); ctx.lineTo(player.x + 10, player.y + 20); ctx.fill();
+        ctx.fillRect(player.x, player.y, 5, 10); // Tail
+        ctx.fillStyle = "#00ffff"; ctx.fillRect(player.x + 25, player.y + 8, 8, 4);
+    }
+
+    // Draw Enemies
+    enemies.forEach(e => {
+        ctx.fillStyle = e.type === 'supply' ? "#ff0" : "#f0f";
+        ctx.beginPath(); ctx.ellipse(e.x + e.w/2, e.y + e.h/2, e.w/2, e.h/2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillRect(e.x + e.w/4, e.y + e.h/3, e.w/2, 2);
+    });
+
+    bullets.forEach(b => {
+        ctx.fillStyle = b.type === 'rocket' ? "#f80" : "#ff0";
+        ctx.fillRect(b.x, b.y, b.type === 'rocket' ? 18 : 6, 4);
+    });
+
+    explosions.forEach(exp => {
+        ctx.strokeStyle = `rgba(255, 150, 0, ${1 - exp.r/exp.maxR})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(exp.x, exp.y, exp.r, 0, Math.PI*2); ctx.stroke();
+    });
+
+    if (phase !== 'flying') {
+        ctx.fillStyle = "#333"; ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
+        ctx.fillStyle = "#111"; ctx.fillRect(700, 120, 100, 200);
+        ctx.fillStyle = "#0f0"; ctx.fillRect(740, 280, 20, 40);
+    }
+
+    update();
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

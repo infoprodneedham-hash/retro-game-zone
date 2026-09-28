@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sniper Range: Movement Fixed</title>
+    <style>
+        :root { --scope-size: 220px; }
+        body { margin: 0; padding: 0; background: #1a1a1a; color: white; font-family: 'Courier New', monospace; overflow: hidden; user-select: none; cursor: none; }
+        #game-box { width: 100vw; height: 100vh; background: #2e3b2e; position: relative; overflow: hidden; }
+        
+        /* Scope */
+        #scope {
+            width: var(--scope-size); height: var(--scope-size);
+            border: 4px solid #000; border-radius: 50%;
+            position: absolute; pointer-events: none;
+            box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.8);
+            z-index: 100; transform: translate(-50%, -50%);
+        }
+        .crosshair-h { width: 100%; height: 2px; background: rgba(255,0,0,0.6); position: absolute; top: 50%; }
+        .crosshair-v { width: 2px; height: 100%; background: rgba(255,0,0,0.6); position: absolute; left: 50%; }
+
+        /* Target */
+        .target {
+            width: 60px; height: 60px;
+            background: radial-gradient(circle, red 10%, white 10%, white 30%, red 30%, red 50%, white 50%, white 70%, red 70%);
+            border-radius: 50%; position: absolute;
+            z-index: 5;
+        }
+
+        #hud { position: absolute; top: 20px; left: 20px; z-index: 110; background: rgba(0,0,0,0.7); padding: 15px; border-left: 4px solid #0f0; }
+        #flash { position: absolute; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 99; }
+        #msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; text-align: center; z-index: 120; display: none; }
+    </style>
+</head>
+<body>
+
+<div id="game-box">
+    <div id="flash"></div>
+    <div id="scope"><div class="crosshair-h"></div><div class="crosshair-v"></div></div>
+    <div id="hud">
+        <div>ROUND: <span id="r-val">1</span></div>
+        <div>HITS: <span id="h-val">0</span> / 10</div>
+        <div>AMMO: <span id="a-val">15</span></div>
+    </div>
+    <div id="msg"></div>
+</div>
+
+<script>
+    const gameBox = document.getElementById('game-box');
+    const scope = document.getElementById('scope');
+    const flash = document.getElementById('flash');
+    const msg = document.getElementById('msg');
+    
+    let hits = 0, ammo = 15, round = 1, gameActive = true;
+
+    // Audio
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playShot() {
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    // Movement
+    window.addEventListener('mousemove', e => {
+        if(!gameActive) return;
+        scope.style.left = e.clientX + 'px';
+        scope.style.top = e.clientY + 'px';
+    });
+
+    window.addEventListener('mousedown', e => {
+        if(!gameActive || ammo <= 0) return;
+        ammo--;
+        document.getElementById('a-val').innerText = ammo;
+        playShot();
+        
+        flash.style.opacity = '0.5'; setTimeout(() => flash.style.opacity = '0', 50);
+        scope.style.marginTop = "-30px"; setTimeout(() => scope.style.marginTop = "0px", 100);
+
+        const hitObj = document.elementFromPoint(e.clientX, e.clientY);
+        if (hitObj && hitObj.classList.contains('target')) {
+            hits++;
+            document.getElementById('h-val').innerText = hits;
+            hitObj.remove();
+            if (hits < 10) spawnTarget();
+            checkGameState();
+        } else {
+            if (ammo <= 0) checkGameState();
+        }
+    });
+
+    function spawnTarget() {
+        const t = document.createElement('div');
+        t.className = 'target';
+        
+        if (round === 1) {
+            t.style.left = (Math.random() * 80 + 10) + 'vw';
+            t.style.top = (Math.random() * 80 + 10) + 'vh';
+        } else {
+            // Round 2 Logic: Constant Drift
+            let side = Math.random() > 0.5;
+            let posX = side ? -60 : window.innerWidth + 60;
+            let posY = (Math.random() * 60 + 20) + 'vh';
+            let speed = (Math.random() * 3 + 2) * (side ? 1 : -1); // Speed between 2 and 5
+
+            t.style.top = posY;
+            t.style.left = posX + 'px';
+
+            function animate() {
+                if (!t.parentNode) return;
+                posX += speed;
+                t.style.left = posX + 'px';
+
+                // Wrap around
+                if (posX > window.innerWidth + 100) posX = -100;
+                if (posX < -100) posX = window.innerWidth + 100;
+
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        }
+        gameBox.appendChild(t);
+    }
+
+    function checkGameState() {
+        if (hits >= 10) {
+            if (round === 1) {
+                round = 2;
+                uiMessage("ROUND 1 CLEAR\nMOVING TARGETS DETECTED");
+            } else {
+                uiMessage("MISSION COMPLETE\nYOU ARE A LEGEND");
+                gameActive = false;
+            }
+        } else if (ammo <= 0 && hits < 10) {
+            uiMessage("OUT OF AMMO\nGAME OVER");
+            gameActive = false;
+            setTimeout(() => location.reload(), 3000);
+        }
+    }
+
+    function uiMessage(text) {
+        msg.innerText = text;
+        msg.style.display = 'block';
+        gameActive = false;
+        document.querySelectorAll('.target').forEach(t => t.remove());
+
+        if (text.includes("CLEAR")) {
+            setTimeout(() => {
+                msg.style.display = 'none';
+                hits = 0; ammo = 15; round = 2;
+                document.getElementById('h-val').innerText = hits;
+                document.getElementById('a-val').innerText = ammo;
+                document.getElementById('r-val').innerText = round;
+                gameActive = true;
+                spawnTarget();
+            }, 3000);
+        }
+    }
+
+    spawnTarget();
+</script>
+</body>
+</html>

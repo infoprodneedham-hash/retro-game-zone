@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sniper Scope - Tactical Precision</title>
+    <style>
+        body { margin: 0; background: #000; color: #0f0; font-family: 'Courier New', monospace; overflow: hidden; cursor: none; }
+        canvas { display: block; }
+        #ui {
+            position: absolute; top: 20px; left: 20px; pointer-events: none;
+            background: rgba(0,10,0,0.9); padding: 15px; border: 1px solid #0f0;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <div>SCORE: <span id="score">0</span> | AMMO: <span id="ammo">6/6</span></div>
+    <div id="health-ui">HEALTH: [|||]</div>
+    <div id="status">SCANNING...</div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+/** AUDIO ENGINE **/
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playShot(isPlayer) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const noise = audioCtx.createBufferSource();
+    const gain = audioCtx.createGain();
+    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
+    noise.buffer = buffer;
+    gain.gain.setValueAtTime(isPlayer ? 0.4 : 0.25, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    noise.connect(gain); gain.connect(audioCtx.destination);
+    noise.start();
+}
+
+/** GAME SETUP **/
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+let score = 0, ammo = 6, hitsInClip = 0, isReloading = false;
+let mouse = { x: 0, y: 0 }, recoil = 0, playerHealth = 3, enemyCount = 0;
+let gameOver = false;
+
+const building = { x: canvas.width/4, y: canvas.height/4, w: canvas.width/2, h: canvas.height/1.5 };
+const winW = 60, winH = 80;
+let enemies = [];
+
+const searchLights = [
+    { x: 100, y: 100, dx: 1.1, dy: 0.7, r: 250 },
+    { x: canvas.width-100, y: canvas.height-100, dx: -0.8, dy: -1.2, r: 300 }
+];
+
+function initEnemies() {
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            enemies.push({
+                x: building.x + (c + 0.5) * (building.w / 3) - winW/2,
+                y: building.y + (r + 0.5) * (building.h / 3) - winH/2,
+                active: false, isElite: false,
+                timer: 2000, lastChange: Date.now(),
+                fireTimer: 0, shotsTaken: 0, flashActive: 0
+            });
+        }
+    }
+}
+
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('mousedown', () => { 
+    if(gameOver) return location.reload();
+    if(ammo > 0 && !isReloading) fire(); 
+});
+
+function fire() {
+    playShot(true);
+    ammo--; recoil = 50;
+    enemies.forEach(e => {
+        if (e.active) {
+            const hX = e.x + winW/2, hY = e.y + 35;
+            const d = Math.hypot(mouse.x - hX, mouse.y - hY);
+            if (d < 15) { score += 500; e.active = false; hitsInClip++; }
+            else if (mouse.x > e.x+10 && mouse.x < e.x+winW-10 && mouse.y > e.y+45 && mouse.y < e.y+winH) {
+                score += 150; e.active = false; hitsInClip++;
+            }
+        }
+    });
+    updateUI();
+    if (ammo === 0) reload();
+}
+
+function reload() {
+    isReloading = true;
+    document.getElementById('status').innerText = "RELOADING...";
+    setTimeout(() => {
+        ammo = 6; isReloading = false;
+        document.getElementById('status').innerText = "READY";
+        hitsInClip = 0; updateUI();
+    }, 1500);
+}
+
+function updateUI() {
+    document.getElementById('score').innerText = score;
+    document.getElementById('ammo').innerText = ammo + "/6";
+    document.getElementById('health-ui').innerText = "HEALTH: " + "[|".repeat(playerHealth) + " ".repeat(3-playerHealth) + "]";
+}
+
+function update() {
+    if (gameOver) return;
+    const now = Date.now();
+    if (recoil > 0) recoil *= 0.85;
+
+    searchLights.forEach(s => {
+        s.x += s.dx; s.y += s.dy;
+        if (s.x < 0 || s.x > canvas.width) s.dx *= -1;
+        if (s.y < 0 || s.y > canvas.height) s.dy *= -1;
+    });
+
+    enemies.forEach(e => {
+        if (e.flashActive > 0) e.flashActive--; 
+
+        if (!e.isElite || (e.isElite && e.shotsTaken === 0)) {
+            if (now - e.lastChange > e.timer) {
+                e.active = !e.active;
+                e.lastChange = now;
+                if (e.active) {
+                    enemyCount++;
+                    e.isElite = (enemyCount % 5 === 0);
+                    e.fireTimer = now + 3000;
+                    e.shotsTaken = 0;
+                    e.timer = e.isElite ? 20000 : (Math.random() * 2000 + 1000);
+                }
+            }
+        }
+
+        if (e.active && e.isElite && now > e.fireTimer && e.shotsTaken < 3) {
+            playerHealth--;
+            e.flashActive = 15; // Muzzle flash duration
+            e.shotsTaken++;
+            playShot(false);
+            e.fireTimer = now + 3000; 
+            updateUI();
+            if (playerHealth <= 0) gameOver = true;
+        }
+    });
+    draw();
+    requestAnimationFrame(update);
+}
+
+function draw() {
+    // 1. Scene Base
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0,0, canvas.width, canvas.height);
+    ctx.fillStyle = '#1a1a1a'; ctx.fillRect(building.x, building.y, building.w, building.h);
+    
+    enemies.forEach(e => {
+        ctx.fillStyle = '#000'; ctx.fillRect(e.x, e.y, winW, winH);
+        if (e.active) {
+            ctx.fillStyle = e.isElite ? '#fff' : '#777'; 
+            ctx.fillRect(e.x + 15, e.y + 45, winW - 30, 30);
+            ctx.beginPath(); ctx.arc(e.x + winW/2, e.y + 35, 10, 0, Math.PI*2); ctx.fill();
+        }
+    });
+
+    // 2. The Mask (Searchlights and Scope)
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-in'; 
+    ctx.beginPath();
+    const sX = mouse.x, sY = mouse.y - recoil;
+    ctx.arc(sX, sY, 180, 0, Math.PI*2);
+    searchLights.forEach(s => { ctx.moveTo(s.x + s.r, s.y); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); });
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Atmosphere Glow
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    searchLights.forEach(s => {
+        const g = ctx.createRadialGradient(s.x, s.y, s.r * 0.5, s.x, s.y, s.r);
+        g.addColorStop(0, 'rgba(200, 255, 180, 0.1)'); g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g; ctx.fillRect(0,0, canvas.width, canvas.height);
+    });
+    ctx.restore();
+
+    // 4. OVERLAY LAYER (Draws ON TOP of the darkness mask)
+    // This ensures the muzzle flash is always visible regardless of light
+    enemies.forEach(e => {
+        if (e.flashActive > 0) {
+            ctx.save();
+            ctx.fillStyle = '#ffff00';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "white";
+            ctx.beginPath();
+            ctx.arc(e.x + winW/2 + 12, e.y + 45, 3, 0, Math.PI*2); 
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
+            ctx.beginPath(); 
+            ctx.moveTo(e.x+winW/2+7, e.y+45); ctx.lineTo(e.x+winW/2+17, e.y+45); 
+            ctx.stroke();
+            ctx.restore();
+        }
+    });
+
+    // 5. NVG Scope UI
+    ctx.save();
+    ctx.strokeStyle = '#0f0'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(sX, sY, 180, 0, Math.PI*2); ctx.stroke();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.15)'; ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath(); ctx.moveTo(sX, sY-180); ctx.lineTo(sX, sY+180); ctx.moveTo(sX-180, sY); ctx.lineTo(sX+180, sY); ctx.stroke();
+    ctx.restore();
+
+    if(gameOver) {
+        ctx.fillStyle = "rgba(0,0,0,0.95)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "red"; ctx.font = "24px Courier New"; ctx.textAlign = "center";
+        ctx.fillText("OPERATOR KIA - CLICK TO RESTART", canvas.width/2, canvas.height/2);
+    }
+}
+
+initEnemies();
+update();
+window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+</script>
+</body>
+</html>

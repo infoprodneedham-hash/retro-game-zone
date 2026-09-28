@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Starship Defender - Arrowhead</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: 'Courier New', monospace; 
+            color: #00ffcc;
+            touch-action: none; /* Prevents mobile pull-to-refresh and scrolling */
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+        canvas { 
+            display: block; 
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui { position: absolute; top: 20px; left: 20px; pointer-events: none; z-index: 2; }
+        .stat-box { margin-bottom: 5px; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 5px #00ffcc; }
+        
+        #game-over { 
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); 
+            text-align: center; display: none; background: rgba(0,0,0,0.9); padding: 30px; border: 2px solid #ff0000;
+            z-index: 10;
+            width: 80%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        /* --- TOUCH CONTROLS --- */
+        #touch-controls {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            width: 92%;
+            max-width: 500px;
+            pointer-events: none; 
+            z-index: 5;
+        }
+        .control-group {
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffcc;
+            color: #00ffcc;
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 12px;
+            text-shadow: 0 0 5px #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+            outline: none;
+            touch-action: none; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active {
+            background: rgba(0, 255, 204, 0.3);
+            color: #fff;
+        }
+        #btn-fire {
+            border-color: #ff00ff;
+            color: #ff00ff;
+            width: 110px;
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+        }
+        #btn-fire:active {
+            background: rgba(255, 0, 255, 0.3);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <div class="stat-box">SCORE > <span id="score">0</span></div>
+    <div class="stat-box">LIVES > <span id="lives">5</span></div>
+    <div class="stat-box" style="color: #ffaa00;">WARP  > <span id="speedDisplay">1.0</span>x</div>
+</div>
+
+<div id="game-over">
+    <h1 style="color: #ff0000; font-size: 2.2rem; margin-top: 0;">HULL BREACHED</h1>
+    <p>FINAL SCORE: <span id="finalScore">0</span></p>
+    <p style="font-size: 0.9rem;">PRESS 'R' OR TAP 'FIRE' TO REBOOT</p>
+</div>
+
+<div id="touch-controls">
+    <div class="control-group">
+        <button class="btn" id="btn-left">◀</button>
+        <button class="btn" id="btn-right">▶</button>
+    </div>
+    <button class="btn" id="btn-fire">FIRE</button>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+// --- AUDIO ENGINE ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+const SFX = {
+    laser() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    },
+    explode(isSmall) {
+        const duration = isSmall ? 0.2 : 0.4;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(isSmall ? 150 : 100, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(10, audioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    },
+    damage() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+        osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+};
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let lives = 5;
+let gameOver = false;
+let globalSpeedMult = 1.0;
+let spawnTimer = 0;
+
+const keys = {};
+let lasers = [];
+let rocks = [];
+let stars = [];
+
+class Ship {
+    constructor() {
+        this.w = 40;
+        this.h = 50;
+        this.speed = 9;
+        this.resetPos();
+    }
+    resetPos() {
+        this.x = canvas.width / 2 - this.w / 2;
+        // Pushed up safely out of the way of the 70px high touch buttons layout
+        this.y = canvas.height - this.h - 140; 
+    }
+    draw() {
+        ctx.strokeStyle = "#00ffff";
+        ctx.fillStyle = "#00ffff";
+        ctx.lineWidth = 2;
+        
+        ctx.beginPath();
+        ctx.moveTo(this.x + this.w / 2, this.y); 
+        ctx.lineTo(this.x, this.y + this.h);     
+        ctx.lineTo(this.x + this.w / 2, this.y + this.h - 12); 
+        ctx.lineTo(this.x + this.w, this.y + this.h); 
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#ffaa00";
+        ctx.fillStyle = "#ffaa00";
+        ctx.fillRect(this.x + this.w/2 - 4, this.y + this.h - 5, 8, 8);
+        ctx.shadowBlur = 0;
+    }
+    update() {
+        if (keys['ArrowLeft'] && this.x > 0) this.x -= this.speed;
+        if (keys['ArrowRight'] && this.x < canvas.width - this.w) this.x += this.speed;
+    }
+}
+
+class Rock {
+    constructor(x, y, radius, level) {
+        this.x = x || Math.random() * canvas.width;
+        this.y = y || -100;
+        this.radius = radius || 25 + Math.random() * 20;
+        this.level = level || 2; 
+        this.vy = (Math.random() * 2 + 2) * globalSpeedMult;
+        this.vx = (Math.random() - 0.5) * 2;
+        
+        this.points = [];
+        const sides = 6 + Math.floor(Math.random() * 5); 
+        for(let i=0; i < sides; i++) {
+            const angle = (i / sides) * Math.PI * 2;
+            const variation = 0.7 + Math.random() * 0.3;
+            this.points.push({
+                x: Math.cos(angle) * this.radius * variation,
+                y: Math.sin(angle) * this.radius * variation
+            });
+        }
+    }
+    draw() {
+        ctx.strokeStyle = this.level === 2 ? "#ffffff" : "#ff4444";
+        ctx.lineWidth = 2;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.beginPath();
+        ctx.moveTo(this.points[0].x, this.points[0].y);
+        for(let i=1; i < this.points.length; i++) {
+            ctx.lineTo(this.points[i].x, this.points[i].y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+    }
+}
+
+function initStars() {
+    stars = [];
+    for(let i=0; i<60; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2,
+            speed: Math.random() * 3 + 1
+        });
+    }
+}
+
+const ship = new Ship();
+
+function init() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ship.resetPos();
+    initStars();
+}
+
+function verifyAudioContext() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+window.addEventListener('resize', init);
+window.addEventListener('keydown', e => {
+    verifyAudioContext();
+    keys[e.code] = true;
+    if (e.code === 'Space' && !gameOver) {
+        lasers.push({ x: ship.x + ship.w / 2, y: ship.y, speed: 14 });
+        SFX.laser();
+    }
+    if (e.code === 'KeyR' && gameOver) reboot();
+});
+window.addEventListener('keyup', e => keys[e.code] = false);
+
+// --- UNIFIED POINTER CONTROLS (Fixes mobile touch lag) ---
+const btnLeft = document.getElementById('btn-left');
+const btnRight = document.getElementById('btn-right');
+const btnFire = document.getElementById('btn-fire');
+
+btnLeft.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    verifyAudioContext();
+    keys['ArrowLeft'] = true;
+});
+btnLeft.addEventListener('pointerup', e => { e.preventDefault(); keys['ArrowLeft'] = false; });
+btnLeft.addEventListener('pointercancel', e => { e.preventDefault(); keys['ArrowLeft'] = false; });
+
+btnRight.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    verifyAudioContext();
+    keys['ArrowRight'] = true;
+});
+btnRight.addEventListener('pointerup', e => { e.preventDefault(); keys['ArrowRight'] = false; });
+btnRight.addEventListener('pointercancel', e => { e.preventDefault(); keys['ArrowRight'] = false; });
+
+btnFire.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    verifyAudioContext();
+    if (!gameOver) {
+        lasers.push({ x: ship.x + ship.w / 2, y: ship.y, speed: 14 });
+        SFX.laser();
+    } else {
+        reboot();
+    }
+});
+
+function reboot() {
+    score = 0; lives = 5; globalSpeedMult = 1.0;
+    rocks = []; lasers = []; gameOver = false;
+    document.getElementById('game-over').style.display = 'none';
+    updateUI();
+    ship.resetPos();
+    loop();
+}
+
+function updateUI() {
+    document.getElementById('score').innerText = score;
+    document.getElementById('lives').innerText = lives;
+    document.getElementById('speedDisplay').innerText = globalSpeedMult.toFixed(1);
+}
+
+function loop() {
+    if (gameOver) return;
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#fff";
+    stars.forEach(s => {
+        s.y += s.speed * globalSpeedMult;
+        if (s.y > canvas.height) s.y = 0;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+    });
+
+    ship.update();
+    ship.draw();
+
+    spawnTimer++;
+    if (spawnTimer > 35 / globalSpeedMult) {
+        rocks.push(new Rock());
+        spawnTimer = 0;
+    }
+
+    for (let i = lasers.length - 1; i >= 0; i--) {
+        lasers[i].y -= lasers[i].speed;
+        ctx.fillStyle = "#ff00ff";
+        ctx.fillRect(lasers[i].x - 2, lasers[i].y, 4, 15);
+        if (lasers[i].y < 0) lasers.splice(i, 1);
+    }
+
+    for (let i = rocks.length - 1; i >= 0; i--) {
+        const r = rocks[i];
+        r.update();
+        r.draw();
+
+        const distToShip = Math.hypot((ship.x + ship.w/2) - r.x, (ship.y + ship.h/2) - r.y);
+        if (distToShip < r.radius + 15) {
+            rocks.splice(i, 1);
+            lives--;
+            SFX.damage(); 
+            globalSpeedMult += 0.25; 
+            updateUI();
+            if (lives <= 0) {
+                gameOver = true;
+                document.getElementById('finalScore').innerText = score;
+                document.getElementById('game-over').style.display = 'block';
+            }
+            continue;
+        }
+
+        for (let j = lasers.length - 1; j >= 0; j--) {
+            const l = lasers[j];
+            const dist = Math.hypot(l.x - r.x, l.y - r.y);
+            if (dist < r.radius) {
+                SFX.explode(r.level === 1); 
+                if (r.level > 1) {
+                    rocks.push(new Rock(r.x, r.y, r.radius * 0.5, 1));
+                    rocks.push(new Rock(r.x, r.y, r.radius * 0.5, 1));
+                }
+                rocks.splice(i, 1);
+                lasers.splice(j, 1);
+                score += (r.level === 2) ? 10 : 20;
+                updateUI();
+                break;
+            }
+        }
+
+        if (r.y > canvas.height + 100) rocks.splice(i, 1);
+    }
+
+    requestAnimationFrame(loop);
+}
+
+init();
+loop();
+</script>
+</body>
+</html>
+
+```

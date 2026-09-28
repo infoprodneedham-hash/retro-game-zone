@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickman Adventure: 3 Lives</title>
+    <style>
+        body { margin: 0; background: #222; display: flex; flex-direction: column; align-items: center; color: white; font-family: sans-serif; overflow: hidden; }
+        #container { position: relative; margin-top: 20px; }
+        canvas { background: white; border: 4px solid #000; image-rendering: pixelated; display: block; }
+        #overlay, #game-over { 
+            position: absolute; top: 0; left: 0; width: 800px; height: 450px; 
+            background: rgba(0,0,0,0.85); display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; cursor: pointer; z-index: 10;
+        }
+        #game-over { display: none; color: #ff4444; }
+        #game-over button { padding: 10px 20px; font-size: 20px; cursor: pointer; background: #ff4444; border: none; color: white; margin-top: 20px; }
+        .ui { position: absolute; top: 10px; left: 15px; right: 15px; font-size: 24px; color: black; pointer-events: none; display: flex; justify-content: space-between; z-index: 5; font-weight: bold; }
+        .health-bar { color: #cc0000; letter-spacing: 2px; }
+        .controls { margin-top: 10px; color: #aaa; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="ui">
+            <div id="score">Score: 0</div>
+            <div class="health-bar" id="health">❤❤❤</div>
+            <div id="level">Screen: 1</div>
+        </div>
+        <div id="overlay">
+            <h1>CLICK TO PLAY</h1>
+            <p>ARROWS to Move | SPACE to Swing | SHIFT to Run</p>
+        </div>
+        <div id="game-over">
+            <h1>GAME OVER</h1>
+            <p id="final-score">Final Score: 0</p>
+            <button onclick="resetGame()">RESTART</button>
+        </div>
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+    </div>
+    <div class="controls">You have 3 lives. Watch out for the Alien and Spikes!</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const healthEl = document.getElementById('health');
+const levelEl = document.getElementById('level');
+const overlay = document.getElementById('overlay');
+const gameOverScreen = document.getElementById('game-over');
+const finalScoreEl = document.getElementById('final-score');
+
+let gameRunning = false;
+let score = 0;
+let health = 3;
+let currentLevel = 0;
+let keys = {};
+let audioCtx;
+
+overlay.addEventListener('click', startAudio);
+
+function startAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    overlay.style.display = 'none';
+    gameRunning = true;
+    requestAnimationFrame(gameLoop);
+}
+
+function resetGame() {
+    score = 0;
+    health = 3;
+    currentLevel = 0;
+    scoreEl.innerText = `Score: 0`;
+    healthEl.innerText = `❤❤❤`;
+    levelEl.innerText = `Screen: 1`;
+    gameOverScreen.style.display = 'none';
+    player.x = 50; player.y = 300;
+    gameRunning = true;
+}
+
+function playSound(freq, type, duration, vol = 0.1) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+const player = { x: 50, y: 300, w: 20, h: 40, vx: 0, vy: 0, speed: 3, runSpeed: 6, jumpPower: -12, grounded: false, swinging: false, rope: null, angle: 0, angleV: 0 };
+const alien = { x: 700, y: 50, vx: 0, vy: 0, speed: 0.04, maxSpeed: 1.8 };
+
+const levels = [
+    { 
+        platforms: [
+            {x: 0, y: 400, w: 800, h: 50, type: 'floor'}, 
+            {x: 50, y: 140, w: 100, h: 15, type: 'sink', originY: 140},
+            {x: 450, y: 200, w: 150, h: 15, type: 'strafe', originX: 450, range: 200},
+            {x: 180, y: 280, w: 200, h: 15, type: 'normal'}
+        ],
+        springs: [{x: 260, y: 272, w: 30, h: 8, power: -18}],
+        coins: [{x: 100, y: 100, active: true, respawn: 0}, {x: 280, y: 240, active: true, respawn: 0}, {x: 520, y: 160, active: true, respawn: 0}],
+        ropes: [], hazards: []
+    },
+    { 
+        platforms: [
+            {x: 0, y: 400, w: 800, h: 50, type: 'floor'},
+            {x: 200, y: 350, w: 60, h: 50, type: 'normal'}, 
+            {x: 480, y: 350, w: 60, h: 50, type: 'normal'}
+        ],
+        springs: [],
+        coins: [{x: 510, y: 300, active: true, respawn: 0}],
+        ropes: [{x: 350, y: 0, length: 250}],
+        hazards: [{x: 280, y: 400, w: 30}, {x: 330, y: 400, w: 30}, {x: 380, y: 400, w: 30}]
+    }
+];
+
+window.addEventListener('keydown', e => keys[e.code] = true);
+window.addEventListener('keyup', e => keys[e.code] = false);
+
+function takeDamage() {
+    health--;
+    healthEl.innerText = "❤".repeat(health);
+    playSound(100, 'sawtooth', 0.4, 0.2);
+    if (health <= 0) {
+        gameRunning = false;
+        finalScoreEl.innerText = `Final Score: ${score}`;
+        gameOverScreen.style.display = 'flex';
+    } else {
+        player.x = 50; player.y = 300;
+    }
+}
+
+function switchLevel(dir) {
+    if (dir === 'right') { currentLevel = (currentLevel + 1) % levels.length; player.x = 10; }
+    else { currentLevel = currentLevel === 0 ? levels.length - 1 : currentLevel - 1; player.x = 770; }
+    levelEl.innerText = `Screen: ${currentLevel + 1}`;
+    alien.x = player.x > 400 ? 50 : 750;
+}
+
+function update() {
+    if (!gameRunning) return;
+    let activeSpeed = keys['ShiftLeft'] ? player.runSpeed : player.speed;
+    let time = Date.now() * 0.002;
+
+    // Alien Tracking
+    let dx = (player.x + 10) - alien.x, dy = (player.y + 20) - alien.y;
+    let dist = Math.hypot(dx, dy);
+    alien.vx += (dx / dist) * alien.speed;
+    alien.vy += (dy / dist) * alien.speed;
+    alien.vx *= 0.98; alien.vy *= 0.98;
+    alien.x += alien.vx; alien.y += alien.vy;
+    if (dist < 25) takeDamage();
+
+    if (!player.swinging) {
+        if (keys['ArrowLeft']) player.vx = -activeSpeed;
+        else if (keys['ArrowRight']) player.vx = activeSpeed;
+        else player.vx *= 0.8;
+
+        player.vy += 0.6;
+        player.x += player.vx;
+        player.y += player.vy;
+
+        player.grounded = false;
+        levels[currentLevel].platforms.forEach(p => {
+            let pOldX = p.x;
+            if (p.type === 'strafe') p.x = p.originX + Math.sin(time) * 100;
+
+            if (player.x < p.x + p.w && player.x + player.w > p.x &&
+                player.y + player.h > p.y && player.y + player.h < p.y + p.h + 10 && player.vy >= 0) {
+                player.y = p.y - player.h;
+                player.vy = 0;
+                player.grounded = true;
+                if (p.type === 'strafe') player.x += (p.x - pOldX);
+                if (p.type === 'sink') { p.y += 1.2; player.y = p.y - player.h; }
+            } else if (p.type === 'sink' && p.y > p.originY) p.y -= 0.4;
+        });
+
+        levels[currentLevel].springs.forEach(s => {
+            if (player.x < s.x + s.w && player.x + player.w > s.x && player.y + player.h > s.y && player.y + player.h < s.y + s.h + 10) {
+                player.vy = s.power; playSound(400, 'square', 0.2);
+            }
+        });
+
+        if (keys['ArrowUp'] && player.grounded) { player.vy = player.jumpPower; playSound(150, 'square', 0.1); }
+
+        if (keys['Space']) {
+            levels[currentLevel].ropes.forEach(r => {
+                let ex = r.x + Math.sin(player.angle) * r.length, ey = r.y + Math.cos(player.angle) * r.length;
+                if (Math.hypot(player.x - ex, player.y - ey) < 50) {
+                    player.swinging = true; player.rope = r;
+                    player.angle = Math.atan2(player.x - r.x, player.y - r.y);
+                    player.angleV = player.vx * 0.01;
+                }
+            });
+        }
+    } else {
+        player.angleV += -0.008 * Math.sin(player.angle);
+        player.angle += player.angleV;
+        player.x = player.rope.x + Math.sin(player.angle) * player.rope.length - player.w/2;
+        player.y = player.rope.y + Math.cos(player.angle) * player.rope.length - player.h/2;
+        if (!keys['Space']) { player.swinging = false; player.vx = player.angleV * 60; player.vy = -5; }
+    }
+
+    if (player.x > 800) switchLevel('right');
+    if (player.x < -20) switchLevel('left');
+
+    levels[currentLevel].coins.forEach(c => {
+        if (c.active && Math.hypot(player.x - c.x, player.y - c.y) < 30) {
+            c.active = false; c.respawn = Date.now() + 5000;
+            score += 50; scoreEl.innerText = `Score: ${score}`;
+            playSound(800, 'sine', 0.1);
+        } else if (!c.active && Date.now() > c.respawn) c.active = true;
+    });
+
+    levels[currentLevel].hazards.forEach(h => {
+        if (player.x < h.x + h.w && player.x + player.w > h.x && player.y + player.h > 380) takeDamage();
+    });
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const lvl = levels[currentLevel];
+    lvl.platforms.forEach(p => { ctx.fillStyle = "black"; ctx.fillRect(p.x, p.y, p.w, p.h); });
+    lvl.springs.forEach(s => { ctx.fillStyle = "red"; ctx.fillRect(s.x, s.y + 4, s.w, s.h - 4); ctx.fillStyle = "black"; ctx.fillRect(s.x, s.y, s.w, 2); });
+    ctx.fillStyle = "green";
+    lvl.hazards.forEach(h => { for(let i=0; i<h.w; i+=15) { ctx.beginPath(); ctx.moveTo(h.x+i, 400); ctx.lineTo(h.x+i+7.5, 375); ctx.lineTo(h.x+i+15, 400); ctx.fill(); } });
+    lvl.coins.forEach(c => { if(c.active) { ctx.strokeStyle = "gold"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(c.x, c.y, 6, 12, 0, 0, Math.PI*2); ctx.stroke(); } });
+    ctx.strokeStyle = "red";
+    lvl.ropes.forEach(r => { let ex = r.x + Math.sin(player.angle) * r.length, ey = r.y + Math.cos(player.angle) * r.length; ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(ex, ey); ctx.stroke(); });
+    
+    // Alien Draw
+    ctx.fillStyle = "#0f0"; ctx.beginPath(); ctx.ellipse(alien.x, alien.y, 20, 8, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "cyan"; ctx.beginPath(); ctx.arc(alien.x, alien.y - 4, 8, Math.PI, 0); ctx.fill();
+    
+    // Stickman Draw
+    ctx.strokeStyle = "black"; ctx.lineWidth = 2;
+    let px = player.x + player.w/2, py = player.y;
+    ctx.beginPath(); ctx.arc(px, py+8, 6, 0, Math.PI*2); ctx.moveTo(px, py+14); ctx.lineTo(px, py+30); ctx.moveTo(px-10, py+20); ctx.lineTo(px+10, py+20); ctx.moveTo(px, py+30); ctx.lineTo(px-8, py+40); ctx.moveTo(px, py+30); ctx.lineTo(px+8, py+40); ctx.stroke();
+}
+
+function gameLoop() {
+    update();
+    draw();
+    if (gameRunning) requestAnimationFrame(gameLoop);
+}
+</script>
+</body>
+</html>

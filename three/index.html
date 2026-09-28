@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Math Darts: Stealth Edition</title>
+    <style>
+        body {
+            margin: 0;
+            background: #121212;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        #ui { text-align: center; margin-bottom: 15px; z-index: 10; width: 100%; }
+        #problem { font-size: 64px; font-weight: bold; color: #f1c40f; margin: 0; height: 80px; }
+        #sub-info { font-size: 24px; color: #3498db; height: 35px; margin-bottom: 10px; font-weight: bold; }
+        #stats { 
+            font-size: 22px; 
+            background: rgba(255,255,255,0.1); 
+            padding: 8px 25px; 
+            border-radius: 50px;
+            display: inline-block;
+        }
+        canvas { 
+            background: radial-gradient(circle, #444 0%, #000 100%); 
+            border-radius: 50%; 
+            box-shadow: 0 0 80px rgba(0,0,0,0.9);
+            border: 8px solid #222;
+        }
+        .highlight { color: #f1c40f; }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <div id="problem">Loading...</div>
+    <div id="sub-info"></div>
+    <div id="stats">Score: <span id="score" class="highlight">0</span> | Round: <span id="round" class="highlight">1</span>/10</div>
+</div>
+
+<canvas id="dartCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('dartCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 650;
+
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+const boardRadius = 240;
+const boardValues = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+
+let currentProblem = { question: "", answer: 0, currentSum: 0 };
+let score = 0;
+let round = 1;
+let isThrowing = false;
+let isPaused = false; 
+let stuckDarts = []; 
+
+let dart = { x: 400, y: 700, targetX: 0, targetY: 0, scale: 2.5, speed: 0.08, t: 0 };
+
+function generateProblem() {
+    let a, b, ans, op;
+    stuckDarts = []; 
+    currentProblem.currentSum = 0;
+    isPaused = false;
+    
+    if (round <= 3) {
+        a = Math.floor(Math.random() * 10) + 1;
+        b = Math.floor(Math.random() * 10) + 1;
+        ans = a + b; op = "+";
+    } else if (round <= 6) {
+        a = Math.floor(Math.random() * 20) + 10;
+        b = Math.floor(Math.random() * 10) + 1;
+        ans = a - b; op = "-";
+    } else {
+        a = Math.floor(Math.random() * 8) + 4; 
+        b = Math.floor(Math.random() * 8) + 4;
+        ans = a * b; op = "×";
+    }
+
+    currentProblem.question = `${a} ${op} ${b}`;
+    currentProblem.answer = ans;
+    updateUI();
+}
+
+function updateUI(msg = "") {
+    const probEl = document.getElementById('problem');
+    const subEl = document.getElementById('sub-info');
+    
+    if (msg) {
+        probEl.innerText = msg;
+    } else {
+        probEl.innerText = `${currentProblem.question} = ?`;
+        probEl.style.color = "#f1c40f";
+    }
+
+    if (round > 6) {
+        subEl.innerText = `Current Total: ${currentProblem.currentSum}`;
+        subEl.style.color = "#3498db";
+    } else {
+        subEl.innerText = "Single hit required!";
+        subEl.style.color = "#95a5a6";
+    }
+}
+
+function drawBoard() {
+    const sliceAngle = (Math.PI * 2) / 20;
+    const startOffset = -Math.PI / 2 - sliceAngle / 2;
+
+    for (let i = 0; i < 20; i++) {
+        const angle = startOffset + i * sliceAngle;
+        
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, boardRadius, angle, angle + sliceAngle);
+        ctx.fillStyle = (i % 2 === 0) ? "#1a1a1a" : "#eee";
+        ctx.fill();
+
+        const drawRing = (r, thickness, color1, color2) => {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, r, angle, angle + sliceAngle);
+            ctx.arc(centerX, centerY, r - thickness, angle + sliceAngle, angle, true);
+            ctx.fillStyle = (i % 2 === 0) ? color1 : color2;
+            ctx.fill();
+        };
+
+        drawRing(boardRadius, 15, "#27ae60", "#e74c3c"); 
+        drawRing(140, 15, "#27ae60", "#e74c3c"); 
+
+        ctx.save();
+        const textAngle = angle + sliceAngle / 2;
+        const tx = centerX + Math.cos(textAngle) * (boardRadius + 25);
+        const ty = centerY + Math.sin(textAngle) * (boardRadius + 25);
+        ctx.translate(tx, ty);
+        ctx.fillStyle = "white";
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(boardValues[i], 0, 0);
+        ctx.restore();
+    }
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
+    ctx.fillStyle = "#e74c3c";
+    ctx.fill();
+}
+
+function drawDart(x, y, scale) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = "#555";
+    ctx.fillRect(-2, 0, 4, 40);
+    ctx.fillStyle = "#3498db";
+    ctx.beginPath();
+    ctx.moveTo(0, 35); ctx.lineTo(-12, 55); ctx.lineTo(12, 55);
+    ctx.fill();
+    ctx.strokeStyle = "silver";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(0, -15);
+    ctx.stroke();
+    ctx.restore();
+}
+
+canvas.addEventListener('mousedown', (e) => {
+    if (isThrowing || isPaused || round > 10) return;
+    const rect = canvas.getBoundingClientRect();
+    dart.targetX = e.clientX - rect.left;
+    dart.targetY = e.clientY - rect.top;
+    dart.t = 0;
+    isThrowing = true;
+});
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBoard();
+
+    stuckDarts.forEach(d => {
+        drawDart(d.x, d.y, d.scale);
+    });
+
+    if (isThrowing) {
+        dart.t += 0.08;
+        let curX = centerX + (dart.targetX - centerX) * dart.t;
+        let curY = 700 + (dart.targetY - 700) * dart.t;
+        let curScale = 2.5 - (dart.t * 2.0);
+        
+        drawDart(curX, curY, curScale);
+
+        if (dart.t >= 1) {
+            isThrowing = false;
+            processHit(dart.targetX, dart.targetY, curScale);
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+function processHit(hx, hy, scale) {
+    const dx = hx - centerX;
+    const dy = hy - centerY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    
+    stuckDarts.push({x: hx, y: hy, scale: scale});
+
+    if (dist > boardRadius) {
+        finishRound("MISSED BOARD!");
+        return;
+    }
+
+    let angle = Math.atan2(dy, dx);
+    let normalizedAngle = angle + Math.PI / 2 + (Math.PI * 2 / 40);
+    if (normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+    const sliceIndex = Math.floor((normalizedAngle / (Math.PI * 2)) * 20) % 20;
+    
+    let hitPoints = boardValues[sliceIndex];
+    if (dist >= boardRadius - 15) hitPoints *= 2;
+    else if (dist >= 125 && dist <= 140) hitPoints *= 3;
+    if (dist <= 15) hitPoints = 25; 
+
+    currentProblem.currentSum += hitPoints;
+
+    if (round <= 6) {
+        if (currentProblem.currentSum === currentProblem.answer) {
+            score += 20;
+            finishRound(`CORRECT! It was ${currentProblem.answer}`);
+        } else {
+            finishRound(`WRONG! Total was ${currentProblem.answer}`);
+        }
+    } else {
+        if (currentProblem.currentSum === currentProblem.answer) {
+            score += 50;
+            finishRound(`PERFECT! ${currentProblem.answer} reached!`);
+        } else if (currentProblem.currentSum > currentProblem.answer) {
+            finishRound(`BUST! You hit ${currentProblem.currentSum}, target was ${currentProblem.answer}`);
+        } else {
+            updateUI(); 
+        }
+    }
+}
+
+function finishRound(msg) {
+    isPaused = true; 
+    updateUI(msg);
+    setTimeout(() => {
+        round++;
+        if (round <= 10) {
+            document.getElementById('round').innerText = round;
+            document.getElementById('score').innerText = score;
+            generateProblem();
+        } else {
+            document.getElementById('problem').innerText = "GAME OVER!";
+            document.getElementById('sub-info').innerText = `Final Score: ${score}`;
+        }
+    }, 2500);
+}
+
+generateProblem();
+animate();
+</script>
+</body>
+</html>
