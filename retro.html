@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ARCADE-FORGE 1982 // DIY Classic 8-Bit Generator & Exporter</title>
+  <title>ARCADE-FORGE 1982 // Authenticated 8-Bit Engine & Exporter</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +83,7 @@
       <div class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#22d3ee]"></div>
       <div>
         <h1 class="retro-font text-xs sm:text-sm text-cyan-300 neon-text-cyan flex items-center gap-2">
-          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">CLASSIC 5-IN-1 EDITION</span>
+          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">AUTHENTIC PHYSICS v2.5</span>
         </h1>
         <p class="text-[11px] text-slate-400">Pac-Man • Donkey Kong • Space Invaders • Elevator Action • Frogger</p>
       </div>
@@ -113,7 +113,7 @@
       <div>
         <label class="block text-[11px] font-bold text-cyan-400 mb-2 uppercase tracking-wider flex items-center justify-between">
           <span>SELECT CLASSIC ARCADE ENGINE</span>
-          <span class="text-[10px] text-slate-400 font-mono">100% OFFLINE READY</span>
+          <span class="text-[10px] text-emerald-400 font-mono">PHYSICS TUNED</span>
         </label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
           <button onclick="selectClassicGame('pacman')" id="tab-pacman" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-cyan-500 bg-cyan-950/70 text-cyan-200 transition shadow">
@@ -156,8 +156,8 @@
           <label class="block text-slate-300 font-bold mb-1">💀 DIFFICULTY</label>
           <select id="cfgDifficulty" onchange="onConfigChange()" class="w-full bg-[#060a14] border border-slate-700 rounded px-2.5 py-1.5 text-cyan-200 focus:outline-none">
             <option value="arcade">Arcade Standard (Quarter Muncher)</option>
-            <option value="casual">Casual (Generous Lives / Slower Hazard)</option>
-            <option value="turbo">Turbo 1985 (Lightning Fast)</option>
+            <option value="casual">Casual (Generous Lives / Slower Speed)</option>
+            <option value="turbo">Turbo 1985 (Fast Paced)</option>
           </select>
         </div>
 
@@ -166,28 +166,33 @@
           <select id="cfgMod" onchange="onConfigChange()" class="w-full bg-[#060a14] border border-slate-700 rounded px-2.5 py-1.5 text-cyan-200 focus:outline-none">
             <option value="classic">Faithful Classic Rules</option>
             <option value="doublescore">Double Scoring Fever</option>
-            <option value="speedshoes">Hyper Speed Boost Active</option>
+            <option value="speedshoes">Speed Boost Active</option>
           </select>
         </div>
+      </div>
+
+      <!-- Specific Engine Tuning Summary -->
+      <div id="physicsTuningSummary" class="text-[11px] bg-[#070d18] border border-slate-700/80 rounded p-2.5 text-slate-300 space-y-1">
+        <!-- Dynamically injected details on selected game physics -->
       </div>
 
       <!-- Generated AI Prompt Output -->
       <div class="flex-1 flex flex-col gap-1.5">
         <div class="flex items-center justify-between">
           <label class="text-xs text-amber-400 font-bold flex items-center gap-1.5">
-            <span>✨</span> AI CODING PROMPT (COPY TO CHAT / LLM)
+            <span>✨</span> AI CODING PROMPT (ENGINEER SPEC)
           </label>
           <button onclick="copyAiPrompt()" class="text-[11px] text-amber-300 bg-amber-950/80 hover:bg-amber-900 border border-amber-600/70 px-2 py-0.5 rounded transition">
             📋 COPY PROMPT
           </button>
         </div>
-        <textarea id="aiPromptBox" rows="6" readonly class="w-full bg-[#050811] border border-slate-700 rounded p-2.5 text-[11px] text-slate-300 font-mono leading-relaxed resize-none focus:outline-none select-all"></textarea>
+        <textarea id="aiPromptBox" rows="5" readonly class="w-full bg-[#050811] border border-slate-700 rounded p-2.5 text-[11px] text-slate-300 font-mono leading-relaxed resize-none focus:outline-none select-all"></textarea>
       </div>
 
       <!-- Export & Build Tools -->
-      <div class="pt-3 border-t border-slate-800 flex flex-col gap-2.5">
+      <div class="pt-2 border-t border-slate-800 flex flex-col gap-2">
         <button onclick="loadGameIntoPreview()" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs retro-font tracking-wider rounded transition shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2">
-          <span>🕹️</span> RUN IN PLAYABLE PREVIEW
+          <span>🕹️</span> APPLY & RUN IN PREVIEW
         </button>
 
         <div class="grid grid-cols-2 gap-2">
@@ -202,7 +207,7 @@
         <div class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded border border-slate-800 flex items-start gap-2">
           <span class="text-amber-400 text-sm">💡</span>
           <div>
-            The downloaded game is a <strong class="text-cyan-300">single, 100% self-contained HTML file</strong>. Once downloaded, drag it to your <strong class="text-amber-300">Games</strong> folder and double-click to play in Chrome, Safari, Firefox, or Edge without any internet connection!
+            The downloaded game is a <strong class="text-cyan-300">standalone offline HTML file</strong> with all physics corrections baked in. Move it to your <strong class="text-amber-300">Games</strong> folder and double-click to play anytime!
           </div>
         </div>
       </div>
@@ -213,7 +218,7 @@
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-xs bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-700">SANDBOX</span>
-          <h2 id="activeGameTitleBadge" class="retro-font text-xs text-amber-300">PAC-MAZE 1980</h2>
+          <h2 id="activeGameTitleBadge" class="retro-font text-xs text-amber-300">FROGGER: HOPPING RUN</h2>
         </div>
 
         <div class="flex items-center gap-2">
@@ -231,15 +236,13 @@
         <iframe id="arcadeFrame" class="w-full h-full border-0 absolute inset-0 bg-black" sandbox="allow-scripts" title="Interactive Retro Game Sandbox"></iframe>
       </div>
 
-      <!-- Virtual Controls & Help bar -->
+      <!-- Controls & Help bar -->
       <div class="flex flex-wrap items-center justify-between gap-3 bg-[#060912] border border-slate-800 p-2.5 rounded text-xs text-slate-300">
-        <div class="flex items-center gap-4 flex-wrap">
-          <div><span class="text-cyan-400 font-bold">MOVE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Arrow Keys / WASD</span></div>
-          <div><span class="text-amber-400 font-bold">ACTION / JUMP / SHOOT:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Spacebar</span></div>
-          <div><span class="text-pink-400 font-bold">PAUSE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">P</span></div>
+        <div id="controlsBanner" class="flex items-center gap-4 flex-wrap">
+          <!-- Dynamically populated based on selected game -->
         </div>
         <div id="statusBadge" class="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ENGINE ONLINE
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> PHYSICS SYNCED
         </div>
       </div>
 
@@ -253,7 +256,7 @@
     let audioCtx = null;
     let sfxEnabled = true;
     let crtEnabled = true;
-    let currentGame = 'pacman';
+    let currentGame = 'frogger';
 
     function initAudio() {
       if (!audioCtx) {
@@ -310,41 +313,86 @@
       setTimeout(() => t.classList.add('hidden'), 2800);
     }
 
-    /* 5 Classic Arcade Configurations & Prompts */
+    /* Classic Arcade Metadata with Detailed Physics Tuning Notes */
     const ARCADE_METADATA = {
-      pacman: {
-        id: 'pacman',
-        name: 'PAC-MAZE 1980',
-        palette: 'original',
-        promptTheme: "Pac-Man style maze chaser game featuring a mouth-chomping yellow hero, tile-based labyrinth walls, score dots, 4 energized power pellets, and 4 colored ghosts (Blinky, Pinky, Inky, Clyde). When energized, ghosts turn blue and can be eaten for score bonuses with floating point multipliers. Includes fruit bonus spawns, chiptune sound effects, and player lives.",
-        controls: "Arrow Keys / WASD to turn direction. P to pause."
+      frogger: {
+        id: 'frogger',
+        name: 'FROGGER: HOPPING RUN 1981',
+        controlsHtml: `
+          <div><span class="text-cyan-400 font-bold">HOP:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Arrow Keys / WASD</span></div>
+          <div><span class="text-amber-400 font-bold">GOAL:</span> <span class="text-slate-300">Reach the 5 Lily-pad Docks safely</span></div>
+          <div><span class="text-pink-400 font-bold">PAUSE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">P</span></div>
+        `,
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Frogger Physics:</div>
+          <div>• Halved obstacle movement speeds across all 5 road and 5 river lanes for realistic pacing.</div>
+          <div>• Increased horizontal gaps between vehicles and logs by 40-70% to ensure fair crossing windows.</div>
+          <div>• Smooth log-riding drift and river drowning bounding box calibration.</div>
+        `,
+        promptTheme: "Frogger classic arcade. The frog begins at the bottom grass median and hops across 5 highway traffic lanes with cars, racecars, and trucks traveling at relaxed, halved speeds with wide gaps. The middle median is safe. The top half is a river with floating logs and diving turtles. Hopping onto a log carries the frog along with the current. Landing in water or missing a dock loses a life. Fill all 5 docks to advance."
       },
       kong: {
         id: 'kong',
         name: 'BARREL CLIMBER 1981 (DONKEY KONG)',
-        palette: 'original',
-        promptTheme: "Donkey Kong arcade style multi-tier girder platformer. The player must run across slanted girders, climb up ladders, and jump over rolling barrels thrown by an oversized gorilla on the top beam to rescue the damsel Pauline. Features hammer power-ups to smash barrels, precise jump timing, gravity, and climbing mechanics with classic 8-bit sound effects.",
-        controls: "Left/Right or A/D to run, Up/Down or W/S to climb ladders, Spacebar to jump over barrels."
-      },
-      invaders: {
-        id: 'invaders',
-        name: 'SPACE INVADERS 1978',
-        promptTheme: "Space Invaders arcade shooter with an army of 5 rows of aliens marching horizontally across the screen, dropping down and speeding up as their numbers decrease. The player controls a ground laser cannon moving along the bottom, firing at aliens while dodging enemy bomb drops. Includes destructible bunkers that erode under fire and a high-value red mystery UFO flying across the top.",
-        controls: "Left/Right or A/D to steer cannon, Spacebar to shoot missile."
+        controlsHtml: `
+          <div><span class="text-cyan-400 font-bold">RUN:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Left/Right or A/D</span></div>
+          <div><span class="text-amber-400 font-bold">CLIMB:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Up/Down on Ladders</span></div>
+          <div><span class="text-emerald-400 font-bold">JUMP:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Spacebar</span></div>
+        `,
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Donkey Kong Physics:</div>
+          <div>• Barrels strictly spawn on the top girder and roll along each red girder incline.</div>
+          <div>• At girder edges, barrels drop vertically down to the tier below and reverse rolling direction.</div>
+          <div>• Jumpman has an arcade parabolic jump arc with gravity and only climbs ladders when aligned.</div>
+        `,
+        promptTheme: "Donkey Kong girder climbing game. Donkey Kong stands on the top platform tossing barrels down onto the topmost red slanted girder. Barrels roll smoothly along the sloping steel girders, drop down to the tier below at the end of each platform, and roll in the opposite direction. Jumpman runs, climbs ladders when aligned, and jumps over barrels to reach Pauline at the top."
       },
       elevator: {
         id: 'elevator',
         name: 'ELEVATOR ACTION: SPY 1983',
-        palette: 'original',
-        promptTheme: "Elevator Action style 1980s spy espionage game. The secret agent descends a 30-story building using functional elevator cars that move up and down shafts. The player must shoot enemy trench-coat agents, duck under bullets, ride elevator tops or enter elevator cars, and infiltrate marked red secret doors to steal classified documents before escaping at the ground floor.",
-        controls: "Left/Right to run, Up/Down to operate/call elevators, Down to duck, Spacebar to shoot handgun."
+        controlsHtml: `
+          <div><span class="text-cyan-400 font-bold">WALK:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">A / D or Left / Right</span></div>
+          <div><span class="text-amber-400 font-bold">ELEVATOR / SEARCH:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Up / Down</span></div>
+          <div><span class="text-emerald-400 font-bold">DUCK & SHOOT:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Down to Duck, Space to Fire</span></div>
+        `,
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Elevator Action Mechanics:</div>
+          <div>• NO door teleportation! Red doors are espionage rooms: press UP in front of them to search for documents.</div>
+          <div>• The agent emerges at the exact same location after searching.</div>
+          <div>• Elevator shafts are continuous; step into a car and use UP/DOWN to travel between floors.</div>
+          <div>• Ducking with Down arrow ducks under enemy bullets.</div>
+        `,
+        promptTheme: "Elevator Action espionage game. Secret Agent 17 infiltrates a 30-story building with real elevators moving smoothly through shafts. Entering an elevator allows riding it between floors. Marked red doors contain classified documents: the agent presses UP in front of a red door to enter, searches it, and exits at the exact same spot. Enemy agents patrol hallways and shoot bullets that can be ducked under. Collect all files and reach the ground floor."
       },
-      frogger: {
-        id: 'frogger',
-        name: 'FROGGER: HOPPING RUN 1981',
-        palette: 'original',
-        promptTheme: "Frogger classic arcade game. The frog begins at the bottom and must cross a busy 5-lane highway with cars, buses, and trucks moving at varied speeds. After reaching the safe median grass strip, the player must cross a rapid river by hopping across floating logs and diving turtles without touching the fatal water, and safely navigate into 5 target lily-pad docks before time runs out.",
-        controls: "Arrow keys or WASD to hop in 4 directions."
+      pacman: {
+        id: 'pacman',
+        name: 'PAC-MAZE 1980',
+        controlsHtml: `
+          <div><span class="text-cyan-400 font-bold">STEER:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Arrow Keys / WASD</span></div>
+          <div><span class="text-amber-400 font-bold">GOAL:</span> <span class="text-slate-300">Eat all Dots & Energizers</span></div>
+          <div><span class="text-pink-400 font-bold">PAUSE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">P</span></div>
+        `,
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Mechanics:</div>
+          <div>• Corner pre-buffering allows pressing turn directions before intersections.</div>
+          <div>• 4 distinct ghosts with frightened flashing state and eat multiplier bonuses.</div>
+        `,
+        promptTheme: "Pac-Man maze game with tile-aligned grid, cornering pre-buffers, dot and power pellet eating, flashing vulnerable blue ghosts, tunnel warp mechanics, and classic sound synthesis."
+      },
+      invaders: {
+        id: 'invaders',
+        name: 'SPACE INVADERS 1978',
+        controlsHtml: `
+          <div><span class="text-cyan-400 font-bold">AIM:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Left / Right or A / D</span></div>
+          <div><span class="text-amber-400 font-bold">FIRE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">Spacebar</span></div>
+          <div><span class="text-pink-400 font-bold">PAUSE:</span> <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">P</span></div>
+        `,
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Space Invaders Mechanics:</div>
+          <div>• 5 rows of aliens marching rhythmically, speeding up as ranks thin out.</div>
+          <div>• Destructible defense bunkers that erode under laser fire and high-score flying UFO.</div>
+        `,
+        promptTheme: "Space Invaders arcade shooter with marching alien grid, tempo escalation, bunker damage masks, top UFO flybys, and classic laser cannons."
       }
     };
 
@@ -363,6 +411,9 @@
       const meta = ARCADE_METADATA[gameKey];
       document.getElementById('cfgTitle').value = meta.name;
       document.getElementById('activeGameTitleBadge').innerText = meta.name;
+      document.getElementById('controlsBanner').innerHTML = meta.controlsHtml;
+      document.getElementById('physicsTuningSummary').innerHTML = meta.tuningNotes;
+
       updateAiPromptDisplay();
       loadGameIntoPreview();
     }
@@ -380,17 +431,16 @@
       const mod = document.getElementById('cfgMod').value;
 
       const prompt = `Create a single-file, 100% self-contained HTML5 retro arcade game titled "${title}".
-Classic Genre: ${meta.name}
-Core Gameplay Mechanics:
+Classic Engine: ${meta.name}
+Core Gameplay Mechanics & Physics Fixes:
 - ${meta.promptTheme}
 - Aesthetic & Color Palette: ${palette.toUpperCase()}
 - Difficulty Setting: ${diff.toUpperCase()}
 - Bonus Modifier: ${mod.toUpperCase()}
-Technical Requirements:
-1. Pure HTML, CSS, and Canvas JavaScript bundled into a SINGLE file with zero external CDNs or external image/audio links.
-2. Web Audio API synthesizer for 8-bit chiptune sound effects (player movement, actions, collisions, game over, scoring).
-3. Smooth 60FPS requestAnimationFrame canvas loop, keyboard inputs (Arrow keys/WASD, Spacebar), pause menu, score, high score tracking, and restart handling.
-4. Clean arcade HUD with lives counter and CRT scanline styling.`;
+Verified Physics Rules:
+1. Precise movement physics: For Frogger, halved speeds and wide spacing. For Donkey Kong, barrels roll strictly on sloping girders and drop only at edges. For Elevator Action, authentic elevators and zero door teleportation.
+2. Web Audio API synthesized 8-bit sound effects. Zero external image or sound URLs.
+3. 60FPS requestAnimationFrame canvas loop, keyboard inputs (Arrow keys/WASD, Spacebar), scoreboards, lives, pause, and restart.`;
 
       document.getElementById('aiPromptBox').value = prompt;
     }
@@ -406,7 +456,7 @@ Technical Requirements:
     function randomizeSettings() {
       playBeep(400, 'square', 0.05);
       setTimeout(() => playBeep(700, 'square', 0.05), 60);
-      const keys = ['pacman', 'kong', 'invaders', 'elevator', 'frogger'];
+      const keys = ['frogger', 'kong', 'elevator', 'pacman', 'invaders'];
       const pick = keys[Math.floor(Math.random() * keys.length)];
       
       const palettes = ['original', 'matrix', 'amber', 'cyberpunk', 'gameboy'];
@@ -421,14 +471,13 @@ Technical Requirements:
       showToast('⚡ Preset randomized!');
     }
 
-    /* Generator function that returns the full, runnable, standalone HTML code for the selected game */
+    /* Generator function that returns the full, runnable, standalone HTML code with verified physics */
     function buildStandaloneGameHtml(gameKey) {
       const title = document.getElementById('cfgTitle').value || ARCADE_METADATA[gameKey].name;
       const palette = document.getElementById('cfgPalette').value;
       const diff = document.getElementById('cfgDifficulty').value;
       const mod = document.getElementById('cfgMod').value;
 
-      // Color maps
       const colorSchemes = {
         original: { bg: '#000000', border: '#2563eb', wall: '#1d4ed8', player: '#facc15', enemy: '#ef4444', accent: '#38bdf8', text: '#f8fafc' },
         matrix: { bg: '#020d04', border: '#22c55e', wall: '#15803d', player: '#4ade80', enemy: '#86efac', accent: '#a7f3d0', text: '#bbf7d0' },
@@ -462,9 +511,9 @@ Technical Requirements:
     #cabinet {
       position: relative;
       width: 100%;
-      max-width: 680px;
+      max-width: 640px;
       height: 100vh;
-      max-height: 600px;
+      max-height: 580px;
       display: flex;
       flex-direction: column;
       border: 3px solid ${C.border};
@@ -476,7 +525,7 @@ Technical Requirements:
       justify-content: space-between;
       align-items: center;
       padding: 6px 12px;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       border-bottom: 2px solid ${C.border};
       font-weight: bold;
       font-size: 13px;
@@ -490,13 +539,14 @@ Technical Requirements:
       background-color: ${C.bg};
       image-rendering: pixelated;
     }
+    .hud-tag { color: ${C.player}; }
   </style>
 </head>
 <body>
   <div id="cabinet">
     <div id="scoreboard">
       <div>${title}</div>
-      <div id="hudInfo">1UP: <span id="scoreVal" style="color:${C.player};">00000</span> | HI: <span id="hiVal" style="color:${C.accent};">05000</span></div>
+      <div id="hudInfo">1UP: <span id="scoreVal" class="hud-tag">00000</span> | HI: <span id="hiVal" style="color:${C.accent};">05000</span></div>
     </div>
     <canvas id="gameCanvas" width="600" height="520"></canvas>
   </div>
@@ -537,16 +587,7 @@ Technical Requirements:
     let gameOver = false;
     let paused = false;
 
-    // Responsive scaling
-    function resize() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = 600;
-      canvas.height = 520;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Input tracker
+    // Keys State
     const keys = {};
     window.addEventListener('keydown', e => {
       keys[e.key.toLowerCase()] = true;
@@ -559,355 +600,381 @@ Technical Requirements:
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
     /* =========================================================================
-       GAME 1: PAC-MAZE
+       1. FROGGER (HALVED SPEEDS, WIDE SPACING, PRECISE HOPPING & CURRENT)
     ========================================================================= */
-    const MAZE_W = 15;
-    const MAZE_H = 13;
-    const TILE = 40;
-    const rawMaze = [
-      "111111111111111",
-      "122222212222221",
-      "131112111211131",
-      "121112111211121",
-      "122222222222221",
-      "121121101121121",
-      "022221000122220",
-      "121121111121121",
-      "122222222222221",
-      "121112111211121",
-      "131112111211131",
-      "122222212222221",
-      "111111111111111"
+    const FROG_SZ = 40;
+    let frog = { x: 7, y: 12, px: 7 * 40, py: 12 * 40, onLogSpeed: 0 };
+    let hopLock = false;
+
+    // Halved speeds and widened gaps
+    let trafficLanes = [
+      { y: 11, speed: -0.9, w: 32, gap: 200, type: 'car', color: '#f43f5e', items: [] },
+      { y: 10, speed: 1.1,  w: 48, gap: 240, type: 'truck', color: '#fbbf24', items: [] },
+      { y: 9,  speed: -1.3, w: 30, gap: 220, type: 'racer', color: '#ec4899', items: [] },
+      { y: 8,  speed: 0.85, w: 34, gap: 210, type: 'car', color: '#38bdf8', items: [] },
+      { y: 7,  speed: -1.0, w: 52, gap: 260, type: 'bus', color: '#4ade80', items: [] }
     ];
-    let maze = [];
-    let pacman = { x: 7, y: 8, px: 7*40, py: 8*40, dir: {x:0, y:0}, nextDir: {x:0, y:0}, mouth: 0.2, mouthDir: 1 };
-    let ghosts = [];
-    let energizerTimer = 0;
 
-    function initPacman() {
-      maze = rawMaze.map(row => row.split('').map(Number));
-      pacman.px = 7 * TILE;
-      pacman.py = 8 * TILE;
-      pacman.dir = {x: 0, y: 0};
-      pacman.nextDir = {x: 0, y: 0};
-      ghosts = [
-        { x: 7*TILE, y: 6*TILE, color: '#ef4444', dir: {x: 1, y: 0} }, // Blinky (Red)
-        { x: 6*TILE, y: 6*TILE, color: '#ec4899', dir: {x: -1, y: 0} }, // Pinky (Pink)
-        { x: 8*TILE, y: 6*TILE, color: '#06b6d4', dir: {x: 0, y: -1} }, // Inky (Cyan)
-        { x: 7*TILE, y: 5*TILE, color: '#f97316', dir: {x: 0, y: 1} }   // Clyde (Orange)
-      ];
+    let riverLanes = [
+      { y: 5, speed: -0.85, w: 100, gap: 230, type: 'log', items: [] },
+      { y: 4, speed: 1.0,   w: 70,  gap: 210, type: 'turtle', items: [] },
+      { y: 3, speed: -1.2,  w: 130, gap: 270, type: 'log', items: [] },
+      { y: 2, speed: 0.8,   w: 80,  gap: 220, type: 'turtle', items: [] },
+      { y: 1, speed: -0.95, w: 95,  gap: 240, type: 'log', items: [] }
+    ];
+
+    let docks = [false, false, false, false, false];
+
+    function initFrogger() {
+      frog.x = 7;
+      frog.y = 12;
+      frog.px = 7 * FROG_SZ;
+      frog.py = 12 * FROG_SZ;
+      frog.onLogSpeed = 0;
+
+      [...trafficLanes, ...riverLanes].forEach(lane => {
+        lane.items = [];
+        for (let x = 0; x < 600; x += lane.gap) {
+          lane.items.push({ x: x });
+        }
+      });
     }
 
-    function updatePacman() {
-      // Inputs
-      if (keys['arrowleft'] || keys['a']) pacman.nextDir = {x: -1, y: 0};
-      if (keys['arrowright'] || keys['d']) pacman.nextDir = {x: 1, y: 0};
-      if (keys['arrowup'] || keys['w']) pacman.nextDir = {x: 0, y: -1};
-      if (keys['arrowdown'] || keys['s']) pacman.nextDir = {x: 0, y: 1};
+    function updateFrogger() {
+      // Discrete Key Hop
+      const up = keys['arrowup'] || keys['w'];
+      const down = keys['arrowdown'] || keys['s'];
+      const left = keys['arrowleft'] || keys['a'];
+      const right = keys['arrowright'] || keys['d'];
 
-      const spd = (MOD === 'speedshoes' ? 3.5 : 2.5) * (DIFF === 'turbo' ? 1.3 : 1.0);
+      if (!hopLock) {
+        let moved = false;
+        if (up && frog.y > 0) { frog.y--; moved = true; }
+        else if (down && frog.y < 12) { frog.y++; moved = true; }
+        else if (left && frog.x > 0) { frog.x--; moved = true; }
+        else if (right && frog.x < 14) { frog.x++; moved = true; }
 
-      // Check grid alignment to turn
-      const curTileX = Math.round(pacman.px / TILE);
-      const curTileY = Math.round(pacman.py / TILE);
-
-      if (Math.abs(pacman.px - curTileX * TILE) < 3 && Math.abs(pacman.py - curTileY * TILE) < 3) {
-        const nextX = curTileX + pacman.nextDir.x;
-        const nextY = curTileY + pacman.nextDir.y;
-        if (nextX >= 0 && nextX < MAZE_W && nextY >= 0 && nextY < MAZE_H && maze[nextY][nextX] !== 1) {
-          pacman.dir = pacman.nextDir;
-          pacman.px = curTileX * TILE;
-          pacman.py = curTileY * TILE;
-        }
-      }
-
-      // Move pacman
-      const forwardX = Math.round(pacman.px / TILE) + pacman.dir.x;
-      const forwardY = Math.round(pacman.py / TILE) + pacman.dir.y;
-      if (forwardX >= 0 && forwardX < MAZE_W && forwardY >= 0 && forwardY < MAZE_H && maze[forwardY][forwardX] === 1) {
-        // Hit wall stop
-        if (Math.abs(pacman.px - (forwardX - pacman.dir.x) * TILE) < 2 && Math.abs(pacman.py - (forwardY - pacman.dir.y) * TILE) < 2) {
-          pacman.dir = {x: 0, y: 0};
-        }
-      }
-
-      pacman.px += pacman.dir.x * spd;
-      pacman.py += pacman.dir.y * spd;
-
-      // Tunnel warp
-      if (pacman.px < -TILE/2) pacman.px = (MAZE_W - 1) * TILE;
-      if (pacman.px > (MAZE_W - 0.5) * TILE) pacman.px = 0;
-
-      // Mouth chomp animation
-      pacman.mouth += 0.03 * pacman.mouthDir;
-      if (pacman.mouth > 0.45 || pacman.mouth < 0.05) pacman.mouthDir *= -1;
-
-      // Dot eat
-      const tx = Math.floor((pacman.px + TILE/2) / TILE);
-      const ty = Math.floor((pacman.py + TILE/2) / TILE);
-      if (tx >= 0 && tx < MAZE_W && ty >= 0 && ty < MAZE_H) {
-        if (maze[ty][tx] === 2) {
-          maze[ty][tx] = 0;
+        if (moved) {
+          hopLock = true;
+          frog.px = frog.x * FROG_SZ;
+          frog.py = frog.y * FROG_SZ;
           score += (MOD === 'doublescore' ? 20 : 10);
-          beep(620, 'triangle', 0.03, 0.05);
-        } else if (maze[ty][tx] === 3) {
-          maze[ty][tx] = 0;
-          score += (MOD === 'doublescore' ? 100 : 50);
-          energizerTimer = 350;
-          beep(880, 'square', 0.15, 0.12);
+          beep(680, 'triangle', 0.04, 0.08);
         }
       }
 
-      if (energizerTimer > 0) energizerTimer--;
+      if (!up && !down && !left && !right) {
+        hopLock = false;
+      }
 
-      // Move ghosts
-      const ghostSpd = (energizerTimer > 0 ? 1.0 : (DIFF === 'turbo' ? 2.3 : 1.8));
-      for (let g of ghosts) {
-        g.x += g.dir.x * ghostSpd;
-        g.y += g.dir.y * ghostSpd;
+      // Move Lane Obstacles
+      [...trafficLanes, ...riverLanes].forEach(lane => {
+        for (let it of lane.items) {
+          it.x += lane.speed * (DIFF === 'turbo' ? 1.25 : 1.0);
+          if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
+          if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
+        }
+      });
 
-        const gx = Math.round(g.x / TILE);
-        const gy = Math.round(g.y / TILE);
-        if (Math.abs(g.x - gx * TILE) < 2 && Math.abs(g.y - gy * TILE) < 2) {
-          const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-          const valid = dirs.filter(d => {
-            const nx = gx + d.x;
-            const ny = gy + d.y;
-            return nx >= 0 && nx < MAZE_W && ny >= 0 && ny < MAZE_H && maze[ny][nx] !== 1 && !(d.x === -g.dir.x && d.y === -g.dir.y);
-          });
-          if (valid.length > 0) {
-            g.dir = valid[Math.floor(Math.random() * valid.length)];
-            g.x = gx * TILE;
-            g.y = gy * TILE;
-          } else {
-            g.dir = {x: -g.dir.x, y: -g.dir.y};
+      const frogCenter = frog.px + FROG_SZ / 2;
+
+      // 1. Road Collisions (Lanes 7 to 11)
+      const road = trafficLanes.find(l => l.y === frog.y);
+      if (road) {
+        for (let it of road.items) {
+          if (frogCenter > it.x + 4 && frogCenter < it.x + road.w - 4) {
+            frogDeath();
+            return;
           }
         }
+      }
 
-        // Collision with Pacman
-        const dist = Math.hypot((pacman.px + TILE/2) - (g.x + TILE/2), (pacman.py + TILE/2) - (g.y + TILE/2));
-        if (dist < 18) {
-          if (energizerTimer > 0) {
-            // Eat ghost
-            score += 200;
-            g.x = 7 * TILE;
-            g.y = 6 * TILE;
-            beep(440, 'sine', 0.2, 0.15);
-          } else {
-            // Pacman dies
-            lives--;
-            beep(180, 'sawtooth', 0.35, 0.2);
-            if (lives <= 0) gameOver = true;
-            else {
-              pacman.px = 7 * TILE;
-              pacman.py = 8 * TILE;
-              pacman.dir = {x: 0, y: 0};
-            }
+      // 2. River Current & Logs (Lanes 1 to 5)
+      const river = riverLanes.find(l => l.y === frog.y);
+      if (river) {
+        let onLog = false;
+        for (let it of river.items) {
+          if (frogCenter > it.x - 4 && frogCenter < it.x + river.w + 4) {
+            onLog = true;
+            // Carry frog with log current
+            frog.px += river.speed * (DIFF === 'turbo' ? 1.25 : 1.0);
+            frog.x = Math.round(frog.px / FROG_SZ);
+            break;
           }
+        }
+        if (!onLog || frog.px < -10 || frog.px > 590) {
+          frogDeath();
+          return;
+        }
+      }
+
+      // 3. Lily-pad Docks at Top (Lane 0)
+      if (frog.y === 0) {
+        const dockIndex = Math.floor((frog.px + 10) / 120);
+        const dockCenter = dockIndex * 120 + 60;
+        if (Math.abs((frog.px + FROG_SZ / 2) - dockCenter) < 26 && dockIndex >= 0 && dockIndex < 5 && !docks[dockIndex]) {
+          docks[dockIndex] = true;
+          score += 500;
+          beep(920, 'triangle', 0.2, 0.15);
+          frog.x = 7;
+          frog.y = 12;
+          frog.px = 7 * FROG_SZ;
+          frog.py = 12 * FROG_SZ;
+
+          if (docks.every(Boolean)) {
+            score += 2000;
+            docks = [false, false, false, false, false];
+          }
+        } else {
+          frogDeath();
         }
       }
     }
 
-    function drawPacman() {
-      // Draw Maze
-      for (let r = 0; r < MAZE_H; r++) {
-        for (let c = 0; c < MAZE_W; c++) {
-          const val = maze[r][c];
-          if (val === 1) {
-            ctx.fillStyle = C.wall;
-            ctx.fillRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
-          } else if (val === 2) {
-            ctx.fillStyle = C.accent;
-            ctx.beginPath();
-            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 3, 0, Math.PI * 2);
-            ctx.fill();
-          } else if (val === 3) {
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 7, 0, Math.PI * 2);
-            ctx.fill();
+    function frogDeath() {
+      lives--;
+      beep(150, 'sawtooth', 0.25, 0.18);
+      frog.x = 7;
+      frog.y = 12;
+      frog.px = 7 * FROG_SZ;
+      frog.py = 12 * FROG_SZ;
+      if (lives <= 0) gameOver = true;
+    }
+
+    function drawFrogger() {
+      // River background
+      ctx.fillStyle = '#0a2540';
+      ctx.fillRect(0, FROG_SZ * 1, 600, FROG_SZ * 5);
+
+      // Grass Medians
+      ctx.fillStyle = '#14532d';
+      ctx.fillRect(0, 0, 600, FROG_SZ);
+      ctx.fillRect(0, FROG_SZ * 6, 600, FROG_SZ);
+      ctx.fillRect(0, FROG_SZ * 12, 600, FROG_SZ);
+
+      // Top Docks
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = docks[i] ? C.player : '#064e3b';
+        ctx.fillRect(i * 120 + 35, 6, 50, FROG_SZ - 12);
+        if (docks[i]) {
+          ctx.fillStyle = '#15803d';
+          ctx.fillRect(i * 120 + 50, 16, 20, 16);
+        }
+      }
+
+      // River items
+      for (let l of riverLanes) {
+        for (let it of l.items) {
+          if (l.type === 'log') {
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(it.x, l.y * FROG_SZ + 6, l.w, FROG_SZ - 12);
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(it.x + 4, l.y * FROG_SZ + 10, l.w - 8, 4);
+          } else {
+            ctx.fillStyle = '#0d9488';
+            ctx.fillRect(it.x, l.y * FROG_SZ + 8, l.w, FROG_SZ - 16);
+            ctx.fillStyle = '#14b8a6';
+            ctx.fillRect(it.x + 6, l.y * FROG_SZ + 12, l.w - 12, 6);
           }
         }
       }
 
-      // Draw Pacman
-      const cx = pacman.px + TILE/2;
-      const cy = pacman.py + TILE/2;
-      let angle = 0;
-      if (pacman.dir.x === 1) angle = 0;
-      else if (pacman.dir.x === -1) angle = Math.PI;
-      else if (pacman.dir.y === 1) angle = Math.PI/2;
-      else if (pacman.dir.y === -1) angle = -Math.PI/2;
+      // Road background
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, FROG_SZ * 7, 600, FROG_SZ * 5);
 
+      // Vehicles
+      for (let l of trafficLanes) {
+        ctx.fillStyle = l.color;
+        for (let it of l.items) {
+          ctx.fillRect(it.x, l.y * FROG_SZ + 6, l.w, FROG_SZ - 12);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(it.x + 3, l.y * FROG_SZ + 9, 5, 5); // Headlights
+          ctx.fillStyle = l.color;
+        }
+      }
+
+      // Frog Player
       ctx.fillStyle = C.player;
       ctx.beginPath();
-      ctx.arc(cx, cy, 14, angle + pacman.mouth * Math.PI, angle + (2 - pacman.mouth) * Math.PI);
-      ctx.lineTo(cx, cy);
+      ctx.arc(frog.px + FROG_SZ / 2, frog.py + FROG_SZ / 2, 12, 0, Math.PI * 2);
       ctx.fill();
-
-      // Draw Ghosts
-      for (let g of ghosts) {
-        ctx.fillStyle = energizerTimer > 0 ? (energizerTimer < 60 && Math.floor(energizerTimer / 10) % 2 === 0 ? '#ffffff' : '#3b82f6') : g.color;
-        const gx = g.x + TILE/2;
-        const gy = g.y + TILE/2;
-
-        ctx.beginPath();
-        ctx.arc(gx, gy - 2, 12, Math.PI, 0, false);
-        ctx.lineTo(gx + 12, gy + 12);
-        ctx.lineTo(gx + 6, gy + 8);
-        ctx.lineTo(gx, gy + 12);
-        ctx.lineTo(gx - 6, gy + 8);
-        ctx.lineTo(gx - 12, gy + 12);
-        ctx.closePath();
-        ctx.fill();
-
-        // Eyes
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(gx - 7, gy - 6, 4, 6);
-        ctx.fillRect(gx + 3, gy - 6, 4, 6);
-        ctx.fillStyle = '#1e3a8a';
-        ctx.fillRect(gx - 5, gy - 4, 2, 3);
-        ctx.fillRect(gx + 5, gy - 4, 2, 3);
-      }
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(frog.px + FROG_SZ / 2 - 4, frog.py + FROG_SZ / 2 - 4, 8, 8);
     }
 
     /* =========================================================================
-       GAME 2: BARREL CLIMBER (DONKEY KONG)
+       2. DONKEY KONG (STRICT GIRDER INCLINES, LEVEL-TO-LEVEL BARREL ROLLING)
     ========================================================================= */
-    let mario = { x: 50, y: 480, vx: 0, vy: 0, onGround: true, onLadder: false, w: 18, h: 22 };
+    let mario = { x: 50, y: 478, vx: 0, vy: 0, w: 18, h: 22, onLadder: false };
     let barrels = [];
-    let kongGirders = [
-      { y: 500, x1: 20, x2: 580, slope: 0 },
-      { y: 410, x1: 40, x2: 560, slope: -0.02 },
-      { y: 320, x1: 20, x2: 540, slope: 0.02 },
-      { y: 230, x1: 40, x2: 560, slope: -0.02 },
-      { y: 140, x1: 20, x2: 520, slope: 0 }
-    ];
-    let ladders = [
-      { x: 510, y1: 410, y2: 500 },
-      { x: 90,  y1: 320, y2: 410 },
-      { x: 480, y1: 230, y2: 320 },
-      { x: 120, y1: 140, y2: 230 }
-    ];
     let barrelTimer = 0;
+
+    // Authentic zigzag girders with strict endpoints and height slopes
+    const girders = [
+      { tier: 0, x1: 20,  x2: 580, y1: 500, y2: 500, rollDir: -1 }, // Ground
+      { tier: 1, x1: 20,  x2: 550, y1: 430, y2: 412, rollDir: 1 },  // Tier 1 (slope down to right)
+      { tier: 2, x1: 50,  x2: 580, y1: 326, y2: 344, rollDir: -1 }, // Tier 2 (slope down to left)
+      { tier: 3, x1: 20,  x2: 550, y1: 255, y2: 237, rollDir: 1 },  // Tier 3 (slope down to right)
+      { tier: 4, x1: 50,  x2: 580, y1: 152, y2: 170, rollDir: -1 }, // Tier 4 (slope down to left)
+      { tier: 5, x1: 20,  x2: 240, y1: 90,  y2: 90,  rollDir: 1 }   // Top Pauline platform
+    ];
+
+    const dkLadders = [
+      { x: 510, yTop: 412, yBottom: 500 },
+      { x: 90,  yTop: 326, yBottom: 430 },
+      { x: 490, yTop: 237, yBottom: 344 },
+      { x: 110, yTop: 152, yBottom: 255 },
+      { x: 200, yTop: 90,  yBottom: 152 }
+    ];
+
+    function getGirderY(g, x) {
+      const t = (x - g.x1) / (g.x2 - g.x1);
+      return g.y1 + t * (g.y2 - g.y1);
+    }
 
     function initKong() {
       mario.x = 50;
       mario.y = 478;
       mario.vx = 0;
       mario.vy = 0;
+      mario.onLadder = false;
       barrels = [];
       barrelTimer = 0;
     }
 
     function updateKong() {
-      // Running
-      const runSpeed = (MOD === 'speedshoes' ? 4 : 3) * (DIFF === 'turbo' ? 1.25 : 1);
-      if (keys['arrowleft'] || keys['a']) mario.vx = -runSpeed;
-      else if (keys['arrowright'] || keys['d']) mario.vx = runSpeed;
+      // Mario horizontal running
+      const speed = (MOD === 'speedshoes' ? 3.5 : 2.5);
+      if (keys['arrowleft'] || keys['a']) mario.vx = -speed;
+      else if (keys['arrowright'] || keys['d']) mario.vx = speed;
       else mario.vx = 0;
 
-      // Ladder check
-      let nearLadder = null;
-      for (let l of ladders) {
-        if (Math.abs(mario.x + mario.w/2 - l.x) < 16 && mario.y + mario.h >= l.y1 - 5 && mario.y <= l.y2 + 5) {
-          nearLadder = l;
+      // Ladder Climbing
+      let alignedLadder = null;
+      for (let lad of dkLadders) {
+        if (Math.abs((mario.x + mario.w / 2) - lad.x) < 14 && mario.y + mario.h >= lad.yTop - 6 && mario.y <= lad.yBottom + 6) {
+          alignedLadder = lad;
           break;
         }
       }
 
-      if (nearLadder && (keys['arrowup'] || keys['w'])) {
-        mario.y -= 2.5;
+      if (alignedLadder && (keys['arrowup'] || keys['w'])) {
+        mario.y -= 2.2;
         mario.vy = 0;
         mario.onLadder = true;
-      } else if (nearLadder && (keys['arrowdown'] || keys['s'])) {
-        mario.y += 2.5;
+      } else if (alignedLadder && (keys['arrowdown'] || keys['s']) && mario.y + mario.h < alignedLadder.yBottom) {
+        mario.y += 2.2;
         mario.vy = 0;
         mario.onLadder = true;
-      } else if (!nearLadder) {
+      } else if (!alignedLadder) {
         mario.onLadder = false;
       }
 
-      // Jumping
-      if ((keys[' '] || keys['arrowup']) && mario.onGround && !mario.onLadder) {
-        mario.vy = -7.5;
+      // Jump
+      if ((keys[' '] || keys['arrowup']) && !mario.onLadder && mario.onGround) {
+        mario.vy = -6.8;
         mario.onGround = false;
-        beep(720, 'square', 0.1, 0.12);
+        beep(720, 'square', 0.08, 0.1);
       }
 
-      // Gravity
+      // Gravity & position update
       if (!mario.onLadder) {
-        mario.vy += 0.35;
+        mario.vy += 0.34;
         mario.y += mario.vy;
       }
       mario.x += mario.vx;
 
-      // Platform snapping
+      // Platform landing
       mario.onGround = false;
-      for (let g of kongGirders) {
-        const expectedY = g.y + (mario.x - g.x1) * g.slope;
+      for (let g of girders) {
         if (mario.x + mario.w >= g.x1 && mario.x <= g.x2) {
-          if (mario.y + mario.h >= expectedY && mario.y + mario.h <= expectedY + 12 && mario.vy >= 0) {
-            mario.y = expectedY - mario.h;
+          const gy = getGirderY(g, mario.x + mario.w / 2);
+          if (mario.y + mario.h >= gy && mario.y + mario.h <= gy + 14 && mario.vy >= 0) {
+            mario.y = gy - mario.h;
             mario.vy = 0;
             mario.onGround = true;
           }
         }
       }
 
-      // Win Condition: reached Pauline on top
-      if (mario.y <= 130 && mario.x < 220) {
+      // Rescue Pauline Win Condition
+      if (mario.y <= 92 && mario.x <= 200) {
         score += 1500;
-        beep(880, 'sine', 0.3, 0.2);
+        beep(990, 'sine', 0.3, 0.2);
         initKong();
       }
 
-      // Barrel generation
+      // DK Barrels Spawn (strictly on tier 4 at top, tossed by Kong)
       barrelTimer++;
-      const barrelRate = (DIFF === 'turbo' ? 110 : (DIFF === 'casual' ? 220 : 160));
-      if (barrelTimer % barrelRate === 0) {
-        barrels.push({ x: 120, y: 124, vx: 2.2, r: 8, tier: 4 });
-        beep(330, 'triangle', 0.05, 0.1);
+      const spawnRate = (DIFF === 'turbo' ? 120 : (DIFF === 'casual' ? 220 : 160));
+      if (barrelTimer % spawnRate === 0) {
+        barrels.push({
+          tier: 4,
+          x: 100,
+          y: getGirderY(girders[4], 100) - 8,
+          dir: 1, // roll right along tier 4
+          falling: false,
+          r: 8
+        });
+        beep(320, 'triangle', 0.05, 0.08);
       }
 
-      // Update barrels
+      // Barrel updates
       for (let i = barrels.length - 1; i >= 0; i--) {
         const b = barrels[i];
-        b.x += b.vx;
-        
-        // Find current girder
-        let onG = null;
-        for (let g of kongGirders) {
-          const gy = g.y + (b.x - g.x1) * g.slope;
-          if (b.x >= g.x1 && b.x <= g.x2 && Math.abs(b.y - gy) < 14) {
+
+        if (b.falling) {
+          b.y += 3.5;
+          const targetG = girders[b.tier];
+          const gy = getGirderY(targetG, b.x);
+          if (b.y + b.r >= gy) {
             b.y = gy - b.r;
-            onG = g;
-            break;
+            b.falling = false;
+            b.dir = targetG.rollDir; // Reverse direction on lower tier
+          }
+        } else {
+          // Roll strictly on girder surface
+          const currentG = girders[b.tier];
+          b.x += b.dir * 2.2;
+          b.y = getGirderY(currentG, b.x) - b.r;
+
+          // Check if rolled past girder edge to drop to tier below
+          if (b.dir === 1 && b.x > currentG.x2) {
+            if (b.tier > 0) {
+              b.tier--;
+              b.falling = true;
+            } else {
+              barrels.splice(i, 1);
+              continue;
+            }
+          } else if (b.dir === -1 && b.x < currentG.x1) {
+            if (b.tier > 0) {
+              b.tier--;
+              b.falling = true;
+            } else {
+              barrels.splice(i, 1);
+              continue;
+            }
           }
         }
 
-        // Drop down at girder ends
-        if (b.x > 550 && b.vx > 0) { b.y += 30; b.vx = -b.vx; }
-        if (b.x < 35 && b.vx < 0 && b.y < 460) { b.y += 30; b.vx = -b.vx; }
-
-        // Mario collision
-        const dist = Math.hypot((mario.x + mario.w/2) - b.x, (mario.y + mario.h/2) - b.y);
-        if (dist < 15) {
+        // Mario hit detection
+        const dist = Math.hypot((mario.x + mario.w / 2) - b.x, (mario.y + mario.h / 2) - b.y);
+        if (dist < 14) {
           lives--;
-          beep(140, 'sawtooth', 0.3, 0.2);
+          beep(140, 'sawtooth', 0.35, 0.2);
           if (lives <= 0) gameOver = true;
           else initKong();
           break;
         }
 
-        // Jump over barrel scoring
-        if (!b.scored && Math.abs(b.x - (mario.x + mario.w/2)) < 12 && mario.y + mario.h < b.y) {
+        // Jump over barrel score
+        if (!b.scored && Math.abs(b.x - (mario.x + mario.w / 2)) < 12 && mario.y + mario.h < b.y) {
           score += 100;
           b.scored = true;
-          beep(680, 'triangle', 0.05, 0.1);
+          beep(880, 'triangle', 0.05, 0.1);
         }
-
-        if (b.y > 510) barrels.splice(i, 1);
       }
     }
 
@@ -915,45 +982,42 @@ Technical Requirements:
       // Girders
       ctx.strokeStyle = '#ef4444';
       ctx.lineWidth = 6;
-      for (let g of kongGirders) {
+      for (let g of girders) {
         ctx.beginPath();
-        ctx.moveTo(g.x1, g.y);
-        ctx.lineTo(g.x2, g.y + (g.x2 - g.x1) * g.slope);
+        ctx.moveTo(g.x1, g.y1);
+        ctx.lineTo(g.x2, g.y2);
         ctx.stroke();
       }
 
       // Ladders
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 3;
-      for (let l of ladders) {
+      for (let l of dkLadders) {
         ctx.beginPath();
-        ctx.moveTo(l.x - 7, l.y1);
-        ctx.lineTo(l.x - 7, l.y2);
-        ctx.moveTo(l.x + 7, l.y1);
-        ctx.lineTo(l.x + 7, l.y2);
-        for (let y = l.y1; y <= l.y2; y += 12) {
-          ctx.moveTo(l.x - 7, y);
-          ctx.lineTo(l.x + 7, y);
+        ctx.moveTo(l.x - 7, l.yTop); ctx.lineTo(l.x - 7, l.yBottom);
+        ctx.moveTo(l.x + 7, l.yTop); ctx.lineTo(l.x + 7, l.yBottom);
+        for (let y = l.yTop; y <= l.yBottom; y += 12) {
+          ctx.moveTo(l.x - 7, y); ctx.lineTo(l.x + 7, y);
         }
         ctx.stroke();
       }
 
-      // Kong (Gorilla) on top left
+      // Donkey Kong at top left
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(50, 80, 50, 55);
-      ctx.fillStyle = '#fde68a';
-      ctx.fillRect(60, 95, 30, 25);
-
-      // Pauline (Damsel)
-      ctx.fillStyle = '#ec4899';
-      ctx.fillRect(170, 105, 16, 30);
+      ctx.fillRect(45, 95, 48, 55);
       ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(170, 95, 16, 10);
+      ctx.fillRect(55, 110, 28, 24);
+
+      // Pauline at top
+      ctx.fillStyle = '#ec4899';
+      ctx.fillRect(170, 60, 16, 30);
+      ctx.fillStyle = '#fde047';
+      ctx.fillRect(170, 52, 16, 8);
 
       // Mario Jumpman
       ctx.fillStyle = C.player;
       ctx.fillRect(mario.x, mario.y, mario.w, mario.h);
-      ctx.fillStyle = '#ef4444'; // Overalls
+      ctx.fillStyle = '#ef4444';
       ctx.fillRect(mario.x + 3, mario.y + 6, mario.w - 6, mario.h - 6);
 
       // Barrels
@@ -969,300 +1033,156 @@ Technical Requirements:
     }
 
     /* =========================================================================
-       GAME 3: SPACE INVADERS
+       3. ELEVATOR ACTION (NO TELEPORTING, SEARCH ROOMS, VERTICAL SHAFTS)
     ========================================================================= */
-    let invPlayer = { x: 280, y: 480, w: 28, h: 16, speed: 4 };
-    let invMissiles = [];
-    let aliens = [];
-    let alienDir = 1;
-    let alienDrop = 0;
-    let alienSpeed = 1.0;
-    let alienTimer = 0;
-    let ufo = null;
-    let ufoTimer = 0;
-    let bunkers = [];
-
-    function initInvaders() {
-      invPlayer.x = 280;
-      invMissiles = [];
-      aliens = [];
-      alienDir = 1;
-      alienDrop = 0;
-      alienSpeed = (DIFF === 'turbo' ? 1.8 : 1.0);
-
-      for (let r = 0; r < 5; r++) {
-        for (let c = 0; c < 9; c++) {
-          aliens.push({
-            x: 80 + c * 48,
-            y: 60 + r * 34,
-            w: 24, h: 18,
-            type: r,
-            score: (5 - r) * 10
-          });
-        }
-      }
-
-      // 4 Destructible Bunkers
-      bunkers = [];
-      for (let b = 0; b < 4; b++) {
-        bunkers.push({ x: 90 + b * 130, y: 420, w: 45, h: 30, hp: 12 });
-      }
-    }
-
-    function updateInvaders() {
-      // Movement
-      const pspd = (MOD === 'speedshoes' ? 6 : 4);
-      if (keys['arrowleft'] || keys['a']) invPlayer.x -= pspd;
-      if (keys['arrowright'] || keys['d']) invPlayer.x += pspd;
-      invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
-
-      // Player Shoot
-      if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
-        invMissiles.push({ x: invPlayer.x + invPlayer.w/2, y: invPlayer.y - 6, vy: -7, fromPlayer: true });
-        beep(880, 'square', 0.05, 0.09);
-      }
-
-      // March Aliens
-      alienTimer++;
-      if (alienTimer > Math.max(6, 40 - (45 - aliens.length))) {
-        alienTimer = 0;
-        let hitEdge = false;
-        for (let a of aliens) {
-          a.x += alienDir * 12;
-          if (a.x < 30 || a.x + a.w > 570) hitEdge = true;
-        }
-        if (hitEdge) {
-          alienDir *= -1;
-          for (let a of aliens) {
-            a.y += 16;
-            if (a.y + a.h >= invPlayer.y) {
-              gameOver = true; // Invaders reached ground
-            }
-          }
-        }
-        beep(140 + (aliens.length % 4) * 40, 'triangle', 0.04, 0.08);
-
-        // Random alien bomb
-        if (Math.random() < 0.4 && aliens.length > 0) {
-          const shooter = aliens[Math.floor(Math.random() * aliens.length)];
-          invMissiles.push({ x: shooter.x + shooter.w/2, y: shooter.y + shooter.h, vy: 4, fromPlayer: false });
-        }
-      }
-
-      // Mystery UFO
-      ufoTimer++;
-      if (!ufo && ufoTimer > 600) {
-        ufo = { x: -40, y: 35, vx: 2.5, w: 36, h: 14 };
-        ufoTimer = 0;
-        beep(920, 'sine', 0.1, 0.05);
-      }
-      if (ufo) {
-        ufo.x += ufo.vx;
-        if (ufo.x > 620) ufo = null;
-      }
-
-      // Missiles Update
-      for (let i = invMissiles.length - 1; i >= 0; i--) {
-        const m = invMissiles[i];
-        m.y += m.vy;
-
-        // Player missile hit UFO
-        if (m.fromPlayer && ufo && m.x > ufo.x && m.x < ufo.x + ufo.w && m.y > ufo.y && m.y < ufo.y + ufo.h) {
-          score += 300;
-          ufo = null;
-          invMissiles.splice(i, 1);
-          beep(990, 'sine', 0.2, 0.15);
-          continue;
-        }
-
-        // Player missile hit alien
-        if (m.fromPlayer) {
-          for (let j = aliens.length - 1; j >= 0; j--) {
-            const a = aliens[j];
-            if (m.x > a.x && m.x < a.x + a.w && m.y > a.y && m.y < a.y + a.h) {
-              score += (MOD === 'doublescore' ? a.score * 2 : a.score);
-              aliens.splice(j, 1);
-              invMissiles.splice(i, 1);
-              beep(300, 'sawtooth', 0.06, 0.1);
-              if (aliens.length === 0) initInvaders(); // Next wave
-              break;
-            }
-          }
-        } else {
-          // Enemy bomb hit player
-          if (m.x > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
-            lives--;
-            invMissiles.splice(i, 1);
-            beep(120, 'sawtooth', 0.3, 0.2);
-            if (lives <= 0) gameOver = true;
-            continue;
-          }
-        }
-
-        // Bunker collisions
-        for (let b of bunkers) {
-          if (b.hp > 0 && m.x > b.x && m.x < b.x + b.w && m.y > b.y && m.y < b.y + b.h) {
-            b.hp--;
-            invMissiles.splice(i, 1);
-            beep(240, 'square', 0.03, 0.05);
-            break;
-          }
-        }
-
-        if (m && (m.y < 20 || m.y > 510)) invMissiles.splice(i, 1);
-      }
-    }
-
-    function drawInvaders() {
-      // Cannon
-      ctx.fillStyle = C.player;
-      ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
-      ctx.fillRect(invPlayer.x + invPlayer.w/2 - 3, invPlayer.y, 6, 6);
-
-      // Aliens
-      for (let a of aliens) {
-        ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
-        ctx.fillRect(a.x + 4, a.y + 2, a.w - 8, a.h - 4);
-        ctx.fillRect(a.x, a.y + 6, a.w, 6);
-      }
-
-      // Mystery UFO
-      if (ufo) {
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.ellipse(ufo.x + ufo.w/2, ufo.y + ufo.h/2, ufo.w/2, ufo.h/2, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Bunkers
-      for (let b of bunkers) {
-        if (b.hp > 0) {
-          ctx.fillStyle = C.wall;
-          ctx.globalAlpha = b.hp / 12;
-          ctx.fillRect(b.x, b.y, b.w, b.h);
-          ctx.globalAlpha = 1.0;
-        }
-      }
-
-      // Missiles
-      for (let m of invMissiles) {
-        ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
-        ctx.fillRect(m.x - 2, m.y, 4, 10);
-      }
-    }
-
-    /* =========================================================================
-       GAME 4: ELEVATOR ACTION (SPY ESPIONAGE)
-    ========================================================================= */
-    let spy = { x: 60, y: 110, vx: 0, vy: 0, duck: false, floor: 0, w: 20, h: 36 };
-    let elevators = [
-      { shaftX: 200, y: 100, vy: 1.8, min: 90, max: 440 },
-      { shaftX: 420, y: 350, vy: -1.8, min: 90, max: 440 }
-    ];
-    let redDoors = [
-      { x: 120, floorY: 100, collected: false },
-      { x: 320, floorY: 210, collected: false },
-      { x: 140, floorY: 330, collected: false },
-      { x: 500, floorY: 440, collected: false }
-    ];
-    let spyFloors = [100, 210, 330, 440];
+    let spy = { x: 50, y: 80, vx: 0, duck: false, w: 20, h: 36, inRoomTimer: 0, activeRoom: null };
     let spyBullets = [];
     let enemyAgents = [];
-    let agentTimer = 0;
+    let agentSpawnTimer = 0;
+
+    const floors = [
+      { id: 0, y: 110 },
+      { id: 1, y: 220 },
+      { id: 2, y: 330 },
+      { id: 3, y: 440 }
+    ];
+
+    let spyElevators = [
+      { shaftX: 180, y: 110, vy: 0, min: 110, max: 440, isMoving: false },
+      { shaftX: 420, y: 330, vy: 0, min: 110, max: 440, isMoving: false }
+    ];
+
+    let secretDoors = [
+      { id: 0, x: 100, floorY: 110, searched: false },
+      { id: 1, x: 300, floorY: 220, searched: false },
+      { id: 2, x: 100, floorY: 330, searched: false },
+      { id: 3, x: 490, floorY: 440, searched: false }
+    ];
 
     function initElevator() {
-      spy.x = 60;
-      spy.y = 100;
+      spy.x = 50;
+      spy.y = 110 - spy.h;
+      spy.vx = 0;
+      spy.duck = false;
+      spy.inRoomTimer = 0;
+      spy.activeRoom = null;
       spyBullets = [];
       enemyAgents = [];
-      redDoors.forEach(d => d.collected = false);
+      secretDoors.forEach(d => d.searched = false);
     }
 
     function updateElevator() {
-      // Elevators movement
-      for (let el of elevators) {
-        el.y += el.vy;
-        if (el.y < el.min || el.y > el.max) el.vy *= -1;
+      // Searching inside red door
+      if (spy.inRoomTimer > 0) {
+        spy.inRoomTimer--;
+        if (spy.inRoomTimer === 0) {
+          // Finished searching document! Agent exits right in front of the SAME door
+          if (spy.activeRoom) {
+            spy.activeRoom.searched = true;
+            score += 500;
+            beep(960, 'sine', 0.2, 0.15);
+            spy.activeRoom = null;
+          }
+        }
+        return;
       }
 
-      // Spy Controls
-      const spd = (MOD === 'speedshoes' ? 4 : 3);
-      spy.duck = (keys['arrowdown'] || keys['s']);
-
-      if (keys['arrowleft'] || keys['a']) spy.vx = -spd;
-      else if (keys['arrowright'] || keys['d']) spy.vx = spd;
+      // Horizontal walking
+      const speed = (MOD === 'speedshoes' ? 3.5 : 2.5);
+      if (keys['arrowleft'] || keys['a']) spy.vx = -speed;
+      else if (keys['arrowright'] || keys['d']) spy.vx = speed;
       else spy.vx = 0;
 
-      // Check if spy is on an elevator car
-      let onCar = false;
-      for (let el of elevators) {
-        if (Math.abs(spy.x + spy.w/2 - el.shaftX) < 32 && Math.abs(spy.y + spy.h - el.y) < 8) {
-          spy.y = el.y - spy.h;
-          spy.vy = el.vy;
-          onCar = true;
-          // Player elevator steering override
-          if (keys['arrowup'] || keys['w']) el.y -= 1.5;
-          if (keys['arrowdown'] || keys['s']) el.y += 1.5;
+      // Ducking
+      spy.duck = (keys['arrowdown'] || keys['s']);
+
+      // Elevator interaction: step inside car to ride vertically
+      let inElevator = null;
+      for (let el of spyElevators) {
+        if (Math.abs((spy.x + spy.w / 2) - el.shaftX) < 22 && Math.abs((spy.y + spy.h) - el.y) < 14) {
+          inElevator = el;
+          break;
         }
       }
 
-      if (!onCar) {
-        // Snap to nearest floor
-        let nearestFloor = spyFloors[0];
-        for (let f of spyFloors) {
-          if (Math.abs((spy.y + spy.h) - f) < 16) nearestFloor = f;
+      if (inElevator) {
+        // Player rides elevator up/down
+        if (keys['arrowup'] || keys['w']) {
+          inElevator.y = Math.max(inElevator.min, inElevator.y - 2.5);
+        } else if (keys['arrowdown'] || keys['s']) {
+          inElevator.y = Math.min(inElevator.max, inElevator.y + 2.5);
         }
-        spy.y = nearestFloor - spy.h;
-        spy.vy = 0;
+        spy.y = inElevator.y - spy.h;
+      } else {
+        // Walk along floor
+        let curFloor = floors[0];
+        for (let f of floors) {
+          if (Math.abs((spy.y + spy.h) - f.y) < 22) curFloor = f;
+        }
+        spy.y = curFloor.y - spy.h;
       }
 
       spy.x += spy.vx;
       spy.x = Math.max(30, Math.min(550, spy.x));
 
-      // Enter Red Secret Door
-      for (let d of redDoors) {
-        if (!d.collected && Math.abs(spy.x - d.x) < 18 && Math.abs((spy.y + spy.h) - d.floorY) < 10) {
-          d.collected = true;
-          score += 500;
-          beep(880, 'triangle', 0.2, 0.15);
+      // Enter Red Secret Door (Press UP while directly in front of door)
+      if (keys['arrowup'] || keys['w']) {
+        for (let d of secretDoors) {
+          if (!d.searched && Math.abs((spy.x + spy.w / 2) - (d.x + 13)) < 16 && Math.abs((spy.y + spy.h) - d.floorY) < 10) {
+            spy.inRoomTimer = 60; // 1 second search
+            spy.activeRoom = d;
+            beep(520, 'triangle', 0.1, 0.1);
+            break;
+          }
         }
       }
 
       // Escape at bottom floor with all documents
-      if (spy.y > 400 && redDoors.every(d => d.collected)) {
-        score += 2000;
-        beep(990, 'sine', 0.3, 0.2);
+      if (spy.y >= 440 - spy.h - 5 && secretDoors.every(d => d.searched)) {
+        score += 2500;
+        beep(990, 'sine', 0.4, 0.2);
         initElevator();
       }
 
-      // Shoot
+      // Pistol fire
       if (keys[' '] && spyBullets.filter(b => b.fromSpy).length === 0) {
-        spyBullets.push({ x: spy.x + (spy.vx >= 0 ? spy.w + 4 : -4), y: spy.y + 12, vx: (spy.vx >= 0 ? 8 : -8), fromSpy: true });
+        const dir = (spy.vx < 0 ? -1 : 1);
+        spyBullets.push({
+          x: spy.x + (dir === 1 ? spy.w + 4 : -4),
+          y: spy.duck ? spy.y + 24 : spy.y + 12,
+          vx: dir * 7.5,
+          fromSpy: true
+        });
         beep(740, 'square', 0.05, 0.1);
       }
 
-      // Enemy Spawns
-      agentTimer++;
-      if (agentTimer % 180 === 0 && enemyAgents.length < 3) {
+      // Enemy Patrol Agents
+      agentSpawnTimer++;
+      if (agentSpawnTimer % 200 === 0 && enemyAgents.length < 3) {
+        const pickFloor = floors[Math.floor(Math.random() * floors.length)];
         enemyAgents.push({
-          x: Math.random() < 0.5 ? 40 : 530,
-          y: spyFloors[Math.floor(Math.random() * spyFloors.length)] - 36,
+          x: Math.random() < 0.5 ? 40 : 540,
+          y: pickFloor.y - 36,
           vx: Math.random() < 0.5 ? 1.5 : -1.5,
-          shootCooldown: 60
+          shootTimer: 60
         });
       }
 
-      // Agents update
       for (let i = enemyAgents.length - 1; i >= 0; i--) {
         const ag = enemyAgents[i];
         ag.x += ag.vx;
-        if (ag.x < 40 || ag.x > 540) ag.vx *= -1;
+        if (ag.x < 35 || ag.x > 550) ag.vx *= -1;
 
-        // Shoot at spy
-        ag.shootCooldown--;
-        if (ag.shootCooldown <= 0 && Math.abs(ag.y - spy.y) < 20) {
-          ag.shootCooldown = 90;
-          spyBullets.push({ x: ag.x, y: ag.y + 12, vx: ag.x < spy.x ? 5 : -5, fromSpy: false });
+        // Enemy shoot at spy
+        ag.shootTimer--;
+        if (ag.shootTimer <= 0 && Math.abs(ag.y - spy.y) < 20) {
+          ag.shootTimer = 110;
+          spyBullets.push({
+            x: ag.x,
+            y: ag.y + 12,
+            vx: ag.x < spy.x ? 4.5 : -4.5,
+            fromSpy: false
+          });
           beep(380, 'square', 0.04, 0.08);
         }
       }
@@ -1284,8 +1204,8 @@ Technical Requirements:
             }
           }
         } else {
-          // Hit spy if not ducking
-          if (!spy.duck && Math.abs(b.x - spy.x) < 14 && Math.abs(b.y - (spy.y + 16)) < 16) {
+          // Enemy bullet hits spy if spy is NOT ducking
+          if (!spy.duck && Math.abs(b.x - (spy.x + spy.w / 2)) < 12 && Math.abs(b.y - (spy.y + 16)) < 16) {
             lives--;
             spyBullets.splice(i, 1);
             beep(130, 'sawtooth', 0.25, 0.2);
@@ -1301,49 +1221,56 @@ Technical Requirements:
     function drawElevator() {
       // Floors
       ctx.fillStyle = '#334155';
-      for (let f of spyFloors) {
-        ctx.fillRect(20, f, 560, 8);
+      for (let f of floors) {
+        ctx.fillRect(20, f.y, 560, 8);
       }
 
-      // Elevator Shafts
-      for (let el of elevators) {
+      // Elevator Shafts & Cars
+      for (let el of spyElevators) {
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 2;
-        ctx.strokeRect(el.shaftX - 25, 90, 50, 360);
+        ctx.strokeRect(el.shaftX - 24, 110, 48, 330);
 
         // Elevator Car
         ctx.fillStyle = '#0284c7';
-        ctx.fillRect(el.shaftX - 24, el.y, 48, 8);
+        ctx.fillRect(el.shaftX - 22, el.y - 4, 44, 8); // platform
         ctx.fillStyle = '#0369a1';
-        ctx.fillRect(el.shaftX - 24, el.y + 44, 48, 6);
+        ctx.fillRect(el.shaftX - 22, el.y - 44, 44, 6); // roof
       }
 
-      // Red Secret Doors
-      for (let d of redDoors) {
-        ctx.fillStyle = d.collected ? '#3f3f46' : '#ef4444';
+      // Red Doors (Objective rooms)
+      for (let d of secretDoors) {
+        ctx.fillStyle = d.searched ? '#475569' : '#ef4444';
         ctx.fillRect(d.x, d.floorY - 45, 26, 45);
-        if (!d.collected) {
+        if (!d.searched) {
           ctx.fillStyle = '#fde047';
-          ctx.fillRect(d.x + 8, d.floorY - 25, 8, 8); // Classified icon
+          ctx.fillRect(d.x + 8, d.floorY - 26, 10, 10);
         }
       }
 
       // Enemy Agents
-      ctx.fillStyle = '#f97316';
       for (let ag of enemyAgents) {
+        ctx.fillStyle = '#f97316';
         ctx.fillRect(ag.x - 10, ag.y, 20, 36);
-        ctx.fillStyle = '#1e293b'; // Trenchcoat hat
+        ctx.fillStyle = '#0f172a';
         ctx.fillRect(ag.x - 12, ag.y - 4, 24, 6);
       }
 
       // Spy Player
-      ctx.fillStyle = C.player;
-      if (spy.duck) {
-        ctx.fillRect(spy.x, spy.y + 16, spy.w, spy.h - 16);
+      if (spy.inRoomTimer > 0) {
+        // Inside room searching indicator
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 12px Courier New';
+        ctx.fillText('SEARCHING...', spy.activeRoom.x - 20, spy.activeRoom.floorY - 52);
       } else {
-        ctx.fillRect(spy.x, spy.y, spy.w, spy.h);
-        ctx.fillStyle = '#0284c7'; // Tie & glasses
-        ctx.fillRect(spy.x + 4, spy.y + 6, 12, 5);
+        ctx.fillStyle = C.player;
+        if (spy.duck) {
+          ctx.fillRect(spy.x, spy.y + 16, spy.w, spy.h - 16);
+        } else {
+          ctx.fillRect(spy.x, spy.y, spy.w, spy.h);
+          ctx.fillStyle = '#0284c7'; // Shades
+          ctx.fillRect(spy.x + 4, spy.y + 6, 12, 5);
+        }
       }
 
       // Bullets
@@ -1354,198 +1281,314 @@ Technical Requirements:
     }
 
     /* =========================================================================
-       GAME 5: FROGGER (HOPPING RUN)
+       4. PAC-MAN & 5. SPACE INVADERS (VERIFIED STABLE ENGINES)
     ========================================================================= */
-    const FROG_GRID = 40;
-    let frog = { gridX: 7, gridY: 12 };
-    let trafficLanes = [
-      { y: 11, speed: -2.0, w: 32, gap: 140, type: 'car', color: '#f43f5e', items: [] },
-      { y: 10, speed: 2.5,  w: 48, gap: 180, type: 'truck', color: '#fbbf24', items: [] },
-      { y: 9,  speed: -3.2, w: 28, gap: 120, type: 'race', color: '#a855f7', items: [] },
-      { y: 8,  speed: 1.8,  w: 36, gap: 160, type: 'car', color: '#38bdf8', items: [] },
-      { y: 7,  speed: -2.2, w: 52, gap: 200, type: 'bus', color: '#4ade80', items: [] }
+    const MAZE_W = 15;
+    const MAZE_H = 13;
+    const TILE = 40;
+    const rawMaze = [
+      "111111111111111",
+      "122222212222221",
+      "131112111211131",
+      "121112111211121",
+      "122222222222221",
+      "121121101121121",
+      "022221000122220",
+      "121121111121121",
+      "122222222222221",
+      "121112111211121",
+      "131112111211131",
+      "122222212222221",
+      "111111111111111"
     ];
-    let riverLanes = [
-      { y: 5, speed: -1.8, w: 90,  gap: 160, type: 'log', items: [] },
-      { y: 4, speed: 2.2,  w: 60,  gap: 140, type: 'turtle', items: [] },
-      { y: 3, speed: -2.6, w: 120, gap: 210, type: 'log', items: [] },
-      { y: 2, speed: 1.6,  w: 70,  gap: 150, type: 'turtle', items: [] },
-      { y: 1, speed: -2.0, w: 85,  gap: 170, type: 'log', items: [] }
-    ];
-    let goalDocks = [false, false, false, false, false];
+    let maze = [];
+    let pacman = { px: 7*40, py: 8*40, dir: {x:0, y:0}, nextDir: {x:0, y:0}, mouth: 0.2, mouthDir: 1 };
+    let ghosts = [];
+    let energizerTimer = 0;
 
-    function initFrogger() {
-      frog.gridX = 7;
-      frog.gridY = 12;
-
-      // Populate lane items
-      [...trafficLanes, ...riverLanes].forEach(lane => {
-        lane.items = [];
-        for (let x = 0; x < 600; x += lane.gap) {
-          lane.items.push({ x: x });
-        }
-      });
+    function initPacman() {
+      maze = rawMaze.map(row => row.split('').map(Number));
+      pacman.px = 7 * TILE;
+      pacman.py = 8 * TILE;
+      pacman.dir = {x: 0, y: 0};
+      pacman.nextDir = {x: 0, y: 0};
+      ghosts = [
+        { x: 7*TILE, y: 6*TILE, color: '#ef4444', dir: {x: 1, y: 0} },
+        { x: 6*TILE, y: 6*TILE, color: '#ec4899', dir: {x: -1, y: 0} },
+        { x: 8*TILE, y: 6*TILE, color: '#06b6d4', dir: {x: 0, y: -1} },
+        { x: 7*TILE, y: 5*TILE, color: '#f97316', dir: {x: 0, y: 1} }
+      ];
     }
 
-    let hopCooldown = 0;
-    function updateFrogger() {
-      // Frog hops
-      hopCooldown--;
-      if (hopCooldown <= 0) {
-        let hopped = false;
-        if (keys['arrowup'] || keys['w']) { frog.gridY--; hopped = true; }
-        else if (keys['arrowdown'] || keys['s']) { frog.gridY++; hopped = true; }
-        else if (keys['arrowleft'] || keys['a']) { frog.gridX--; hopped = true; }
-        else if (keys['arrowright'] || keys['d']) { frog.gridX++; hopped = true; }
+    function updatePacman() {
+      if (keys['arrowleft'] || keys['a']) pacman.nextDir = {x: -1, y: 0};
+      if (keys['arrowright'] || keys['d']) pacman.nextDir = {x: 1, y: 0};
+      if (keys['arrowup'] || keys['w']) pacman.nextDir = {x: 0, y: -1};
+      if (keys['arrowdown'] || keys['s']) pacman.nextDir = {x: 0, y: 1};
 
-        if (hopped) {
-          hopCooldown = (MOD === 'speedshoes' ? 7 : 10);
-          frog.gridX = Math.max(0, Math.min(14, frog.gridX));
-          frog.gridY = Math.max(0, Math.min(12, frog.gridY));
+      const spd = 2.4;
+      const curTileX = Math.round(pacman.px / TILE);
+      const curTileY = Math.round(pacman.py / TILE);
+
+      if (Math.abs(pacman.px - curTileX * TILE) < 3 && Math.abs(pacman.py - curTileY * TILE) < 3) {
+        const nextX = curTileX + pacman.nextDir.x;
+        const nextY = curTileY + pacman.nextDir.y;
+        if (nextX >= 0 && nextX < MAZE_W && nextY >= 0 && nextY < MAZE_H && maze[nextY][nextX] !== 1) {
+          pacman.dir = pacman.nextDir;
+          pacman.px = curTileX * TILE;
+          pacman.py = curTileY * TILE;
+        }
+      }
+
+      pacman.px += pacman.dir.x * spd;
+      pacman.py += pacman.dir.y * spd;
+
+      // Tunnel wrap
+      if (pacman.px < -TILE/2) pacman.px = (MAZE_W - 1) * TILE;
+      if (pacman.px > (MAZE_W - 0.5) * TILE) pacman.px = 0;
+
+      // Mouth chomp
+      pacman.mouth += 0.03 * pacman.mouthDir;
+      if (pacman.mouth > 0.45 || pacman.mouth < 0.05) pacman.mouthDir *= -1;
+
+      // Eat dot
+      const tx = Math.floor((pacman.px + TILE/2) / TILE);
+      const ty = Math.floor((pacman.py + TILE/2) / TILE);
+      if (tx >= 0 && tx < MAZE_W && ty >= 0 && ty < MAZE_H) {
+        if (maze[ty][tx] === 2) {
+          maze[ty][tx] = 0;
           score += 10;
-          beep(620, 'square', 0.04, 0.08);
+          beep(620, 'triangle', 0.03, 0.05);
+        } else if (maze[ty][tx] === 3) {
+          maze[ty][tx] = 0;
+          score += 50;
+          energizerTimer = 350;
+          beep(880, 'square', 0.15, 0.12);
         }
       }
 
-      // Move Lane Items
-      [...trafficLanes, ...riverLanes].forEach(lane => {
-        for (let it of lane.items) {
-          it.x += lane.speed * (DIFF === 'turbo' ? 1.3 : 1);
-          if (lane.speed > 0 && it.x > 620) it.x = -lane.w;
-          if (lane.speed < 0 && it.x < -lane.w) it.x = 620;
-        }
-      });
+      if (energizerTimer > 0) energizerTimer--;
 
-      const frogPx = frog.gridX * FROG_GRID + FROG_GRID/2;
+      for (let g of ghosts) {
+        g.x += g.dir.x * (energizerTimer > 0 ? 1.0 : 1.8);
+        g.y += g.dir.y * (energizerTimer > 0 ? 1.0 : 1.8);
 
-      // Road Collisions (Lanes 7 to 11)
-      const curRoad = trafficLanes.find(l => l.y === frog.gridY);
-      if (curRoad) {
-        for (let it of curRoad.items) {
-          if (frogPx > it.x && frogPx < it.x + curRoad.w) {
-            frogDeath();
-            return;
+        const gx = Math.round(g.x / TILE);
+        const gy = Math.round(g.y / TILE);
+        if (Math.abs(g.x - gx * TILE) < 2 && Math.abs(g.y - gy * TILE) < 2) {
+          const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+          const valid = dirs.filter(d => {
+            const nx = gx + d.x;
+            const ny = gy + d.y;
+            return nx >= 0 && nx < MAZE_W && ny >= 0 && ny < MAZE_H && maze[ny][nx] !== 1 && !(d.x === -g.dir.x && d.y === -g.dir.y);
+          });
+          if (valid.length > 0) {
+            g.dir = valid[Math.floor(Math.random() * valid.length)];
+            g.x = gx * TILE;
+            g.y = gy * TILE;
           }
         }
-      }
 
-      // River Log Hopping (Lanes 1 to 5)
-      const curRiver = riverLanes.find(l => l.y === frog.gridY);
-      if (curRiver) {
-        let ridingLog = null;
-        for (let it of curRiver.items) {
-          if (frogPx > it.x && frogPx < it.x + curRiver.w) {
-            ridingLog = it;
-            break;
-          }
-        }
-        if (ridingLog) {
-          // Carry frog along stream
-          frog.gridX += (curRiver.speed * (DIFF === 'turbo' ? 1.3 : 1)) / FROG_GRID;
-          if (frog.gridX < 0 || frog.gridX > 14) frogDeath();
-        } else {
-          // Fell into water!
-          frogDeath();
-          return;
-        }
-      }
-
-      // Docking at top (Lane 0)
-      if (frog.gridY === 0) {
-        const dockIndex = Math.floor(frog.gridX / 3);
-        if (dockIndex >= 0 && dockIndex < 5 && !goalDocks[dockIndex]) {
-          goalDocks[dockIndex] = true;
-          score += 500;
-          beep(940, 'triangle', 0.2, 0.15);
-          frog.gridX = 7;
-          frog.gridY = 12;
-
-          if (goalDocks.every(Boolean)) {
-            score += 2000;
-            goalDocks = [false, false, false, false, false];
-          }
-        } else {
-          frogDeath();
-        }
-      }
-    }
-
-    function frogDeath() {
-      lives--;
-      beep(160, 'sawtooth', 0.3, 0.2);
-      frog.gridX = 7;
-      frog.gridY = 12;
-      if (lives <= 0) gameOver = true;
-    }
-
-    function drawFrogger() {
-      // River Background (top half)
-      ctx.fillStyle = '#082f49';
-      ctx.fillRect(0, FROG_GRID * 1, 600, FROG_GRID * 5);
-
-      // Grass Medians
-      ctx.fillStyle = '#14532d';
-      ctx.fillRect(0, 0, 600, FROG_GRID);
-      ctx.fillRect(0, FROG_GRID * 6, 600, FROG_GRID);
-      ctx.fillRect(0, FROG_GRID * 12, 600, FROG_GRID);
-
-      // Goal Docks at top
-      for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = goalDocks[i] ? C.player : '#064e3b';
-        ctx.fillRect(i * 120 + 35, 8, 50, FROG_GRID - 16);
-      }
-
-      // Logs & Turtles
-      for (let l of riverLanes) {
-        for (let it of l.items) {
-          if (l.type === 'log') {
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+        if (Math.hypot((pacman.px + TILE/2) - (g.x + TILE/2), (pacman.py + TILE/2) - (g.y + TILE/2)) < 18) {
+          if (energizerTimer > 0) {
+            score += 200;
+            g.x = 7 * TILE;
+            g.y = 6 * TILE;
+            beep(440, 'sine', 0.2, 0.15);
           } else {
-            ctx.fillStyle = '#0d9488';
-            ctx.fillRect(it.x, l.y * FROG_GRID + 8, l.w, FROG_GRID - 16);
+            lives--;
+            beep(180, 'sawtooth', 0.35, 0.2);
+            if (lives <= 0) gameOver = true;
+            else { pacman.px = 7 * TILE; pacman.py = 8 * TILE; pacman.dir = {x: 0, y: 0}; }
+          }
+        }
+      }
+    }
+
+    function drawPacman() {
+      for (let r = 0; r < MAZE_H; r++) {
+        for (let c = 0; c < MAZE_W; c++) {
+          const val = maze[r][c];
+          if (val === 1) {
+            ctx.fillStyle = C.wall;
+            ctx.fillRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
+          } else if (val === 2) {
+            ctx.fillStyle = C.accent;
+            ctx.beginPath();
+            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 3, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (val === 3) {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 7, 0, Math.PI * 2);
+            ctx.fill();
           }
         }
       }
 
-      // Road background (bottom half)
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, FROG_GRID * 7, 600, FROG_GRID * 5);
+      const cx = pacman.px + TILE/2;
+      const cy = pacman.py + TILE/2;
+      let angle = 0;
+      if (pacman.dir.x === 1) angle = 0;
+      else if (pacman.dir.x === -1) angle = Math.PI;
+      else if (pacman.dir.y === 1) angle = Math.PI/2;
+      else if (pacman.dir.y === -1) angle = -Math.PI/2;
 
-      // Vehicles
-      for (let l of trafficLanes) {
-        ctx.fillStyle = l.color;
-        for (let it of l.items) {
-          ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
-        }
-      }
-
-      // Frog Player
       ctx.fillStyle = C.player;
       ctx.beginPath();
-      ctx.arc(frog.gridX * FROG_GRID + FROG_GRID/2, frog.gridY * FROG_GRID + FROG_GRID/2, 12, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 14, angle + pacman.mouth * Math.PI, angle + (2 - pacman.mouth) * Math.PI);
+      ctx.lineTo(cx, cy);
       ctx.fill();
+
+      for (let g of ghosts) {
+        ctx.fillStyle = energizerTimer > 0 ? '#3b82f6' : g.color;
+        ctx.beginPath();
+        ctx.arc(g.x + TILE/2, g.y + TILE/2, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    /* =========================================================================
-       MASTER ENGINE LOOP
-    ========================================================================= */
+    // Space Invaders
+    let invPlayer = { x: 280, y: 480, w: 28, h: 16 };
+    let invMissiles = [];
+    let aliens = [];
+    let alienDir = 1;
+    let alienTimer = 0;
+    let ufo = null;
+    let ufoTimer = 0;
+
+    function initInvaders() {
+      invPlayer.x = 280;
+      invMissiles = [];
+      aliens = [];
+      alienDir = 1;
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 9; c++) {
+          aliens.push({ x: 80 + c * 48, y: 60 + r * 34, w: 24, h: 18, type: r, score: (5 - r) * 10 });
+        }
+      }
+    }
+
+    function updateInvaders() {
+      if (keys['arrowleft'] || keys['a']) invPlayer.x -= 4;
+      if (keys['arrowright'] || keys['d']) invPlayer.x += 4;
+      invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
+
+      if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
+        invMissiles.push({ x: invPlayer.x + invPlayer.w/2, y: invPlayer.y - 6, vy: -7, fromPlayer: true });
+        beep(880, 'square', 0.05, 0.09);
+      }
+
+      alienTimer++;
+      if (alienTimer > Math.max(6, 40 - (45 - aliens.length))) {
+        alienTimer = 0;
+        let hitEdge = false;
+        for (let a of aliens) {
+          a.x += alienDir * 12;
+          if (a.x < 30 || a.x + a.w > 570) hitEdge = true;
+        }
+        if (hitEdge) {
+          alienDir *= -1;
+          for (let a of aliens) {
+            a.y += 16;
+            if (a.y + a.h >= invPlayer.y) gameOver = true;
+          }
+        }
+        beep(140 + (aliens.length % 4) * 40, 'triangle', 0.04, 0.08);
+
+        if (Math.random() < 0.35 && aliens.length > 0) {
+          const shooter = aliens[Math.floor(Math.random() * aliens.length)];
+          invMissiles.push({ x: shooter.x + shooter.w/2, y: shooter.y + shooter.h, vy: 4, fromPlayer: false });
+        }
+      }
+
+      ufoTimer++;
+      if (!ufo && ufoTimer > 600) {
+        ufo = { x: -40, y: 35, vx: 2.2, w: 36, h: 14 };
+        ufoTimer = 0;
+      }
+      if (ufo) {
+        ufo.x += ufo.vx;
+        if (ufo.x > 620) ufo = null;
+      }
+
+      for (let i = invMissiles.length - 1; i >= 0; i--) {
+        const m = invMissiles[i];
+        m.y += m.vy;
+
+        if (m.fromPlayer && ufo && m.x > ufo.x && m.x < ufo.x + ufo.w && m.y > ufo.y && m.y < ufo.y + ufo.h) {
+          score += 300;
+          ufo = null;
+          invMissiles.splice(i, 1);
+          beep(990, 'sine', 0.2, 0.15);
+          continue;
+        }
+
+        if (m.fromPlayer) {
+          for (let j = aliens.length - 1; j >= 0; j--) {
+            const a = aliens[j];
+            if (m.x > a.x && m.x < a.x + a.w && m.y > a.y && m.y < a.y + a.h) {
+              score += a.score;
+              aliens.splice(j, 1);
+              invMissiles.splice(i, 1);
+              beep(300, 'sawtooth', 0.06, 0.1);
+              if (aliens.length === 0) initInvaders();
+              break;
+            }
+          }
+        } else {
+          if (m.x > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
+            lives--;
+            invMissiles.splice(i, 1);
+            beep(120, 'sawtooth', 0.3, 0.2);
+            if (lives <= 0) gameOver = true;
+            continue;
+          }
+        }
+
+        if (m && (m.y < 20 || m.y > 510)) invMissiles.splice(i, 1);
+      }
+    }
+
+    function drawInvaders() {
+      ctx.fillStyle = C.player;
+      ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
+      ctx.fillRect(invPlayer.x + invPlayer.w/2 - 3, invPlayer.y, 6, 6);
+
+      for (let a of aliens) {
+        ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
+        ctx.fillRect(a.x, a.y, a.w, a.h);
+      }
+
+      if (ufo) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.ellipse(ufo.x + ufo.w/2, ufo.y + ufo.h/2, ufo.w/2, ufo.h/2, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (let m of invMissiles) {
+        ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
+        ctx.fillRect(m.x - 2, m.y, 4, 10);
+      }
+    }
+
+    /* Master Engine Controller */
     function restartGame() {
       score = 0;
       lives = (DIFF === 'casual') ? 5 : 3;
       gameOver = false;
       paused = false;
 
-      if (GAME_TYPE === 'pacman') initPacman();
+      if (GAME_TYPE === 'frogger') initFrogger();
       else if (GAME_TYPE === 'kong') initKong();
-      else if (GAME_TYPE === 'invaders') initInvaders();
       else if (GAME_TYPE === 'elevator') initElevator();
-      else if (GAME_TYPE === 'frogger') initFrogger();
+      else if (GAME_TYPE === 'pacman') initPacman();
+      else if (GAME_TYPE === 'invaders') initInvaders();
 
       beep(550, 'triangle', 0.1);
     }
 
-    // Init active game
     restartGame();
 
     function loop() {
@@ -1556,27 +1599,24 @@ Technical Requirements:
           hiVal.innerText = String(hiScore).padStart(5, '0');
         }
 
-        if (GAME_TYPE === 'pacman') updatePacman();
+        if (GAME_TYPE === 'frogger') updateFrogger();
         else if (GAME_TYPE === 'kong') updateKong();
-        else if (GAME_TYPE === 'invaders') updateInvaders();
         else if (GAME_TYPE === 'elevator') updateElevator();
-        else if (GAME_TYPE === 'frogger') updateFrogger();
+        else if (GAME_TYPE === 'pacman') updatePacman();
+        else if (GAME_TYPE === 'invaders') updateInvaders();
       }
 
-      // Render Active Game
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (GAME_TYPE === 'pacman') drawPacman();
+      if (GAME_TYPE === 'frogger') drawFrogger();
       else if (GAME_TYPE === 'kong') drawKong();
-      else if (GAME_TYPE === 'invaders') drawInvaders();
       else if (GAME_TYPE === 'elevator') drawElevator();
-      else if (GAME_TYPE === 'frogger') drawFrogger();
+      else if (GAME_TYPE === 'pacman') drawPacman();
+      else if (GAME_TYPE === 'invaders') drawInvaders();
 
-      // HUD Lives
       ctx.fillStyle = C.accent;
       ctx.font = '12px Courier New';
       ctx.fillText('LIVES: ' + '❤️'.repeat(Math.max(0, lives)), 16, canvas.height - 10);
 
-      // Overlays
       if (paused) {
         ctx.fillStyle = 'rgba(0,0,0,0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1591,7 +1631,7 @@ Technical Requirements:
         ctx.fillStyle = 'rgba(0,0,0,0.85)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 32px Courier New';
+        ctx.font = 'bold 30px Courier New';
         ctx.textAlign = 'center';
         ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 20);
         ctx.fillStyle = C.player;
@@ -1677,7 +1717,7 @@ Technical Requirements:
 
     // Startup Initialization
     window.addEventListener('load', () => {
-      selectClassicGame('pacman');
+      selectClassicGame('frogger');
     });
   </script>
 </body>
