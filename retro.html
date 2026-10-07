@@ -320,13 +320,13 @@
           <div><span class="text-amber-400 font-bold">REVERSE:</span> <span class="text-slate-300">Instant 180° turn anytime</span></div>
         `,
         tuningNotes: `
-          <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Physics (Rewritten):</div>
+          <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Physics & Ghost House Mechanics:</div>
           <div>• Strict cardinal direction mapping: Left is screen-left, Right is screen-right, Up is screen-top, Down is screen-bottom.</div>
-          <div>• Instant 180° reverse turns without waiting for tile intersections.</div>
-          <div>• Auto tile-centering corridor cornering buffers with live on-screen directional readout.</div>
-          <div>• Authentic ghost AI (scatter/chase/flee), dots, energizers, mouth chomping, and warp tunnels.</div>
+          <div>• Instant 180° reverse turns and corridor cornering pre-buffers.</div>
+          <div>• Ghost House Departure: Blinky starts active, while Pinky, Inky, and Clyde bob inside the pen and exit through the ghost gate on staggered timers.</div>
+          <div>• Defeated eyes return straight to the ghost house to re-emerge into the maze.</div>
         `,
-        promptTheme: "Pac-Man arcade maze with strict cardinal view-relative inputs (Up=North, Down=South, Left=West, Right=East), instant 180-degree reversing, corridor snap pre-buffers, 4 distinct ghosts, flashing energizers, eat multipliers, and 8-bit chiptune sound synthesis."
+        promptTheme: "Pac-Man arcade maze with strict cardinal view-relative inputs, corridor snap pre-buffers, ghost house gate passage with staggered exit timers, returning eyes upon capture, flashing energizers, and 8-bit chiptune sound synthesis."
       },
       kong: {
         id: 'kong',
@@ -610,14 +610,14 @@ Strict Gameplay Rules:
     const COLS = 15;
     const ROWS = 13;
 
-    // 0: Empty/Warp corridor, 1: Wall, 2: Dot, 3: Energizer
+    // 0: Empty/Warp corridor, 1: Wall, 2: Dot, 3: Energizer, 4: Ghost Gate (Ghosts only)
     const rawMaze = [
       "111111111111111",
       "122222212222221",
       "131112111211131",
       "121112111211121",
       "122222222222221",
-      "121121101121121",
+      "121121141121121",
       "022221000122220",
       "121121111121121",
       "122222222222221",
@@ -642,10 +642,13 @@ Strict Gameplay Rules:
     let ghosts = [];
     let energizerTimer = 0;
 
-    function isWall(col, row) {
+    function isWall(col, row, forGhost = false) {
       if (row < 0 || row >= ROWS) return true;
       if (col < 0 || col >= COLS) return false; // Side warp tunnel
-      return maze[row][col] === 1;
+      const tile = maze[row][col];
+      if (tile === 1) return true;
+      if (tile === 4) return !forGhost; // Ghost gate: ghosts can pass when authorized
+      return false;
     }
 
     function canMoveInDir(px, py, dx, dy) {
@@ -653,7 +656,7 @@ Strict Gameplay Rules:
       const row = Math.floor(py / TILE);
       const targetCol = col + dx;
       const targetRow = row + dy;
-      return !isWall(targetCol, targetRow);
+      return !isWall(targetCol, targetRow, false);
     }
 
     function handlePacmanKeyDown(k) {
@@ -688,7 +691,7 @@ Strict Gameplay Rules:
       if (pacman.dirX === 0 && pacman.dirY === 0) {
         const col = Math.floor(pacman.x / TILE);
         const row = Math.floor(pacman.y / TILE);
-        if (!isWall(col + reqX, row + reqY)) {
+        if (!isWall(col + reqX, row + reqY, false)) {
           pacman.dirX = reqX;
           pacman.dirY = reqY;
           pacman.nextDirX = 0;
@@ -709,11 +712,16 @@ Strict Gameplay Rules:
       pacman.mouthDir = 1;
       energizerTimer = 0;
 
+      // State machine for ghosts:
+      // 'active' : hunting in maze
+      // 'in_house' : bobbing vertically in quarters awaiting exit timer
+      // 'exiting' : traversing to house center (7*TILE+20) and ascending out through gate to (4*TILE+20)
+      // 'dead_eyes' : returning to house to respawn
       ghosts = [
-        { x: 7 * TILE + 20, y: 5 * TILE + 20, dirX: 1,  dirY: 0,  color: '#ef4444' }, // Blinky (Red)
-        { x: 6 * TILE + 20, y: 6 * TILE + 20, dirX: -1, dirY: 0,  color: '#ec4899' }, // Pinky (Pink)
-        { x: 8 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: -1, color: '#06b6d4' }, // Inky (Cyan)
-        { x: 7 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: 1,  color: '#f97316' }  // Clyde (Orange)
+        { name: 'Blinky', x: 7 * TILE + 20, y: 4 * TILE + 20, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, bobPhase: 0 },
+        { name: 'Pinky',  x: 7 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 70, bobPhase: 1 },
+        { name: 'Inky',   x: 6 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: 1,  color: '#06b6d4', state: 'in_house', exitTimer: 180, bobPhase: 2 },
+        { name: 'Clyde',  x: 8 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: -1, color: '#f97316', state: 'in_house', exitTimer: 300, bobPhase: 3 }
       ];
     }
 
@@ -731,7 +739,7 @@ Strict Gameplay Rules:
           const targetCol = curCol + pacman.nextDirX;
           const targetRow = curRow + pacman.nextDirY;
 
-          if (!isWall(targetCol, targetRow)) {
+          if (!isWall(targetCol, targetRow, false)) {
             // Commit to buffered turn and snap perpendicular axis to corridor center
             pacman.x = cellCenterX;
             pacman.y = cellCenterY;
@@ -748,7 +756,7 @@ Strict Gameplay Rules:
         const nextCol = curCol + pacman.dirX;
         const nextRow = curRow + pacman.dirY;
 
-        if (isWall(nextCol, nextRow)) {
+        if (isWall(nextCol, nextRow, false)) {
           // Stop cleanly at tile center when facing a wall
           if (pacman.dirX === 1 && pacman.x >= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
           else if (pacman.dirX === -1 && pacman.x <= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
@@ -791,9 +799,63 @@ Strict Gameplay Rules:
 
       if (energizerTimer > 0) energizerTimer--;
 
-      // Ghosts AI
+      // ================= GHOSTS STATE MACHINE & AI =================
       const ghostSpd = energizerTimer > 0 ? 1.1 : (DIFF === 'turbo' ? 2.2 : 1.7);
+      const houseExitX = 7 * TILE + 20; // 300
+      const mazeEntranceY = 4 * TILE + 20; // 180
+
       for (let g of ghosts) {
+        // 1. Ghost inside house: countdown and gentle bobbing
+        if (g.state === 'in_house') {
+          g.exitTimer--;
+          g.bobPhase = (g.bobPhase || 0) + 0.08;
+          g.y = (6 * TILE + 20) + Math.sin(g.bobPhase) * 6;
+
+          if (g.exitTimer <= 0) {
+            g.state = 'exiting';
+          }
+          continue;
+        }
+
+        // 2. Ghost exiting house: move horizontally to center gate, then ascend into corridor
+        if (g.state === 'exiting') {
+          if (Math.abs(g.x - houseExitX) > 1.5) {
+            g.dirX = g.x < houseExitX ? 1 : -1;
+            g.dirY = 0;
+            g.x += g.dirX * 1.5;
+          } else {
+            g.x = houseExitX;
+            g.dirX = 0;
+            g.dirY = -1;
+            g.y -= 1.8;
+
+            if (g.y <= mazeEntranceY) {
+              g.y = mazeEntranceY;
+              g.state = 'active';
+              g.dirX = Math.random() < 0.5 ? -1 : 1;
+              g.dirY = 0;
+            }
+          }
+          continue;
+        }
+
+        // 3. Ghost dead eyes returning to house after being eaten
+        if (g.state === 'dead_eyes') {
+          const eyeSpeed = 4.0;
+          if (Math.abs(g.x - houseExitX) > 4) {
+            g.x += g.x < houseExitX ? eyeSpeed : -eyeSpeed;
+          } else if (g.y < 6 * TILE + 20) {
+            g.x = houseExitX;
+            g.y += eyeSpeed;
+          } else {
+            // Re-entered pen: short reload before emerging
+            g.y = 6 * TILE + 20;
+            g.state = 'exiting';
+          }
+          continue;
+        }
+
+        // 4. Ghost active: standard maze navigation & cornering
         g.x += g.dirX * ghostSpd;
         g.y += g.dirY * ghostSpd;
 
@@ -813,7 +875,16 @@ Strict Gameplay Rules:
             { x: 0, y: -1 }
           ];
 
-          const valid = dirs.filter(d => !isWall(gCol + d.x, gRow + d.y) && !(d.x === -g.dirX && d.y === -g.dirY));
+          // Disallow moving through wall or returning down through gate into house while active
+          const valid = dirs.filter(d => {
+            const nextC = gCol + d.x;
+            const nextR = gRow + d.y;
+            if (isWall(nextC, nextR, true)) return false;
+            // Prevent going down into ghost house from the entrance corridor
+            if (gRow === 4 && gCol === 7 && d.y === 1) return false;
+            // Prevent instant 180° reverse unless no other way
+            return !(d.x === -g.dirX && d.y === -g.dirY);
+          });
 
           if (valid.length > 0) {
             if (energizerTimer > 0) {
@@ -825,7 +896,7 @@ Strict Gameplay Rules:
               });
               g.dirX = valid[0].x;
               g.dirY = valid[0].y;
-            } else if (Math.random() < 0.65) {
+            } else if (Math.random() < 0.7) {
               // Chase Pac-Man
               valid.sort((a, b) => {
                 const distA = Math.hypot((gCol + a.x) * TILE - pacman.x, (gRow + a.y) * TILE - pacman.y);
@@ -845,14 +916,11 @@ Strict Gameplay Rules:
           }
         }
 
-        // Ghost collision
+        // Ghost collision with Pac-Man
         if (Math.hypot(pacman.x - g.x, pacman.y - g.y) < 18) {
           if (energizerTimer > 0) {
             score += 200;
-            g.x = 7 * TILE + 20;
-            g.y = 6 * TILE + 20;
-            g.dirX = 0;
-            g.dirY = -1;
+            g.state = 'dead_eyes';
             beep(440, 'sine', 0.2, 0.15);
           } else {
             lives--;
@@ -897,6 +965,10 @@ Strict Gameplay Rules:
             ctx.strokeStyle = C.border;
             ctx.lineWidth = 1;
             ctx.strokeRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
+          } else if (val === 4) {
+            // Ghost House Gate
+            ctx.fillStyle = '#ec4899';
+            ctx.fillRect(c * TILE + 4, r * TILE + 16, TILE - 8, 8);
           } else if (val === 2) {
             ctx.fillStyle = C.accent;
             ctx.beginPath();
@@ -945,8 +1017,23 @@ Strict Gameplay Rules:
 
       // Ghosts
       for (let g of ghosts) {
-        const isFrightened = energizerTimer > 0;
-        const isFlashing = energizerTimer > 0 && energizerTimer < 100 && (Math.floor(energizerTimer / 10) % 2 === 0);
+        if (g.state === 'dead_eyes') {
+          // Render only eyes traveling back to base
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(g.x - 4, g.y - 3, 4, 0, Math.PI * 2);
+          ctx.arc(g.x + 4, g.y - 3, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#1e3a8a';
+          ctx.beginPath();
+          ctx.arc(g.x - 4, g.y - 3, 2, 0, Math.PI * 2);
+          ctx.arc(g.x + 4, g.y - 3, 2, 0, Math.PI * 2);
+          ctx.fill();
+          continue;
+        }
+
+        const isFrightened = energizerTimer > 0 && g.state === 'active';
+        const isFlashing = isFrightened && energizerTimer < 100 && (Math.floor(energizerTimer / 10) % 2 === 0);
 
         ctx.fillStyle = isFlashing ? '#ffffff' : (isFrightened ? '#2563eb' : g.color);
         ctx.beginPath();
