@@ -58,7 +58,6 @@
       text-shadow: 0 0 8px rgba(34, 211, 238, 0.8), 0 0 16px rgba(34, 211, 238, 0.35);
     }
 
-    /* Virtual Controls Styling */
     .vpad-btn {
       touch-action: manipulation;
       user-select: none;
@@ -77,7 +76,7 @@
       <div class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#22d3ee]"></div>
       <div>
         <h1 class="retro-font text-xs sm:text-sm text-cyan-300 neon-text-cyan flex items-center gap-2">
-          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">CALIBRATED v6.0</span>
+          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">STANDALONE v7.0</span>
         </h1>
         <p class="text-[11px] text-slate-400">Space Invaders • Frogger • Pac-Man • Donkey Kong • Elevator Action</p>
       </div>
@@ -188,8 +187,8 @@
         </button>
 
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="downloadStandaloneGameFile()" class="py-2.5 px-3 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs rounded border border-emerald-500 transition shadow flex items-center justify-center gap-1.5">
-            <span>💾</span> DOWNLOAD .HTML
+          <button onclick="downloadStandaloneGameFile()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded border border-emerald-400 transition shadow flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+            <span>💾</span> DOWNLOAD STANDALONE .HTML
           </button>
           <button onclick="copyGameSourceCode()" class="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs rounded border border-slate-700 transition flex items-center justify-center gap-1.5">
             <span id="copyCodeIcon">📄</span> <span id="copyCodeText">COPY HTML CODE</span>
@@ -199,7 +198,7 @@
         <div class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded border border-slate-800 flex items-start gap-2">
           <span class="text-amber-400 text-sm">💡</span>
           <div>
-            The downloaded game is a <strong class="text-cyan-300">100% standalone offline file</strong> with zero external dependencies. Save it into your <strong class="text-amber-300">Games</strong> folder and double-click to play immediately!
+            The downloaded file is a <strong class="text-cyan-300">100% self-contained offline game</strong> with zero external libraries or network calls. Drag it to your <strong class="text-amber-300">Games</strong> folder and double-click to play directly in any browser!
           </div>
         </div>
       </div>
@@ -329,7 +328,7 @@
       invaders: {
         id: 'invaders',
         name: 'SPACE INVADERS 1978',
-        controlsHtml: `<span><strong class="text-cyan-400">MOVE:</strong> ← / → or A / D</span> <span><strong class="text-amber-400">FIRE:</strong> Spacebar</span>`,
+        controlsHtml: '<span><strong class="text-cyan-400">MOVE:</strong> ← / → or A / D</span> <span><strong class="text-amber-400">FIRE:</strong> Spacebar</span>',
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Space Invaders Engine:</div>
           <div>• 4 Solid Destructible Bunkers (Y=440) constructed from 8x5 pixel blocks that erode from lasers and bombs.</div>
@@ -341,7 +340,7 @@
       frogger: {
         id: 'frogger',
         name: 'FROGGER: HOPPING RUN 1981',
-        controlsHtml: `<span><strong class="text-cyan-400">HOP:</strong> Arrow Keys / WASD</span> <span><strong class="text-amber-400">GOAL:</strong> 5 High-Contrast Docks</span>`,
+        controlsHtml: '<span><strong class="text-cyan-400">HOP:</strong> Arrow Keys / WASD</span> <span><strong class="text-amber-400">GOAL:</strong> 5 High-Contrast Docks</span>',
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Frogger Engine:</div>
           <div>• 5 High-Contrast Midnight-Blue Docks with glowing cyan piers and pulsing neon-lime lily pads.</div>
@@ -353,7 +352,7 @@
       pacman: {
         id: 'pacman',
         name: 'PAC-MAZE 1980',
-        controlsHtml: `<span><strong class="text-cyan-400">MOVE:</strong> Arrows / WASD</span> <span><strong class="text-amber-400">REVERSE:</strong> Instant 180°</span>`,
+        controlsHtml: '<span><strong class="text-cyan-400">MOVE:</strong> Arrows / WASD</span> <span><strong class="text-amber-400">REVERSE:</strong> Instant 180°</span>',
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Engine:</div>
           <div>• Absolute Screen-Relative Cardinal Controls with instant 180° reversing and corner snap buffering.</div>
@@ -365,7 +364,7 @@
       kong: {
         id: 'kong',
         name: 'BARREL CLIMBER 1981 (DONKEY KONG)',
-        controlsHtml: `<span><strong class="text-cyan-400">RUN:</strong> ← / →</span> <span><strong class="text-amber-400">CLIMB:</strong> ↑ / ↓</span> <span><strong class="text-emerald-400">JUMP:</strong> Space</span>`,
+        controlsHtml: '<span><strong class="text-cyan-400">RUN:</strong> ← / →</span> <span><strong class="text-amber-400">CLIMB:</strong> ↑ / ↓</span> <span><strong class="text-emerald-400">JUMP:</strong> Space</span>',
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Donkey Kong Engine:</div>
           <div>• Barrels roll strictly down inclined red girders and drop vertically at girder edges to the tier below.</div>
@@ -376,7 +375,7 @@
       elevator: {
         id: 'elevator',
         name: 'ELEVATOR ACTION: SPY 1983',
-        controlsHtml: `<span><strong class="text-cyan-400">RUN:</strong> A / D</span> <span><strong class="text-amber-400">ELEVATOR / ENTER:</strong> W / S</span> <span><strong class="text-emerald-400">DUCK/SHOOT:</strong> S to Duck, Space to Fire</span>`,
+        controlsHtml: '<span><strong class="text-cyan-400">RUN:</strong> A / D</span> <span><strong class="text-amber-400">ELEVATOR / ENTER:</strong> W / S</span> <span><strong class="text-emerald-400">DUCK/SHOOT:</strong> S to Duck, Space to Fire</span>',
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Elevator Action Engine:</div>
           <div>• Continuous elevator shafts; step into elevators and use UP/DOWN to travel between floors.</div>
@@ -470,7 +469,6 @@ Key Engine Rules:
     const canvas = document.getElementById('arcadeCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Input States
     const keys = {};
     window.addEventListener('keydown', e => {
       const k = e.key.toLowerCase();
@@ -485,7 +483,6 @@ Key Engine Rules:
     });
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
-    // Touch Virtual D-Pad bindings
     function bindVpad(elemId, keyMap) {
       const btn = document.getElementById(elemId);
       if (!btn) return;
@@ -511,7 +508,6 @@ Key Engine Rules:
     bindVpad('vbtn-right', ['arrowright', 'd']);
     bindVpad('vbtn-action', [' ']);
 
-    // Active Global Game State
     let activeScore = 0;
     let activeHiScore = 5000;
     let activeLives = 3;
@@ -551,7 +547,6 @@ Key Engine Rules:
       invUfo = null;
       invUfoTimer = 0;
 
-      // 5 Rows x 8 Columns of classic aliens
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 8; c++) {
           invAliens.push({
@@ -565,7 +560,6 @@ Key Engine Rules:
         }
       }
 
-      // Build 4 Destructible Arch Bunkers at Y = 440
       invBunkers = [];
       const bunkerXPos = [70, 205, 340, 475];
       const cols = 8;
@@ -576,9 +570,7 @@ Key Engine Rules:
         const blocks = [];
         for (let r = 0; r < rows; r++) {
           for (let c = 0; c < cols; c++) {
-            // Cut out bottom center archway
             if (r >= 3 && (c === 3 || c === 4)) continue;
-            // Cut out top corners for rounded arcade bunker silhouette
             if (r === 0 && (c === 0 || c === cols - 1)) continue;
 
             blocks.push({
@@ -600,7 +592,6 @@ Key Engine Rules:
       if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
       invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
 
-      // Player laser fire
       if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
         invMissiles.push({
           x: invPlayer.x + invPlayer.w / 2 - 2,
@@ -613,7 +604,6 @@ Key Engine Rules:
         playBeep(880, 'square', 0.05, 0.09);
       }
 
-      // Marching Aliens movement & speed escalation
       invAlienTimer++;
       const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
       if (invAlienTimer >= marchInterval) {
@@ -635,7 +625,6 @@ Key Engine Rules:
         }
         playBeep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
 
-        // Alien bomb drops
         if (Math.random() < 0.45 && invAliens.length > 0) {
           const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
           invMissiles.push({
@@ -649,7 +638,6 @@ Key Engine Rules:
         }
       }
 
-      // Top UFO Saucer Flyby
       invUfoTimer++;
       if (!invUfo && invUfoTimer > 600) {
         invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
@@ -661,12 +649,10 @@ Key Engine Rules:
         if (invUfo.x > 620) invUfo = null;
       }
 
-      // Missiles Update & Collision
       for (let i = invMissiles.length - 1; i >= 0; i--) {
         const m = invMissiles[i];
         m.y += m.vy;
 
-        // Hit UFO
         if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
           activeScore += 300;
           invUfo = null;
@@ -675,7 +661,6 @@ Key Engine Rules:
           continue;
         }
 
-        // Hit Aliens
         if (m.fromPlayer) {
           let alienHit = false;
           for (let j = invAliens.length - 1; j >= 0; j--) {
@@ -695,7 +680,6 @@ Key Engine Rules:
           }
           if (alienHit) continue;
         } else {
-          // Alien bomb hits player
           if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
             activeLives--;
             invMissiles.splice(i, 1);
@@ -705,7 +689,6 @@ Key Engine Rules:
           }
         }
 
-        // Hit Bunkers (Both player and enemy fire erode blocks!)
         let hitBunker = false;
         for (let b of invBunkers) {
           for (let blk of b.blocks) {
@@ -721,13 +704,11 @@ Key Engine Rules:
         }
         if (hitBunker) continue;
 
-        // Clean out of bounds missiles
         if (m.y < 20 || m.y > 580) {
           invMissiles.splice(i, 1);
         }
       }
 
-      // Marching aliens disintegrate bunker blocks on collision
       for (let a of invAliens) {
         for (let b of invBunkers) {
           for (let blk of b.blocks) {
@@ -742,7 +723,6 @@ Key Engine Rules:
     function drawSpaceInvaders() {
       const C = getColorPalette();
 
-      // Draw 4 Destructible Arch Bunkers
       ctx.fillStyle = C.bunker;
       for (let b of invBunkers) {
         for (let blk of b.blocks) {
@@ -752,12 +732,10 @@ Key Engine Rules:
         }
       }
 
-      // Draw Player Cannon
       ctx.fillStyle = C.player;
       ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
       ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
 
-      // Draw Aliens
       for (let a of invAliens) {
         ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
         ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
@@ -766,7 +744,6 @@ Key Engine Rules:
         ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
       }
 
-      // Draw Top UFO
       if (invUfo) {
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
@@ -776,7 +753,6 @@ Key Engine Rules:
         ctx.fillRect(invUfo.x + invUfo.w / 2 - 4, invUfo.y + 4, 8, 4);
       }
 
-      // Draw Missiles
       for (let m of invMissiles) {
         ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
         ctx.fillRect(m.x, m.y, m.w, m.h);
@@ -848,7 +824,6 @@ Key Engine Rules:
         frogHopLock = false;
       }
 
-      // Move road vehicles and river logs
       [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
         for (let it of lane.items) {
           it.x += lane.speed;
@@ -859,7 +834,6 @@ Key Engine Rules:
 
       const frogCenterX = frog.px + FROG_GRID / 2;
 
-      // Road Collisions
       const road = frogTrafficLanes.find(l => l.y === frog.y);
       if (road) {
         for (let it of road.items) {
@@ -870,7 +844,6 @@ Key Engine Rules:
         }
       }
 
-      // River Log Drift & Drowning Checks
       const river = frogRiverLanes.find(l => l.y === frog.y);
       if (river) {
         let onLog = false;
@@ -888,7 +861,6 @@ Key Engine Rules:
         }
       }
 
-      // Reaching the Top Row 1: 5 Goal Lily-Pad Docks with Hedge Dividers
       if (frog.y === 1) {
         let inDockIndex = -1;
         const dockCols = [1, 4, 7, 10, 13];
@@ -913,7 +885,6 @@ Key Engine Rules:
             frogDocks = [false, false, false, false, false];
           }
         } else {
-          // Collided with hedge or already occupied lily dock!
           frogDeath();
         }
       }
@@ -932,24 +903,20 @@ Key Engine Rules:
     function drawFrogger() {
       const C = getColorPalette();
 
-      // Top Goal Hedgerow with High-Contrast Midnight-Blue Inlets and Cyan Piers
       ctx.fillStyle = '#064e3b';
       ctx.fillRect(0, 0, 600, FROG_GRID * 2);
 
       const dockCols = [1, 4, 7, 10, 13];
       dockCols.forEach((col, idx) => {
         const dx = col * FROG_GRID;
-        // Deep midnight-blue cutout
         ctx.fillStyle = '#020617';
         ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
 
-        // Glowing cyan pier border
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 2;
         ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
 
         if (frogDocks[idx]) {
-          // Rescued Golden Trophy Frog
           ctx.fillStyle = '#fbbf24';
           ctx.beginPath();
           ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2);
@@ -957,7 +924,6 @@ Key Engine Rules:
           ctx.fillStyle = '#d97706';
           ctx.fillRect(dx + FROG_GRID / 2 - 3, FROG_GRID + FROG_GRID / 2 - 3, 6, 6);
         } else {
-          // High-contrast vibrant neon-lime lily pad with bright pink lotus center
           ctx.fillStyle = '#4ade80';
           ctx.beginPath();
           ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
@@ -972,11 +938,9 @@ Key Engine Rules:
         }
       });
 
-      // River Water
       ctx.fillStyle = '#0a2540';
       ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
 
-      // River Logs & Turtles
       for (let l of frogRiverLanes) {
         for (let it of l.items) {
           if (l.type === 'log') {
@@ -993,15 +957,12 @@ Key Engine Rules:
         }
       }
 
-      // Middle Safe Median
       ctx.fillStyle = '#166534';
       ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
 
-      // Highway Asphalt
       ctx.fillStyle = '#111827';
       ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
 
-      // Traffic Vehicles
       for (let l of frogTrafficLanes) {
         ctx.fillStyle = l.color;
         for (let it of l.items) {
@@ -1011,11 +972,9 @@ Key Engine Rules:
         }
       }
 
-      // Starting Sidewalk
       ctx.fillStyle = '#166534';
       ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
 
-      // Frog Player
       ctx.fillStyle = C.player;
       ctx.beginPath();
       ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2);
@@ -1072,7 +1031,6 @@ Key Engine Rules:
       else if (k === 'arrowdown' || k === 's')  { reqX = 0;  reqY = 1; }
       else return;
 
-      // Instant 180° turn reversal
       if (reqX !== 0 && reqX === -pacman.dirX) {
         pacman.dirX = reqX; pacman.dirY = 0;
         pacman.nextDirX = 0; pacman.nextDirY = 0;
@@ -1114,7 +1072,6 @@ Key Engine Rules:
       pacman.nextDirY = 0;
       pacEnergizerTimer = 0;
 
-      // Staggered Ghost House Emergence: Blinky patrols, Pinky, Inky, Clyde emerge cleanly
       pacGhosts = [
         { name: 'Blinky', x: 300, y: 180, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, bobPhase: 0, lastCol: 7, lastRow: 4 },
         { name: 'Pinky',  x: 300, y: 260, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 90, bobPhase: 1, lastCol: 7, lastRow: 6 },
@@ -1129,7 +1086,6 @@ Key Engine Rules:
       const cellCenterX = curCol * PAC_TILE + 20;
       const cellCenterY = curRow * PAC_TILE + 20;
 
-      // Corner buffering
       if (pacman.nextDirX !== 0 || pacman.nextDirY !== 0) {
         if (Math.hypot(pacman.x - cellCenterX, pacman.y - cellCenterY) <= (pacman.speed + 3)) {
           if (!isPacWall(curCol + pacman.nextDirX, curRow + pacman.nextDirY, false)) {
@@ -1143,7 +1099,6 @@ Key Engine Rules:
         }
       }
 
-      // Wall collision ahead
       if (pacman.dirX !== 0 || pacman.dirY !== 0) {
         if (isPacWall(curCol + pacman.dirX, curRow + pacman.dirY, false)) {
           if (pacman.dirX === 1 && pacman.x >= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
@@ -1156,7 +1111,6 @@ Key Engine Rules:
       pacman.x += pacman.dirX * pacman.speed;
       pacman.y += pacman.dirY * pacman.speed;
 
-      // Tunnels
       if (pacman.x < -10) pacman.x = 600 + 10;
       else if (pacman.x > 600 + 10) pacman.x = -10;
 
@@ -1165,7 +1119,6 @@ Key Engine Rules:
         if (pacman.mouth > 0.42 || pacman.mouth < 0.04) pacman.mouthDir *= -1;
       }
 
-      // Eat Dots & Energizers
       const eatCol = Math.floor(pacman.x / PAC_TILE);
       const eatRow = Math.floor(pacman.y / PAC_TILE);
       if (eatCol >= 0 && eatCol < PAC_COLS && eatRow >= 0 && eatRow < PAC_ROWS) {
@@ -1190,12 +1143,10 @@ Key Engine Rules:
         }
       }
 
-      // Progressive Cruise Elroy speed escalation
       const ratio = pacInitialDots > 0 ? (1 - (remainingDots / pacInitialDots)) : 0;
       const ghostSpd = pacEnergizerTimer > 0 ? 1.3 : (1.8 + ratio * 1.4);
       const houseExitX = 300;
 
-      // Ghosts Routine
       for (let g of pacGhosts) {
         if (g.state === 'in_house') {
           g.exitTimer--;
@@ -1284,7 +1235,6 @@ Key Engine Rules:
           }
         }
 
-        // Pac-Man collision
         if (Math.hypot(pacman.x - g.x, pacman.y - g.y) < 18) {
           if (pacEnergizerTimer > 0) {
             activeScore += 200;
@@ -1315,7 +1265,6 @@ Key Engine Rules:
     function drawPacman() {
       const C = getColorPalette();
 
-      // Maze
       for (let r = 0; r < PAC_ROWS; r++) {
         for (let c = 0; c < PAC_COLS; c++) {
           const val = pacMaze[r][c];
@@ -1339,7 +1288,6 @@ Key Engine Rules:
         }
       }
 
-      // Pac-Man facing angle
       let angle = 0;
       if (pacman.dirX === 1) angle = 0;
       else if (pacman.dirX === -1) angle = Math.PI;
@@ -1353,7 +1301,6 @@ Key Engine Rules:
       ctx.closePath();
       ctx.fill();
 
-      // Ghosts
       for (let g of pacGhosts) {
         if (g.state === 'dead_eyes') {
           ctx.fillStyle = '#ffffff';
@@ -1526,7 +1473,6 @@ Key Engine Rules:
     function drawKong() {
       const C = getColorPalette();
 
-      // Girders
       ctx.strokeStyle = '#ef4444';
       ctx.lineWidth = 6;
       for (let g of dkGirders) {
@@ -1536,7 +1482,6 @@ Key Engine Rules:
         ctx.stroke();
       }
 
-      // Ladders
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 3;
       for (let l of dkLadders) {
@@ -1549,7 +1494,6 @@ Key Engine Rules:
         ctx.stroke();
       }
 
-      // Donkey Kong & Pauline
       ctx.fillStyle = '#78350f';
       ctx.fillRect(45, 115, 48, 55);
       ctx.fillStyle = '#fbbf24';
@@ -1558,11 +1502,9 @@ Key Engine Rules:
       ctx.fillStyle = '#ec4899';
       ctx.fillRect(170, 75, 16, 30);
 
-      // Mario
       ctx.fillStyle = C.player;
       ctx.fillRect(dkMario.x, dkMario.y, dkMario.w, dkMario.h);
 
-      // Barrels
       ctx.fillStyle = '#b45309';
       for (let b of dkBarrels) {
         ctx.beginPath();
@@ -1652,7 +1594,6 @@ Key Engine Rules:
       spy.x += spy.vx;
       spy.x = Math.max(30, Math.min(550, spy.x));
 
-      // Enter red document rooms
       if (keys['arrowup'] || keys['w']) {
         for (let d of spySecretDoors) {
           if (!d.searched && Math.abs((spy.x + spy.w / 2) - (d.x + 13)) < 16 && Math.abs((spy.y + spy.h) - d.floorY) < 10) {
@@ -1664,14 +1605,12 @@ Key Engine Rules:
         }
       }
 
-      // Escape at bottom floor with all documents
       if (spy.y >= 510 - spy.h - 5 && spySecretDoors.every(d => d.searched)) {
         activeScore += 2500;
         playBeep(990, 'sine', 0.4, 0.2);
         initElevatorEngine();
       }
 
-      // Fire Gun
       if (keys[' '] && spyBullets.filter(b => b.fromSpy).length === 0) {
         const dir = (spy.vx < 0 ? -1 : 1);
         spyBullets.push({
@@ -1683,7 +1622,6 @@ Key Engine Rules:
         playBeep(740, 'square', 0.05, 0.1);
       }
 
-      // Spawn Enemy Agents
       spySpawnTimer++;
       if (spySpawnTimer % 180 === 0 && spyAgents.length < 3) {
         const pickF = spyFloors[Math.floor(Math.random() * spyFloors.length)];
@@ -1787,7 +1725,6 @@ Key Engine Rules:
       }
     }
 
-    // Master Engine Switcher & Loop
     function initSelectedEngine() {
       activeScore = 0;
       activeLives = (document.getElementById('cfgDifficulty').value === 'casual') ? 5 : 3;
@@ -1828,7 +1765,6 @@ Key Engine Rules:
       }
     }
 
-    // Main 60FPS Game Loop
     function masterGameLoop() {
       if (!isPaused && !activeGameOver) {
         if (currentGame === 'invaders') updateSpaceInvaders();
@@ -1848,7 +1784,6 @@ Key Engine Rules:
       else if (currentGame === 'kong') drawKong();
       else if (currentGame === 'elevator') drawElevator();
 
-      // Top HUD Overlay
       ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       ctx.fillRect(0, 0, canvas.width, 28);
       ctx.fillStyle = C.text;
@@ -1896,14 +1831,599 @@ Key Engine Rules:
       const title = document.getElementById('cfgTitle').value || meta.name;
       const palette = document.getElementById('cfgPalette').value;
       const diff = document.getElementById('cfgDifficulty').value;
-      const mod = document.getElementById('cfgMod').value;
+      const initialLives = diff === 'casual' ? 5 : 3;
+
+      let engineInitCode = '';
+      let engineUpdateCode = '';
+      let engineDrawCode = '';
+
+      if (gameKey === 'invaders') {
+        engineInitCode = `
+          let invPlayer = { x: 285, y: 540, w: 30, h: 16 };
+          let invMissiles = [];
+          let invAliens = [];
+          let invAlienDir = 1;
+          let invAlienTimer = 0;
+          let invUfo = null;
+          let invUfoTimer = 0;
+          let invBunkers = [];
+
+          function initEngine() {
+            invPlayer.x = 285; invPlayer.y = 540;
+            invMissiles = []; invAliens = [];
+            invAlienDir = 1; invAlienTimer = 0;
+            invUfo = null; invUfoTimer = 0;
+            for (let r = 0; r < 5; r++) {
+              for (let c = 0; c < 8; c++) {
+                invAliens.push({ x: 75 + c * 56, y: 70 + r * 36, w: 26, h: 20, type: r, score: (5 - r) * 10 });
+              }
+            }
+            invBunkers = [];
+            const bunkerXPos = [70, 205, 340, 475];
+            bunkerXPos.forEach(bx => {
+              const blocks = [];
+              for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 8; c++) {
+                  if (r >= 3 && (c === 3 || c === 4)) continue;
+                  if (r === 0 && (c === 0 || c === 7)) continue;
+                  blocks.push({ x: bx + c * 6, y: 440 + r * 6, w: 6, h: 6, alive: true });
+                }
+              }
+              invBunkers.push({ blocks });
+            });
+          }
+        `;
+        engineUpdateCode = `
+          const spd = 4.2;
+          if (keys['arrowleft'] || keys['a']) invPlayer.x -= spd;
+          if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
+          invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
+
+          if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
+            invMissiles.push({ x: invPlayer.x + invPlayer.w / 2 - 2, y: invPlayer.y - 6, vy: -8, w: 4, h: 12, fromPlayer: true });
+            beep(880, 'square', 0.05, 0.09);
+          }
+
+          invAlienTimer++;
+          const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
+          if (invAlienTimer >= marchInterval) {
+            invAlienTimer = 0;
+            let hitEdge = false;
+            for (let a of invAliens) {
+              a.x += invAlienDir * 12;
+              if (a.x < 25 || a.x + a.w > 575) hitEdge = true;
+            }
+            if (hitEdge) {
+              invAlienDir *= -1;
+              for (let a of invAliens) {
+                a.y += 16;
+                if (a.y + a.h >= invPlayer.y) gameOver = true;
+              }
+            }
+            beep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
+
+            if (Math.random() < 0.45 && invAliens.length > 0) {
+              const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
+              invMissiles.push({ x: shooter.x + shooter.w / 2 - 2, y: shooter.y + shooter.h, vy: 4.5, w: 4, h: 10, fromPlayer: false });
+            }
+          }
+
+          invUfoTimer++;
+          if (!invUfo && invUfoTimer > 600) {
+            invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
+            invUfoTimer = 0;
+            beep(920, 'sine', 0.15, 0.1);
+          }
+          if (invUfo) {
+            invUfo.x += invUfo.vx;
+            if (invUfo.x > 620) invUfo = null;
+          }
+
+          for (let i = invMissiles.length - 1; i >= 0; i--) {
+            const m = invMissiles[i];
+            m.y += m.vy;
+            if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
+              score += 300; invUfo = null; invMissiles.splice(i, 1); beep(990, 'sine', 0.25, 0.15); continue;
+            }
+            if (m.fromPlayer) {
+              let alienHit = false;
+              for (let j = invAliens.length - 1; j >= 0; j--) {
+                const a = invAliens[j];
+                if (m.x + m.w > a.x && m.x < a.x + a.w && m.y < a.y + a.h && m.y + m.h > a.y) {
+                  score += a.score; invAliens.splice(j, 1); invMissiles.splice(i, 1);
+                  beep(260, 'sawtooth', 0.07, 0.12); alienHit = true;
+                  if (invAliens.length === 0) { score += 1000; initEngine(); }
+                  break;
+                }
+              }
+              if (alienHit) continue;
+            } else {
+              if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
+                lives--; invMissiles.splice(i, 1); beep(120, 'sawtooth', 0.35, 0.2);
+                if (lives <= 0) gameOver = true;
+                continue;
+              }
+            }
+            let hitBunker = false;
+            for (let b of invBunkers) {
+              for (let blk of b.blocks) {
+                if (blk.alive && m.x + m.w > blk.x && m.x < blk.x + blk.w && m.y + m.h > blk.y && m.y < blk.y + blk.h) {
+                  blk.alive = false; invMissiles.splice(i, 1); beep(180, 'square', 0.03, 0.06); hitBunker = true; break;
+                }
+              }
+              if (hitBunker) break;
+            }
+            if (hitBunker) continue;
+            if (m.y < 20 || m.y > 580) invMissiles.splice(i, 1);
+          }
+        `;
+        engineDrawCode = `
+          ctx.fillStyle = C.bunker;
+          for (let b of invBunkers) {
+            for (let blk of b.blocks) {
+              if (blk.alive) ctx.fillRect(blk.x, blk.y, blk.w, blk.h);
+            }
+          }
+          ctx.fillStyle = C.player;
+          ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
+          ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
+
+          for (let a of invAliens) {
+            ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
+            ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(a.x + 6, a.y + 6, 3, 3);
+            ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
+          }
+          if (invUfo) {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.ellipse(invUfo.x + invUfo.w / 2, invUfo.y + invUfo.h / 2, invUfo.w / 2, invUfo.h / 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          for (let m of invMissiles) {
+            ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
+            ctx.fillRect(m.x, m.y, m.w, m.h);
+          }
+        `;
+      } else if (gameKey === 'frogger') {
+        engineInitCode = `
+          const FROG_GRID = 40;
+          let frog = { x: 7, y: 14, px: 7 * 40, py: 14 * 40 };
+          let frogHopLock = false;
+          let frogDocks = [false, false, false, false, false];
+          let frogTrafficLanes = [
+            { y: 13, speed: -0.85, w: 36, gap: 190, color: '#f43f5e', items: [] },
+            { y: 12, speed: 1.05,  w: 48, gap: 230, color: '#fbbf24', items: [] },
+            { y: 11, speed: -1.25, w: 32, gap: 210, color: '#ec4899', items: [] },
+            { y: 10, speed: 0.90,  w: 38, gap: 200, color: '#38bdf8', items: [] },
+            { y: 9,  speed: -0.95, w: 56, gap: 250, color: '#4ade80', items: [] }
+          ];
+          let frogRiverLanes = [
+            { y: 7, speed: -0.85, w: 105, gap: 230, type: 'log', items: [] },
+            { y: 6, speed: 0.95,  w: 75,  gap: 210, type: 'turtle', items: [] },
+            { y: 5, speed: -1.20, w: 135, gap: 280, type: 'log', items: [] },
+            { y: 4, speed: 0.85,  w: 80,  gap: 220, type: 'turtle', items: [] },
+            { y: 3, speed: -0.90, w: 95,  gap: 240, type: 'log', items: [] }
+          ];
+          function initEngine() {
+            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+            frogDocks = [false, false, false, false, false];
+            [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+              lane.items = [];
+              for (let x = 0; x < 600; x += lane.gap) lane.items.push({ x });
+            });
+          }
+          function frogDeath() {
+            lives--; beep(140, 'sawtooth', 0.3, 0.2);
+            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+            if (lives <= 0) gameOver = true;
+          }
+        `;
+        engineUpdateCode = `
+          const up = keys['arrowup'] || keys['w'];
+          const down = keys['arrowdown'] || keys['s'];
+          const left = keys['arrowleft'] || keys['a'];
+          const right = keys['arrowright'] || keys['d'];
+
+          if (!frogHopLock) {
+            let moved = false;
+            if (up && frog.y > 1) { frog.y--; moved = true; }
+            else if (down && frog.y < 14) { frog.y++; moved = true; }
+            else if (left && frog.x > 0) { frog.x--; moved = true; }
+            else if (right && frog.x < 14) { frog.x++; moved = true; }
+            if (moved) {
+              frogHopLock = true;
+              frog.px = frog.x * FROG_GRID; frog.py = frog.y * FROG_GRID;
+              score += 10; beep(680, 'triangle', 0.04, 0.08);
+            }
+          }
+          if (!up && !down && !left && !right) frogHopLock = false;
+
+          [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+            for (let it of lane.items) {
+              it.x += lane.speed;
+              if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
+              if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
+            }
+          });
+
+          const frogCenterX = frog.px + FROG_GRID / 2;
+          const road = frogTrafficLanes.find(l => l.y === frog.y);
+          if (road) {
+            for (let it of road.items) {
+              if (frogCenterX > it.x + 4 && frogCenterX < it.x + road.w - 4) { frogDeath(); return; }
+            }
+          }
+          const river = frogRiverLanes.find(l => l.y === frog.y);
+          if (river) {
+            let onLog = false;
+            for (let it of river.items) {
+              if (frogCenterX > it.x - 4 && frogCenterX < it.x + river.w + 4) {
+                onLog = true; frog.px += river.speed; frog.x = Math.round(frog.px / FROG_GRID); break;
+              }
+            }
+            if (!onLog || frog.px < -10 || frog.px > 590) { frogDeath(); return; }
+          }
+          if (frog.y === 1) {
+            let inDockIndex = -1;
+            const dockCols = [1, 4, 7, 10, 13];
+            dockCols.forEach((col, idx) => {
+              if (Math.abs(frogCenterX - (col * FROG_GRID + FROG_GRID / 2)) < 22) inDockIndex = idx;
+            });
+            if (inDockIndex !== -1 && !frogDocks[inDockIndex]) {
+              frogDocks[inDockIndex] = true; score += 500; beep(920, 'triangle', 0.2, 0.15);
+              frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+              if (frogDocks.every(Boolean)) { score += 1500; frogDocks = [false, false, false, false, false]; }
+            } else { frogDeath(); }
+          }
+        `;
+        engineDrawCode = `
+          ctx.fillStyle = '#064e3b';
+          ctx.fillRect(0, 0, 600, FROG_GRID * 2);
+          const dockCols = [1, 4, 7, 10, 13];
+          dockCols.forEach((col, idx) => {
+            const dx = col * FROG_GRID;
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
+            ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2;
+            ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
+            if (frogDocks[idx]) {
+              ctx.fillStyle = '#fbbf24';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
+            } else {
+              ctx.fillStyle = '#4ade80';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
+              ctx.lineTo(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2); ctx.closePath(); ctx.fill();
+              ctx.fillStyle = '#f43f5e';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 4, 0, Math.PI * 2); ctx.fill();
+            }
+          });
+          ctx.fillStyle = '#0a2540'; ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
+          for (let l of frogRiverLanes) {
+            for (let it of l.items) {
+              ctx.fillStyle = l.type === 'log' ? '#78350f' : '#0d9488';
+              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+            }
+          }
+          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
+          ctx.fillStyle = '#111827'; ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
+          for (let l of frogTrafficLanes) {
+            ctx.fillStyle = l.color;
+            for (let it of l.items) {
+              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+              ctx.fillStyle = '#ffffff'; ctx.fillRect(it.x + 4, l.y * FROG_GRID + 9, 6, 6);
+            }
+          }
+          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
+          ctx.fillStyle = C.player;
+          ctx.beginPath(); ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
+        `;
+      } else if (gameKey === 'pacman') {
+        engineInitCode = `
+          const PAC_TILE = 40, PAC_COLS = 15, PAC_ROWS = 15;
+          const pacRawMaze = [
+            "111111111111111","122222212222221","131112111211131","121112111211121","122222222222221",
+            "121121141121121","022221000122220","121121111121121","122222222222221","121112111211121",
+            "131112111211131","122222212222221","121112222211121","122222222222221","111111111111111"
+          ];
+          let pacMaze = [], pacInitialDots = 0;
+          let pacman = { x: 300, y: 380, dirX: 0, dirY: 0, nextDirX: 0, nextDirY: 0, speed: 2.6, mouth: 0.2, mouthDir: 1 };
+          let pacGhosts = [], pacEnergizerTimer = 0;
+
+          function isPacWall(c, r, forGhost = false) {
+            if (r < 0 || r >= PAC_ROWS) return true;
+            if (c < 0 || c >= PAC_COLS) return false;
+            const t = pacMaze[r][c];
+            if (t === 1) return true;
+            if (t === 4) return !forGhost;
+            return false;
+          }
+          function initEngine() {
+            pacMaze = pacRawMaze.map(row => row.split('').map(Number));
+            pacInitialDots = 0;
+            for (let r = 0; r < PAC_ROWS; r++) {
+              for (let c = 0; c < PAC_COLS; c++) {
+                if (pacMaze[r][c] === 2 || pacMaze[r][c] === 3) pacInitialDots++;
+              }
+            }
+            pacman.x = 300; pacman.y = 380; pacman.dirX = 0; pacman.dirY = 0; pacman.nextDirX = 0; pacman.nextDirY = 0;
+            pacGhosts = [
+              { name: 'Blinky', x: 300, y: 180, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, lastCol: 7, lastRow: 4 },
+              { name: 'Pinky',  x: 300, y: 260, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 90, lastCol: 7, lastRow: 6 },
+              { name: 'Inky',   x: 260, y: 260, dirX: 0,  dirY: 1,  color: '#06b6d4', state: 'in_house', exitTimer: 240, lastCol: 6, lastRow: 6 },
+              { name: 'Clyde',  x: 340, y: 260, dirX: 0,  dirY: -1, color: '#f97316', state: 'in_house', exitTimer: 440, lastCol: 8, lastRow: 6 }
+            ];
+          }
+          function onCustomKey(k) {
+            let rx = 0, ry = 0;
+            if (k === 'arrowleft' || k === 'a') rx = -1;
+            else if (k === 'arrowright' || k === 'd') rx = 1;
+            else if (k === 'arrowup' || k === 'w') ry = -1;
+            else if (k === 'arrowdown' || k === 's') ry = 1;
+            if (rx !== 0 && rx === -pacman.dirX) { pacman.dirX = rx; pacman.dirY = 0; pacman.nextDirX = 0; return; }
+            if (ry !== 0 && ry === -pacman.dirY) { pacman.dirX = 0; pacman.dirY = ry; pacman.nextDirY = 0; return; }
+            pacman.nextDirX = rx; pacman.nextDirY = ry;
+          }
+        `;
+        engineUpdateCode = `
+          const curCol = Math.floor(pacman.x / PAC_TILE);
+          const curRow = Math.floor(pacman.y / PAC_TILE);
+          const cellCenterX = curCol * PAC_TILE + 20;
+          const cellCenterY = curRow * PAC_TILE + 20;
+
+          if (pacman.nextDirX !== 0 || pacman.nextDirY !== 0) {
+            if (Math.hypot(pacman.x - cellCenterX, pacman.y - cellCenterY) <= (pacman.speed + 3)) {
+              if (!isPacWall(curCol + pacman.nextDirX, curRow + pacman.nextDirY, false)) {
+                pacman.x = cellCenterX; pacman.y = cellCenterY;
+                pacman.dirX = pacman.nextDirX; pacman.dirY = pacman.nextDirY;
+                pacman.nextDirX = 0; pacman.nextDirY = 0;
+              }
+            }
+          }
+          if (pacman.dirX !== 0 || pacman.dirY !== 0) {
+            if (isPacWall(curCol + pacman.dirX, curRow + pacman.dirY, false)) {
+              if (pacman.dirX === 1 && pacman.x >= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
+              else if (pacman.dirX === -1 && pacman.x <= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
+              else if (pacman.dirY === 1 && pacman.y >= cellCenterY) { pacman.y = cellCenterY; pacman.dirY = 0; }
+              else if (pacman.dirY === -1 && pacman.y <= cellCenterY) { pacman.y = cellCenterY; pacman.dirY = 0; }
+            }
+          }
+          pacman.x += pacman.dirX * pacman.speed; pacman.y += pacman.dirY * pacman.speed;
+          if (pacman.x < -10) pacman.x = 610; else if (pacman.x > 610) pacman.x = -10;
+
+          const eatCol = Math.floor(pacman.x / PAC_TILE);
+          const eatRow = Math.floor(pacman.y / PAC_TILE);
+          if (eatCol >= 0 && eatCol < PAC_COLS && eatRow >= 0 && eatRow < PAC_ROWS) {
+            if (pacMaze[eatRow][eatCol] === 2) {
+              pacMaze[eatRow][eatCol] = 0; score += 10; beep(620, 'triangle', 0.03, 0.05);
+            } else if (pacMaze[eatRow][eatCol] === 3) {
+              pacMaze[eatRow][eatCol] = 0; score += 50; pacEnergizerTimer = 400; beep(880, 'square', 0.15, 0.12);
+            }
+          }
+          if (pacEnergizerTimer > 0) pacEnergizerTimer--;
+
+          let remDots = 0;
+          for (let r = 0; r < PAC_ROWS; r++) {
+            for (let c = 0; c < PAC_COLS; c++) {
+              if (pacMaze[r][c] === 2 || pacMaze[r][c] === 3) remDots++;
+            }
+          }
+          const ghostSpd = pacEnergizerTimer > 0 ? 1.3 : (1.8 + (1 - (remDots / pacInitialDots)) * 1.4);
+          for (let g of pacGhosts) {
+            if (g.state === 'in_house') {
+              g.exitTimer--; g.y = 260 + Math.sin(Date.now() * 0.005) * 5;
+              if (g.exitTimer <= 0) g.state = 'exiting';
+              continue;
+            }
+            if (g.state === 'exiting') {
+              if (Math.abs(g.x - 300) > 2) { g.x += g.x < 300 ? 2 : -2; }
+              else { g.x = 300; g.y -= 2; if (g.y <= 180) { g.y = 180; g.state = 'active'; g.dirX = -1; g.dirY = 0; } }
+              continue;
+            }
+            g.x += g.dirX * ghostSpd; g.y += g.dirY * ghostSpd;
+            const gCol = Math.floor(g.x / PAC_TILE); const gRow = Math.floor(g.y / PAC_TILE);
+            const wallAhead = isPacWall(gCol + g.dirX, gRow + g.dirY, true);
+            if (wallAhead || (gCol !== g.lastCol || gRow !== g.lastRow)) {
+              g.x = gCol * PAC_TILE + 20; g.y = gRow * PAC_TILE + 20;
+              g.lastCol = gCol; g.lastRow = gRow;
+              const moves = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }].filter(m => {
+                if (isPacWall(gCol + m.x, gRow + m.y, true)) return false;
+                return !(m.x === -g.dirX && m.y === -g.dirY);
+              });
+              if (moves.length > 0) {
+                moves.sort((a,b) => Math.hypot((gCol+a.x)*40+20 - pacman.x, (gRow+a.y)*40+20 - pacman.y) - Math.hypot((gCol+b.x)*40+20 - pacman.x, (gRow+b.y)*40+20 - pacman.y));
+                g.dirX = moves[0].x; g.dirY = moves[0].y;
+              } else { g.dirX = -g.dirX; g.dirY = -g.dirY; }
+            }
+            if (Math.hypot(pacman.x - g.x, pacman.y - g.y) < 18) {
+              if (pacEnergizerTimer > 0) { score += 200; g.state = 'in_house'; g.exitTimer = 180; beep(440, 'sine', 0.2); }
+              else { lives--; beep(180, 'sawtooth', 0.35); if (lives <= 0) gameOver = true; else { pacman.x = 300; pacman.y = 380; pacman.dirX = 0; pacman.dirY = 0; } break; }
+            }
+          }
+          if (remDots === 0) { score += 1500; initEngine(); }
+        `;
+        engineDrawCode = `
+          for (let r = 0; r < PAC_ROWS; r++) {
+            for (let c = 0; c < PAC_COLS; c++) {
+              const val = pacMaze[r][c];
+              if (val === 1) { ctx.fillStyle = C.wall; ctx.fillRect(c * 40 + 2, r * 40 + 2, 36, 36); }
+              else if (val === 4) { ctx.fillStyle = '#ec4899'; ctx.fillRect(c * 40 + 4, r * 40 + 16, 32, 8); }
+              else if (val === 2) { ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(c * 40 + 20, r * 40 + 20, 3, 0, Math.PI * 2); ctx.fill(); }
+              else if (val === 3) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(c * 40 + 20, r * 40 + 20, 7, 0, Math.PI * 2); ctx.fill(); }
+            }
+          }
+          ctx.fillStyle = C.player; ctx.beginPath(); ctx.arc(pacman.x, pacman.y, 14, 0, Math.PI * 2); ctx.fill();
+          for (let g of pacGhosts) {
+            ctx.fillStyle = pacEnergizerTimer > 0 ? '#2563eb' : g.color;
+            ctx.beginPath(); ctx.arc(g.x, g.y, 12, 0, Math.PI * 2); ctx.fill();
+          }
+        `;
+      } else if (gameKey === 'kong') {
+        engineInitCode = `
+          let dkMario = { x: 50, y: 555, vx: 0, vy: 0, w: 18, h: 22, onLadder: false, onGround: true };
+          let dkBarrels = []; let dkBarrelTimer = 0;
+          const dkGirders = [
+            { tier: 0, x1: 20, x2: 580, y1: 580, y2: 580, rollDir: -1 },
+            { tier: 1, x1: 20, x2: 550, y1: 490, y2: 472, rollDir: 1 },
+            { tier: 2, x1: 50, x2: 580, y1: 376, y2: 394, rollDir: -1 },
+            { tier: 3, x1: 20, x2: 550, y1: 295, y2: 277, rollDir: 1 },
+            { tier: 4, x1: 50, x2: 580, y1: 182, y2: 200, rollDir: -1 }
+          ];
+          const dkLadders = [{ x: 510, yTop: 472, yBottom: 580 }, { x: 90, yTop: 376, yBottom: 490 }, { x: 490, yTop: 277, yBottom: 394 }];
+          function getDkY(g, x) { return g.y1 + ((x - g.x1) / (g.x2 - g.x1)) * (g.y2 - g.y1); }
+          function initEngine() {
+            dkMario.x = 50; dkMario.y = 555; dkMario.vx = 0; dkMario.vy = 0; dkBarrels = []; dkBarrelTimer = 0;
+          }
+        `;
+        engineUpdateCode = `
+          if (keys['arrowleft'] || keys['a']) dkMario.vx = -2.8;
+          else if (keys['arrowright'] || keys['d']) dkMario.vx = 2.8;
+          else dkMario.vx = 0;
+
+          let ladder = dkLadders.find(l => Math.abs((dkMario.x + dkMario.w / 2) - l.x) < 14 && dkMario.y + dkMario.h >= l.yTop - 6 && dkMario.y <= l.yBottom + 6);
+          if (ladder && (keys['arrowup'] || keys['w'])) { dkMario.y -= 2.2; dkMario.vy = 0; dkMario.onLadder = true; }
+          else if (ladder && (keys['arrowdown'] || keys['s'])) { dkMario.y += 2.2; dkMario.vy = 0; dkMario.onLadder = true; }
+          else if (!ladder) dkMario.onLadder = false;
+
+          if ((keys[' '] || keys['arrowup']) && !dkMario.onLadder && dkMario.onGround) {
+            dkMario.vy = -6.8; dkMario.onGround = false; beep(720, 'square', 0.08);
+          }
+          if (!dkMario.onLadder) { dkMario.vy += 0.35; dkMario.y += dkMario.vy; }
+          dkMario.x += dkMario.vx;
+          dkMario.onGround = false;
+
+          for (let g of dkGirders) {
+            if (dkMario.x + dkMario.w >= g.x1 && dkMario.x <= g.x2) {
+              const gy = getDkY(g, dkMario.x + dkMario.w / 2);
+              if (dkMario.y + dkMario.h >= gy && dkMario.y + dkMario.h <= gy + 14 && dkMario.vy >= 0) {
+                dkMario.y = gy - dkMario.h; dkMario.vy = 0; dkMario.onGround = true;
+              }
+            }
+          }
+          if (dkMario.y <= 190 && dkMario.x >= 500) { score += 1500; beep(990, 'sine', 0.3); initEngine(); }
+
+          dkBarrelTimer++;
+          if (dkBarrelTimer % 150 === 0) {
+            dkBarrels.push({ tier: 4, x: 100, y: getDkY(dkGirders[4], 100) - 8, dir: 1, falling: false, r: 8 });
+          }
+          for (let i = dkBarrels.length - 1; i >= 0; i--) {
+            const b = dkBarrels[i];
+            if (b.falling) {
+              b.y += 3.5;
+              const tg = dkGirders[b.tier];
+              const gy = getDkY(tg, b.x);
+              if (b.y + b.r >= gy) { b.y = gy - b.r; b.falling = false; b.dir = tg.rollDir; }
+            } else {
+              const cg = dkGirders[b.tier];
+              b.x += b.dir * 2.3; b.y = getDkY(cg, b.x) - b.r;
+              if (b.dir === 1 && b.x > cg.x2) { if (b.tier > 0) { b.tier--; b.falling = true; } else { dkBarrels.splice(i, 1); continue; } }
+              else if (b.dir === -1 && b.x < cg.x1) { if (b.tier > 0) { b.tier--; b.falling = true; } else { dkBarrels.splice(i, 1); continue; } }
+            }
+            if (Math.hypot((dkMario.x + dkMario.w / 2) - b.x, (dkMario.y + dkMario.h / 2) - b.y) < 14) {
+              lives--; beep(140, 'sawtooth', 0.35); if (lives <= 0) gameOver = true; else initEngine(); break;
+            }
+          }
+        `;
+        engineDrawCode = `
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 6;
+          for (let g of dkGirders) { ctx.beginPath(); ctx.moveTo(g.x1, g.y1); ctx.lineTo(g.x2, g.y2); ctx.stroke(); }
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
+          for (let l of dkLadders) {
+            ctx.beginPath(); ctx.moveTo(l.x - 7, l.yTop); ctx.lineTo(l.x - 7, l.yBottom);
+            ctx.moveTo(l.x + 7, l.yTop); ctx.lineTo(l.x + 7, l.yBottom); ctx.stroke();
+          }
+          ctx.fillStyle = '#78350f'; ctx.fillRect(45, 115, 48, 55);
+          ctx.fillStyle = C.player; ctx.fillRect(dkMario.x, dkMario.y, dkMario.w, dkMario.h);
+          ctx.fillStyle = '#b45309';
+          for (let b of dkBarrels) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill(); }
+        `;
+      } else if (gameKey === 'elevator') {
+        engineInitCode = `
+          let spy = { x: 50, y: 94, vx: 0, duck: false, w: 20, h: 36, inRoomTimer: 0, activeRoom: null };
+          let spyBullets = [], spyAgents = [], spySpawnTimer = 0;
+          const spyFloors = [{ y: 130 }, { y: 250 }, { y: 380 }, { y: 510 }];
+          let spyElevators = [{ shaftX: 180, y: 130 }, { shaftX: 420, y: 380 }];
+          let spySecretDoors = [{ x: 90, floorY: 130, searched: false }, { x: 300, floorY: 250, searched: false }, { x: 490, floorY: 510, searched: false }];
+          function initEngine() {
+            spy.x = 50; spy.y = 130 - spy.h; spy.inRoomTimer = 0; spyBullets = []; spyAgents = [];
+            spySecretDoors.forEach(d => d.searched = false);
+          }
+        `;
+        engineUpdateCode = `
+          if (spy.inRoomTimer > 0) {
+            spy.inRoomTimer--;
+            if (spy.inRoomTimer === 0 && spy.activeRoom) { spy.activeRoom.searched = true; score += 500; beep(960, 'sine', 0.2); spy.activeRoom = null; }
+            return;
+          }
+          if (keys['arrowleft'] || keys['a']) spy.vx = -2.8;
+          else if (keys['arrowright'] || keys['d']) spy.vx = 2.8;
+          else spy.vx = 0;
+          spy.duck = (keys['arrowdown'] || keys['s']);
+
+          let inEl = spyElevators.find(el => Math.abs((spy.x + spy.w / 2) - el.shaftX) < 22 && Math.abs((spy.y + spy.h) - el.y) < 14);
+          if (inEl) {
+            if (keys['arrowup'] || keys['w']) inEl.y = Math.max(130, inEl.y - 2.5);
+            else if (keys['arrowdown'] || keys['s']) inEl.y = Math.min(510, inEl.y + 2.5);
+            spy.y = inEl.y - spy.h;
+          } else {
+            let curF = spyFloors.find(f => Math.abs((spy.y + spy.h) - f.y) < 22) || spyFloors[0];
+            spy.y = curF.y - spy.h;
+          }
+          spy.x = Math.max(30, Math.min(550, spy.x + spy.vx));
+
+          if (keys['arrowup'] || keys['w']) {
+            const door = spySecretDoors.find(d => !d.searched && Math.abs((spy.x + spy.w / 2) - (d.x + 13)) < 16 && Math.abs((spy.y + spy.h) - d.floorY) < 10);
+            if (door) { spy.inRoomTimer = 60; spy.activeRoom = door; beep(520, 'triangle', 0.1); }
+          }
+          if (spy.y >= 510 - spy.h - 5 && spySecretDoors.every(d => d.searched)) { score += 2500; beep(990, 'sine', 0.4); initEngine(); }
+
+          if (keys[' '] && spyBullets.filter(b => b.fromSpy).length === 0) {
+            const dir = (spy.vx < 0 ? -1 : 1);
+            spyBullets.push({ x: spy.x + (dir === 1 ? spy.w + 4 : -4), y: spy.duck ? spy.y + 24 : spy.y + 12, vx: dir * 7.5, fromSpy: true });
+            beep(740, 'square', 0.05);
+          }
+          spySpawnTimer++;
+          if (spySpawnTimer % 180 === 0 && spyAgents.length < 3) {
+            const pickF = spyFloors[Math.floor(Math.random() * spyFloors.length)];
+            spyAgents.push({ x: Math.random() < 0.5 ? 40 : 540, y: pickF.y - 36, vx: Math.random() < 0.5 ? 1.5 : -1.5 });
+          }
+          for (let i = spyBullets.length - 1; i >= 0; i--) {
+            const b = spyBullets[i]; b.x += b.vx;
+            if (b.fromSpy) {
+              const hitIdx = spyAgents.findIndex(ag => Math.abs(b.x - ag.x) < 16 && Math.abs(b.y - (ag.y + 16)) < 16);
+              if (hitIdx !== -1) { spyAgents.splice(hitIdx, 1); spyBullets.splice(i, 1); score += 150; beep(220, 'sawtooth', 0.08); continue; }
+            }
+            if (b.x < 20 || b.x > 580) spyBullets.splice(i, 1);
+          }
+        `;
+        engineDrawCode = `
+          ctx.fillStyle = '#334155';
+          for (let f of spyFloors) ctx.fillRect(20, f.y, 560, 8);
+          for (let el of spyElevators) {
+            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.strokeRect(el.shaftX - 24, 130, 48, 380);
+            ctx.fillStyle = '#0284c7'; ctx.fillRect(el.shaftX - 22, el.y - 4, 44, 8);
+          }
+          for (let d of spySecretDoors) {
+            ctx.fillStyle = d.searched ? '#475569' : '#ef4444';
+            ctx.fillRect(d.x, d.floorY - 45, 26, 45);
+          }
+          ctx.fillStyle = C.player;
+          if (spy.duck) ctx.fillRect(spy.x, spy.y + 16, spy.w, spy.h - 16);
+          else ctx.fillRect(spy.x, spy.y, spy.w, spy.h);
+          ctx.fillStyle = '#facc15';
+          for (let b of spyBullets) ctx.fillRect(b.x - 3, b.y - 2, 6, 4);
+        `;
+      }
+
+      const scriptEnd = '</' + 'script>';
 
       return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>${title} // Standalone Arcade</title>
+  <title>${title} // Standalone Retro Arcade</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -1929,24 +2449,40 @@ Key Engine Rules:
       box-shadow: 0 0 35px rgba(34, 211, 238, 0.25);
       background: #000;
     }
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #0f172a;
+      border-bottom: 2px solid #334155;
+      font-size: 13px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
     canvas {
       flex: 1;
       width: 100%;
       height: 100%;
       display: block;
       background: #000;
-      image-rendering: pixelated;
     }
   </style>
 </head>
 <body>
   <div id="cabinet">
+    <div id="hud">
+      <div>${title}</div>
+      <div id="scoreBox">SCORE: 00000 | LIVES: ${initialLives}</div>
+    </div>
     <canvas id="c" width="600" height="600"></canvas>
   </div>
   <script>
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
+    const scoreBox = document.getElementById('scoreBox');
     let audioCtx = null;
+
     function beep(f, t='square', d=0.06, v=0.1) {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1960,26 +2496,56 @@ Key Engine Rules:
       } catch(e){}
     }
 
-    const GAME = "${gameKey}";
-    let score = 0, hi = 5000, lives = (${diff === 'casual' ? 5 : 3}), over = false;
+    const C = { bg: '#000', border: '#2563eb', wall: '#1d4ed8', player: '#facc15', enemy: '#ef4444', bunker: '#22c55e', accent: '#38bdf8', text: '#f8fafc' };
+    let score = 0, lives = ${initialLives}, gameOver = false;
     const keys = {};
+
     window.addEventListener('keydown', e => {
       const k = e.key.toLowerCase();
       keys[k] = true;
       if (['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k)) e.preventDefault();
-      if (over && (k === ' ' || k === 'r')) location.reload();
+      if (typeof onCustomKey === 'function') onCustomKey(k);
+      if (gameOver && (k === ' ' || k === 'r')) {
+        score = 0; lives = ${initialLives}; gameOver = false; initEngine();
+      }
     });
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
+    ${engineInitCode}
+
+    initEngine();
+
     function loop() {
-      ctx.fillStyle = '#000'; ctx.fillRect(0,0,600,600);
-      ctx.fillStyle = '#22d3ee'; ctx.font = '14px monospace';
-      ctx.fillText("${title} - OFFLINE STANDALONE OK", 20, 30);
-      ctx.fillText("SCORE: " + score + "   LIVES: " + lives, 20, 55);
+      if (!gameOver) {
+        ${engineUpdateCode}
+        scoreBox.innerText = 'SCORE: ' + String(score).padStart(5, '0') + ' | LIVES: ' + lives;
+      }
+
+      ctx.fillStyle = C.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ${engineDrawCode}
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 28px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', 300, 280);
+        ctx.fillStyle = '#facc15';
+        ctx.font = '16px monospace';
+        ctx.fillText('FINAL SCORE: ' + score, 300, 320);
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px monospace';
+        ctx.fillText('PRESS [SPACEBAR] OR [R] TO RESTART', 300, 360);
+        ctx.textAlign = 'left';
+      }
+
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
-  <\/script>
+  ${scriptEnd}
 </body>
 </html>`;
     }
@@ -2002,7 +2568,7 @@ Key Engine Rules:
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast(`💾 "${safeName}" downloaded! Drag to your Games folder to play anytime.`);
+      showToast(`💾 "${safeName}" downloaded! Ready to play offline in your Games folder.`);
     }
 
     function copyGameSourceCode() {
