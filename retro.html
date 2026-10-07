@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>RETRO-FORGE 1982 // Authentic 8-Bit Arcade & Standalone Maker</title>
+  <title>RETRO-FORGE 1982 // Arcade Studio & Standalone Maker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,9 +76,9 @@
       <div class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#22d3ee]"></div>
       <div>
         <h1 class="retro-font text-xs sm:text-sm text-cyan-300 neon-text-cyan flex items-center gap-2">
-          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">STANDALONE v7.0</span>
+          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">STANDALONE STUDIO</span>
         </h1>
-        <p class="text-[11px] text-slate-400">Space Invaders • Frogger • Pac-Man • Donkey Kong • Elevator Action</p>
+        <p class="text-[11px] text-slate-400">Pac-Man • Donkey Kong • Space Invaders • Elevator Action • Frogger</p>
       </div>
     </div>
 
@@ -98,29 +98,29 @@
   </header>
 
   <main class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-4 p-3 md:p-5 max-w-[1780px] w-full mx-auto">
-    <!-- LEFT PANEL: Game Selector, AI Prompt Generator & Rule Customizer -->
+    <!-- LEFT PANEL: Game Selector, Settings, and AI Spec -->
     <section class="xl:col-span-5 flex flex-col gap-3.5 bg-[#0a0f1d] border border-slate-800 rounded-lg p-4 shadow-2xl">
-      <!-- Game Selector Tabs -->
+      <!-- Game Selector Tabs in Exact Order -->
       <div>
         <label class="block text-[11px] font-bold text-cyan-400 mb-2 uppercase tracking-wider flex items-center justify-between">
           <span>SELECT CLASSIC ARCADE ENGINE</span>
           <span class="text-[10px] text-emerald-400 font-mono">100% OFFLINE STANDALONE</span>
         </label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-          <button onclick="selectClassicGame('invaders')" id="tab-invaders" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-cyan-500 bg-cyan-950/70 text-cyan-200 transition shadow">
-            INVADERS
-          </button>
-          <button onclick="selectClassicGame('frogger')" id="tab-frogger" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
-            FROGGER
-          </button>
-          <button onclick="selectClassicGame('pacman')" id="tab-pacman" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
-            PAC-MAZE
+          <button onclick="selectClassicGame('pacman')" id="tab-pacman" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-cyan-500 bg-cyan-950/70 text-cyan-200 transition shadow">
+            PAC-MAN
           </button>
           <button onclick="selectClassicGame('kong')" id="tab-kong" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
-            KONG
+            D. KONG
+          </button>
+          <button onclick="selectClassicGame('invaders')" id="tab-invaders" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
+            INVADERS
           </button>
           <button onclick="selectClassicGame('elevator')" id="tab-elevator" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
             ELEVATOR
+          </button>
+          <button onclick="selectClassicGame('frogger')" id="tab-frogger" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-slate-800 bg-slate-900/80 text-slate-400 transition hover:border-slate-600">
+            FROGGER
           </button>
         </div>
       </div>
@@ -204,12 +204,12 @@
       </div>
     </section>
 
-    <!-- RIGHT PANEL: Live Playable Arcade Cabinet Preview -->
+    <!-- RIGHT PANEL: Live Playable Arcade Cabinet Viewport -->
     <section class="xl:col-span-7 flex flex-col gap-2.5 bg-[#080d19] border border-slate-800 rounded-lg p-3 md:p-4 shadow-2xl">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-xs bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-700">CANVAS VIEWPORT</span>
-          <h2 id="activeGameTitleBadge" class="retro-font text-xs text-amber-300">SPACE INVADERS 1978</h2>
+          <h2 id="activeGameTitleBadge" class="retro-font text-xs text-amber-300">PAC-MAZE 1980</h2>
         </div>
 
         <div class="flex items-center gap-2">
@@ -266,7 +266,7 @@
     let audioCtx = null;
     let sfxEnabled = true;
     let crtEnabled = true;
-    let currentGame = 'invaders';
+    let currentGame = 'pacman';
     let isPaused = false;
 
     function initAudio() {
@@ -325,30 +325,6 @@
     }
 
     const ARCADE_METADATA = {
-      invaders: {
-        id: 'invaders',
-        name: 'SPACE INVADERS 1978',
-        controlsHtml: '<span><strong class="text-cyan-400">MOVE:</strong> ← / → or A / D</span> <span><strong class="text-amber-400">FIRE:</strong> Spacebar</span>',
-        tuningNotes: `
-          <div class="text-amber-400 font-bold">✓ Calibrated Space Invaders Engine:</div>
-          <div>• 4 Solid Destructible Bunkers (Y=440) constructed from 8x5 pixel blocks that erode from lasers and bombs.</div>
-          <div>• 5x8 Marching Alien Armada with edge drops, speed escalation, and low alien bunker disintegration.</div>
-          <div>• Flying Mystery UFO at ceiling awarding +300 bonus points when sniped.</div>
-        `,
-        promptTheme: "Space Invaders arcade shooter with marching 5x8 alien grid, 4 destructible green pixel-mesh bunkers at Y=440, bottom player laser cannon at Y=540, top flying saucer UFO, and retro chiptune SFX."
-      },
-      frogger: {
-        id: 'frogger',
-        name: 'FROGGER: HOPPING RUN 1981',
-        controlsHtml: '<span><strong class="text-cyan-400">HOP:</strong> Arrow Keys / WASD</span> <span><strong class="text-amber-400">GOAL:</strong> 5 High-Contrast Docks</span>',
-        tuningNotes: `
-          <div class="text-amber-400 font-bold">✓ Calibrated Frogger Engine:</div>
-          <div>• 5 High-Contrast Midnight-Blue Docks with glowing cyan piers and pulsing neon-lime lily pads.</div>
-          <div>• Halved highway and river obstacle speeds with generous spacing between vehicles and logs.</div>
-          <div>• Smooth horizontal log drift, water drowning collision, and golden saved frog indicators.</div>
-        `,
-        promptTheme: "Frogger arcade game with 5 top high-contrast lily-pad docks (midnight-blue bays, cyan piers, neon-lime pads), halved obstacle speeds, wide gaps, floating logs/turtles with horizontal drift, and median rest zones."
-      },
       pacman: {
         id: 'pacman',
         name: 'PAC-MAZE 1980',
@@ -356,7 +332,7 @@
         tuningNotes: `
           <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Engine:</div>
           <div>• Absolute Screen-Relative Cardinal Controls with instant 180° reversing and corner snap buffering.</div>
-          <div>• Staggered Ghost House Emergence: Blinky patrols, Pinky (~2.5s), Inky (~6s), Clyde (~10s) exit through gate.</div>
+          <div>• Staggered Ghost House Emergence: Blinky patrols, Pinky (~2.5s), Inky (~6.5s), Clyde (~11s) exit through gate.</div>
           <div>• Continuous non-stalling ghost movement with Cruise Elroy acceleration up to 3.2 px/frame.</div>
         `,
         promptTheme: "Pac-Man arcade maze with absolute screen-relative cardinal inputs, continuous non-stalling ghost movement with staggered house departures, progressive Elroy speed ramping, corridor gravitation pursuit, and chiptune sound effects."
@@ -372,6 +348,18 @@
         `,
         promptTheme: "Donkey Kong girder climbing game with sloping steel girders, rolling barrels dropping down tiers, Mario jumping over barrels, climbing ladders, and rescuing Pauline at top."
       },
+      invaders: {
+        id: 'invaders',
+        name: 'SPACE INVADERS 1978',
+        controlsHtml: '<span><strong class="text-cyan-400">MOVE:</strong> ← / → or A / D</span> <span><strong class="text-amber-400">FIRE:</strong> Spacebar</span>',
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Space Invaders Engine:</div>
+          <div>• 4 Solid Destructible Bunkers (Y=440) constructed from 8x5 pixel blocks that erode from lasers and bombs.</div>
+          <div>• 5x8 Marching Alien Armada with edge drops, speed escalation, and low alien bunker disintegration.</div>
+          <div>• Flying Mystery UFO at ceiling awarding +300 bonus points when sniped.</div>
+        `,
+        promptTheme: "Space Invaders arcade shooter with marching 5x8 alien grid, 4 destructible green pixel-mesh bunkers at Y=440, bottom player laser cannon at Y=540, top flying saucer UFO, and retro chiptune SFX."
+      },
       elevator: {
         id: 'elevator',
         name: 'ELEVATOR ACTION: SPY 1983',
@@ -383,6 +371,18 @@
           <div>• Ducking under enemy bullets and eliminating patrolling agent spies.</div>
         `,
         promptTheme: "Elevator Action espionage game with continuous vertical elevator shafts, searching red document rooms exiting at identical location, ducking under bullets, and shooting enemy agents."
+      },
+      frogger: {
+        id: 'frogger',
+        name: 'FROGGER: HOPPING RUN 1981',
+        controlsHtml: '<span><strong class="text-cyan-400">HOP:</strong> Arrow Keys / WASD</span> <span><strong class="text-amber-400">GOAL:</strong> 5 High-Contrast Docks</span>',
+        tuningNotes: `
+          <div class="text-amber-400 font-bold">✓ Calibrated Frogger Engine:</div>
+          <div>• 5 High-Contrast Midnight-Blue Docks with glowing cyan piers and pulsing neon-lime lily pads.</div>
+          <div>• Halved highway and river obstacle speeds with generous spacing between vehicles and logs.</div>
+          <div>• Smooth horizontal log drift, water drowning collision, and golden saved frog indicators.</div>
+        `,
+        promptTheme: "Frogger arcade game with 5 top high-contrast lily-pad docks (midnight-blue bays, cyan piers, neon-lime pads), halved obstacle speeds, wide gaps, floating logs/turtles with horizontal drift, and median rest zones."
       }
     };
 
@@ -428,11 +428,11 @@ Core Gameplay Mechanics & Calibrations:
 - Difficulty Setting: ${diff.toUpperCase()}
 - Bonus Modifier: ${mod.toUpperCase()}
 Key Engine Rules:
-1. Space Invaders: 4 destructible multi-block green defense bunkers at Y=440 that erode from laser/bomb impacts. Marching 5x8 alien armada with edge drop and speed escalation. Top flying red mystery saucer UFO.
-2. Frogger: 5 high-contrast open lily-pad docks (midnight-blue inlets, glowing cyan piers, pulsing neon-lime pads with lotus centers). Halved vehicle and river speeds with generous gaps. Log-riding horizontal drift and water drowning collision.
-3. Pac-Man: Absolute screen-relative movement, instant 180° reversing, corner buffering. Continuous ghost movement, staggered departures, and progressive Cruise Elroy acceleration.
-4. Donkey Kong: Barrels roll strictly down girder inclines and drop down at girder edges to the next tier below.
-5. Elevator Action: Authentic continuous elevator shafts, zero door teleportation (enter and exit red secret rooms at identical position), ducking under bullets.
+1. Pac-Man: Absolute screen-relative movement, instant 180° reversing, corner buffering. Continuous ghost movement, staggered departures, and progressive Cruise Elroy acceleration.
+2. Donkey Kong: Barrels roll strictly down girder inclines and drop down at girder edges to the next tier below.
+3. Space Invaders: 4 destructible multi-block green defense bunkers at Y=440 that erode from laser/bomb impacts. Marching 5x8 alien armada with edge drop and speed escalation. Top flying red mystery saucer UFO.
+4. Elevator Action: Authentic continuous elevator shafts, zero door teleportation (enter and exit red secret rooms at identical position), ducking under bullets.
+5. Frogger: 5 high-contrast open lily-pad docks (midnight-blue inlets, glowing cyan piers, pulsing neon-lime pads with lotus centers). Halved vehicle and river speeds with generous gaps. Log-riding horizontal drift and water drowning collision.
 6. Web Audio API synthesized chiptune SFX with zero external image or audio URLs. Fully self-contained.`;
 
       document.getElementById('aiPromptBox').value = prompt;
@@ -449,7 +449,7 @@ Key Engine Rules:
     function randomizeSettings() {
       playBeep(400, 'square', 0.05);
       setTimeout(() => playBeep(700, 'square', 0.05), 60);
-      const keys = ['invaders', 'frogger', 'pacman', 'kong', 'elevator'];
+      const keys = ['pacman', 'kong', 'invaders', 'elevator', 'frogger'];
       const pick = keys[Math.floor(Math.random() * keys.length)];
       
       const palettes = ['original', 'matrix', 'amber', 'cyberpunk', 'gameboy'];
@@ -526,465 +526,7 @@ Key Engine Rules:
     }
 
     /* =========================================================================
-       ENGINE 1: SPACE INVADERS (DESTRUCTIBLE BUNKERS, MARCHING ALIENS, UFO)
-    ========================================================================= */
-    let invPlayer = { x: 285, y: 540, w: 30, h: 16 };
-    let invMissiles = [];
-    let invAliens = [];
-    let invAlienDir = 1;
-    let invAlienTimer = 0;
-    let invUfo = null;
-    let invUfoTimer = 0;
-    let invBunkers = [];
-
-    function initSpaceInvadersEngine() {
-      invPlayer.x = 285;
-      invPlayer.y = 540;
-      invMissiles = [];
-      invAliens = [];
-      invAlienDir = 1;
-      invAlienTimer = 0;
-      invUfo = null;
-      invUfoTimer = 0;
-
-      for (let r = 0; r < 5; r++) {
-        for (let c = 0; c < 8; c++) {
-          invAliens.push({
-            x: 75 + c * 56,
-            y: 70 + r * 36,
-            w: 26,
-            h: 20,
-            type: r,
-            score: (5 - r) * 10
-          });
-        }
-      }
-
-      invBunkers = [];
-      const bunkerXPos = [70, 205, 340, 475];
-      const cols = 8;
-      const rows = 5;
-      const blockSize = 6;
-
-      bunkerXPos.forEach(bx => {
-        const blocks = [];
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            if (r >= 3 && (c === 3 || c === 4)) continue;
-            if (r === 0 && (c === 0 || c === cols - 1)) continue;
-
-            blocks.push({
-              x: bx + c * blockSize,
-              y: 440 + r * blockSize,
-              w: blockSize,
-              h: blockSize,
-              alive: true
-            });
-          }
-        }
-        invBunkers.push({ x: bx, y: 440, w: cols * blockSize, h: rows * blockSize, blocks });
-      });
-    }
-
-    function updateSpaceInvaders() {
-      const spd = 4.2;
-      if (keys['arrowleft'] || keys['a']) invPlayer.x -= spd;
-      if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
-      invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
-
-      if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
-        invMissiles.push({
-          x: invPlayer.x + invPlayer.w / 2 - 2,
-          y: invPlayer.y - 6,
-          vy: -8,
-          w: 4,
-          h: 12,
-          fromPlayer: true
-        });
-        playBeep(880, 'square', 0.05, 0.09);
-      }
-
-      invAlienTimer++;
-      const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
-      if (invAlienTimer >= marchInterval) {
-        invAlienTimer = 0;
-        let hitEdge = false;
-        for (let a of invAliens) {
-          a.x += invAlienDir * 12;
-          if (a.x < 25 || a.x + a.w > 575) hitEdge = true;
-        }
-
-        if (hitEdge) {
-          invAlienDir *= -1;
-          for (let a of invAliens) {
-            a.y += 16;
-            if (a.y + a.h >= invPlayer.y) {
-              activeGameOver = true;
-            }
-          }
-        }
-        playBeep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
-
-        if (Math.random() < 0.45 && invAliens.length > 0) {
-          const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
-          invMissiles.push({
-            x: shooter.x + shooter.w / 2 - 2,
-            y: shooter.y + shooter.h,
-            vy: 4.5,
-            w: 4,
-            h: 10,
-            fromPlayer: false
-          });
-        }
-      }
-
-      invUfoTimer++;
-      if (!invUfo && invUfoTimer > 600) {
-        invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
-        invUfoTimer = 0;
-        playBeep(920, 'sine', 0.15, 0.1);
-      }
-      if (invUfo) {
-        invUfo.x += invUfo.vx;
-        if (invUfo.x > 620) invUfo = null;
-      }
-
-      for (let i = invMissiles.length - 1; i >= 0; i--) {
-        const m = invMissiles[i];
-        m.y += m.vy;
-
-        if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
-          activeScore += 300;
-          invUfo = null;
-          invMissiles.splice(i, 1);
-          playBeep(990, 'sine', 0.25, 0.15);
-          continue;
-        }
-
-        if (m.fromPlayer) {
-          let alienHit = false;
-          for (let j = invAliens.length - 1; j >= 0; j--) {
-            const a = invAliens[j];
-            if (m.x + m.w > a.x && m.x < a.x + a.w && m.y < a.y + a.h && m.y + m.h > a.y) {
-              activeScore += a.score;
-              invAliens.splice(j, 1);
-              invMissiles.splice(i, 1);
-              playBeep(260, 'sawtooth', 0.07, 0.12);
-              alienHit = true;
-              if (invAliens.length === 0) {
-                activeScore += 1000;
-                initSpaceInvadersEngine();
-              }
-              break;
-            }
-          }
-          if (alienHit) continue;
-        } else {
-          if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
-            activeLives--;
-            invMissiles.splice(i, 1);
-            playBeep(120, 'sawtooth', 0.35, 0.2);
-            if (activeLives <= 0) activeGameOver = true;
-            continue;
-          }
-        }
-
-        let hitBunker = false;
-        for (let b of invBunkers) {
-          for (let blk of b.blocks) {
-            if (blk.alive && m.x + m.w > blk.x && m.x < blk.x + blk.w && m.y + m.h > blk.y && m.y < blk.y + blk.h) {
-              blk.alive = false;
-              invMissiles.splice(i, 1);
-              playBeep(180, 'square', 0.03, 0.06);
-              hitBunker = true;
-              break;
-            }
-          }
-          if (hitBunker) break;
-        }
-        if (hitBunker) continue;
-
-        if (m.y < 20 || m.y > 580) {
-          invMissiles.splice(i, 1);
-        }
-      }
-
-      for (let a of invAliens) {
-        for (let b of invBunkers) {
-          for (let blk of b.blocks) {
-            if (blk.alive && a.x + a.w > blk.x && a.x < blk.x + blk.w && a.y + a.h > blk.y && a.y < blk.y + blk.h) {
-              blk.alive = false;
-            }
-          }
-        }
-      }
-    }
-
-    function drawSpaceInvaders() {
-      const C = getColorPalette();
-
-      ctx.fillStyle = C.bunker;
-      for (let b of invBunkers) {
-        for (let blk of b.blocks) {
-          if (blk.alive) {
-            ctx.fillRect(blk.x, blk.y, blk.w, blk.h);
-          }
-        }
-      }
-
-      ctx.fillStyle = C.player;
-      ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
-      ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
-
-      for (let a of invAliens) {
-        ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
-        ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(a.x + 6, a.y + 6, 3, 3);
-        ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
-      }
-
-      if (invUfo) {
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.ellipse(invUfo.x + invUfo.w / 2, invUfo.y + invUfo.h / 2, invUfo.w / 2, invUfo.h / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#fde047';
-        ctx.fillRect(invUfo.x + invUfo.w / 2 - 4, invUfo.y + 4, 8, 4);
-      }
-
-      for (let m of invMissiles) {
-        ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
-        ctx.fillRect(m.x, m.y, m.w, m.h);
-      }
-    }
-
-    /* =========================================================================
-       ENGINE 2: FROGGER (5 HIGH-CONTRAST DOCKS, HALF-SPEED PACING, DRIFTING LOGS)
-    ========================================================================= */
-    const FROG_GRID = 40;
-    let frog = { x: 7, y: 14, px: 7 * 40, py: 14 * 40 };
-    let frogHopLock = false;
-    let frogDocks = [false, false, false, false, false];
-
-    let frogTrafficLanes = [
-      { y: 13, speed: -0.85, w: 36, gap: 190, color: '#f43f5e', items: [] },
-      { y: 12, speed: 1.05,  w: 48, gap: 230, color: '#fbbf24', items: [] },
-      { y: 11, speed: -1.25, w: 32, gap: 210, color: '#ec4899', items: [] },
-      { y: 10, speed: 0.90,  w: 38, gap: 200, color: '#38bdf8', items: [] },
-      { y: 9,  speed: -0.95, w: 56, gap: 250, color: '#4ade80', items: [] }
-    ];
-
-    let frogRiverLanes = [
-      { y: 7, speed: -0.85, w: 105, gap: 230, type: 'log', items: [] },
-      { y: 6, speed: 0.95,  w: 75,  gap: 210, type: 'turtle', items: [] },
-      { y: 5, speed: -1.20, w: 135, gap: 280, type: 'log', items: [] },
-      { y: 4, speed: 0.85,  w: 80,  gap: 220, type: 'turtle', items: [] },
-      { y: 3, speed: -0.90, w: 95,  gap: 240, type: 'log', items: [] }
-    ];
-
-    function initFroggerEngine() {
-      frog.x = 7;
-      frog.y = 14;
-      frog.px = 7 * FROG_GRID;
-      frog.py = 14 * FROG_GRID;
-      frogDocks = [false, false, false, false, false];
-
-      [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
-        lane.items = [];
-        for (let x = 0; x < 600; x += lane.gap) {
-          lane.items.push({ x });
-        }
-      });
-    }
-
-    function updateFrogger() {
-      const up = keys['arrowup'] || keys['w'];
-      const down = keys['arrowdown'] || keys['s'];
-      const left = keys['arrowleft'] || keys['a'];
-      const right = keys['arrowright'] || keys['d'];
-
-      if (!frogHopLock) {
-        let moved = false;
-        if (up && frog.y > 1) { frog.y--; moved = true; }
-        else if (down && frog.y < 14) { frog.y++; moved = true; }
-        else if (left && frog.x > 0) { frog.x--; moved = true; }
-        else if (right && frog.x < 14) { frog.x++; moved = true; }
-
-        if (moved) {
-          frogHopLock = true;
-          frog.px = frog.x * FROG_GRID;
-          frog.py = frog.y * FROG_GRID;
-          activeScore += 10;
-          playBeep(680, 'triangle', 0.04, 0.08);
-        }
-      }
-
-      if (!up && !down && !left && !right) {
-        frogHopLock = false;
-      }
-
-      [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
-        for (let it of lane.items) {
-          it.x += lane.speed;
-          if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
-          if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
-        }
-      });
-
-      const frogCenterX = frog.px + FROG_GRID / 2;
-
-      const road = frogTrafficLanes.find(l => l.y === frog.y);
-      if (road) {
-        for (let it of road.items) {
-          if (frogCenterX > it.x + 4 && frogCenterX < it.x + road.w - 4) {
-            frogDeath();
-            return;
-          }
-        }
-      }
-
-      const river = frogRiverLanes.find(l => l.y === frog.y);
-      if (river) {
-        let onLog = false;
-        for (let it of river.items) {
-          if (frogCenterX > it.x - 4 && frogCenterX < it.x + river.w + 4) {
-            onLog = true;
-            frog.px += river.speed;
-            frog.x = Math.round(frog.px / FROG_GRID);
-            break;
-          }
-        }
-        if (!onLog || frog.px < -10 || frog.px > 590) {
-          frogDeath();
-          return;
-        }
-      }
-
-      if (frog.y === 1) {
-        let inDockIndex = -1;
-        const dockCols = [1, 4, 7, 10, 13];
-        dockCols.forEach((col, idx) => {
-          const dockCenterX = col * FROG_GRID + FROG_GRID / 2;
-          if (Math.abs(frogCenterX - dockCenterX) < 22) {
-            inDockIndex = idx;
-          }
-        });
-
-        if (inDockIndex !== -1 && !frogDocks[inDockIndex]) {
-          frogDocks[inDockIndex] = true;
-          activeScore += 500;
-          playBeep(920, 'triangle', 0.2, 0.15);
-          frog.x = 7;
-          frog.y = 14;
-          frog.px = 7 * FROG_GRID;
-          frog.py = 14 * FROG_GRID;
-
-          if (frogDocks.every(Boolean)) {
-            activeScore += 1500;
-            frogDocks = [false, false, false, false, false];
-          }
-        } else {
-          frogDeath();
-        }
-      }
-    }
-
-    function frogDeath() {
-      activeLives--;
-      playBeep(140, 'sawtooth', 0.3, 0.2);
-      frog.x = 7;
-      frog.y = 14;
-      frog.px = 7 * FROG_GRID;
-      frog.py = 14 * FROG_GRID;
-      if (activeLives <= 0) activeGameOver = true;
-    }
-
-    function drawFrogger() {
-      const C = getColorPalette();
-
-      ctx.fillStyle = '#064e3b';
-      ctx.fillRect(0, 0, 600, FROG_GRID * 2);
-
-      const dockCols = [1, 4, 7, 10, 13];
-      dockCols.forEach((col, idx) => {
-        const dx = col * FROG_GRID;
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
-
-        ctx.strokeStyle = '#22d3ee';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
-
-        if (frogDocks[idx]) {
-          ctx.fillStyle = '#fbbf24';
-          ctx.beginPath();
-          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#d97706';
-          ctx.fillRect(dx + FROG_GRID / 2 - 3, FROG_GRID + FROG_GRID / 2 - 3, 6, 6);
-        } else {
-          ctx.fillStyle = '#4ade80';
-          ctx.beginPath();
-          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
-          ctx.lineTo(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2);
-          ctx.closePath();
-          ctx.fill();
-
-          ctx.fillStyle = '#f43f5e';
-          ctx.beginPath();
-          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-
-      ctx.fillStyle = '#0a2540';
-      ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
-
-      for (let l of frogRiverLanes) {
-        for (let it of l.items) {
-          if (l.type === 'log') {
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
-            ctx.fillStyle = '#92400e';
-            ctx.fillRect(it.x + 4, l.y * FROG_GRID + 10, l.w - 8, 4);
-          } else {
-            ctx.fillStyle = '#0d9488';
-            ctx.fillRect(it.x, l.y * FROG_GRID + 8, l.w, FROG_GRID - 16);
-            ctx.fillStyle = '#14b8a6';
-            ctx.fillRect(it.x + 4, l.y * FROG_GRID + 12, l.w - 8, 4);
-          }
-        }
-      }
-
-      ctx.fillStyle = '#166534';
-      ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
-
-      ctx.fillStyle = '#111827';
-      ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
-
-      for (let l of frogTrafficLanes) {
-        ctx.fillStyle = l.color;
-        for (let it of l.items) {
-          ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(it.x + 4, l.y * FROG_GRID + 9, 6, 6);
-        }
-      }
-
-      ctx.fillStyle = '#166534';
-      ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
-
-      ctx.fillStyle = C.player;
-      ctx.beginPath();
-      ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(frog.px + FROG_GRID / 2 - 4, frog.py + FROG_GRID / 2 - 4, 8, 8);
-    }
-
-    /* =========================================================================
-       ENGINE 3: PAC-MAN (SCREEN-RELATIVE INPUTS, CORNER BUFFER, GHOST STAGGER)
+       ENGINE 1: PAC-MAN (SCREEN-RELATIVE INPUTS, CORNER BUFFER, GHOST STAGGER)
     ========================================================================= */
     const PAC_TILE = 40;
     const PAC_COLS = 15;
@@ -1329,7 +871,7 @@ Key Engine Rules:
     }
 
     /* =========================================================================
-       ENGINE 4: DONKEY KONG (INCLINED GIRDERS, DROPPING BARRELS, LADDERS)
+       ENGINE 2: DONKEY KONG (INCLINED GIRDERS, DROPPING BARRELS, LADDERS)
     ========================================================================= */
     let dkMario = { x: 50, y: 555, vx: 0, vy: 0, w: 18, h: 22, onLadder: false, onGround: true };
     let dkBarrels = [];
@@ -1514,7 +1056,241 @@ Key Engine Rules:
     }
 
     /* =========================================================================
-       ENGINE 5: ELEVATOR ACTION (CONTINUOUS SHAFTS, RED DOORS, DUCKING)
+       ENGINE 3: SPACE INVADERS (DESTRUCTIBLE BUNKERS, MARCHING ALIENS, UFO)
+    ========================================================================= */
+    let invPlayer = { x: 285, y: 540, w: 30, h: 16 };
+    let invMissiles = [];
+    let invAliens = [];
+    let invAlienDir = 1;
+    let invAlienTimer = 0;
+    let invUfo = null;
+    let invUfoTimer = 0;
+    let invBunkers = [];
+
+    function initSpaceInvadersEngine() {
+      invPlayer.x = 285;
+      invPlayer.y = 540;
+      invMissiles = [];
+      invAliens = [];
+      invAlienDir = 1;
+      invAlienTimer = 0;
+      invUfo = null;
+      invUfoTimer = 0;
+
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 8; c++) {
+          invAliens.push({
+            x: 75 + c * 56,
+            y: 70 + r * 36,
+            w: 26,
+            h: 20,
+            type: r,
+            score: (5 - r) * 10
+          });
+        }
+      }
+
+      invBunkers = [];
+      const bunkerXPos = [70, 205, 340, 475];
+      const cols = 8;
+      const rows = 5;
+      const blockSize = 6;
+
+      bunkerXPos.forEach(bx => {
+        const blocks = [];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (r >= 3 && (c === 3 || c === 4)) continue;
+            if (r === 0 && (c === 0 || c === cols - 1)) continue;
+
+            blocks.push({
+              x: bx + c * blockSize,
+              y: 440 + r * blockSize,
+              w: blockSize,
+              h: blockSize,
+              alive: true
+            });
+          }
+        }
+        invBunkers.push({ x: bx, y: 440, w: cols * blockSize, h: rows * blockSize, blocks });
+      });
+    }
+
+    function updateSpaceInvaders() {
+      const spd = 4.2;
+      if (keys['arrowleft'] || keys['a']) invPlayer.x -= spd;
+      if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
+      invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
+
+      if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
+        invMissiles.push({
+          x: invPlayer.x + invPlayer.w / 2 - 2,
+          y: invPlayer.y - 6,
+          vy: -8,
+          w: 4,
+          h: 12,
+          fromPlayer: true
+        });
+        playBeep(880, 'square', 0.05, 0.09);
+      }
+
+      invAlienTimer++;
+      const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
+      if (invAlienTimer >= marchInterval) {
+        invAlienTimer = 0;
+        let hitEdge = false;
+        for (let a of invAliens) {
+          a.x += invAlienDir * 12;
+          if (a.x < 25 || a.x + a.w > 575) hitEdge = true;
+        }
+
+        if (hitEdge) {
+          invAlienDir *= -1;
+          for (let a of invAliens) {
+            a.y += 16;
+            if (a.y + a.h >= invPlayer.y) {
+              activeGameOver = true;
+            }
+          }
+        }
+        playBeep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
+
+        if (Math.random() < 0.45 && invAliens.length > 0) {
+          const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
+          invMissiles.push({
+            x: shooter.x + shooter.w / 2 - 2,
+            y: shooter.y + shooter.h,
+            vy: 4.5,
+            w: 4,
+            h: 10,
+            fromPlayer: false
+          });
+        }
+      }
+
+      invUfoTimer++;
+      if (!invUfo && invUfoTimer > 600) {
+        invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
+        invUfoTimer = 0;
+        playBeep(920, 'sine', 0.15, 0.1);
+      }
+      if (invUfo) {
+        invUfo.x += invUfo.vx;
+        if (invUfo.x > 620) invUfo = null;
+      }
+
+      for (let i = invMissiles.length - 1; i >= 0; i--) {
+        const m = invMissiles[i];
+        m.y += m.vy;
+
+        if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
+          activeScore += 300;
+          invUfo = null;
+          invMissiles.splice(i, 1);
+          playBeep(990, 'sine', 0.25, 0.15);
+          continue;
+        }
+
+        if (m.fromPlayer) {
+          let alienHit = false;
+          for (let j = invAliens.length - 1; j >= 0; j--) {
+            const a = invAliens[j];
+            if (m.x + m.w > a.x && m.x < a.x + a.w && m.y < a.y + a.h && m.y + m.h > a.y) {
+              activeScore += a.score;
+              invAliens.splice(j, 1);
+              invMissiles.splice(i, 1);
+              playBeep(260, 'sawtooth', 0.07, 0.12);
+              alienHit = true;
+              if (invAliens.length === 0) {
+                activeScore += 1000;
+                initSpaceInvadersEngine();
+              }
+              break;
+            }
+          }
+          if (alienHit) continue;
+        } else {
+          if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
+            activeLives--;
+            invMissiles.splice(i, 1);
+            playBeep(120, 'sawtooth', 0.35, 0.2);
+            if (activeLives <= 0) activeGameOver = true;
+            continue;
+          }
+        }
+
+        let hitBunker = false;
+        for (let b of invBunkers) {
+          for (let blk of b.blocks) {
+            if (blk.alive && m.x + m.w > blk.x && m.x < blk.x + blk.w && m.y + m.h > blk.y && m.y < blk.y + blk.h) {
+              blk.alive = false;
+              invMissiles.splice(i, 1);
+              playBeep(180, 'square', 0.03, 0.06);
+              hitBunker = true;
+              break;
+            }
+          }
+          if (hitBunker) break;
+        }
+        if (hitBunker) continue;
+
+        if (m.y < 20 || m.y > 580) {
+          invMissiles.splice(i, 1);
+        }
+      }
+
+      for (let a of invAliens) {
+        for (let b of invBunkers) {
+          for (let blk of b.blocks) {
+            if (blk.alive && a.x + a.w > blk.x && a.x < blk.x + blk.w && a.y + a.h > blk.y && a.y < blk.y + blk.h) {
+              blk.alive = false;
+            }
+          }
+        }
+      }
+    }
+
+    function drawSpaceInvaders() {
+      const C = getColorPalette();
+
+      ctx.fillStyle = C.bunker;
+      for (let b of invBunkers) {
+        for (let blk of b.blocks) {
+          if (blk.alive) {
+            ctx.fillRect(blk.x, blk.y, blk.w, blk.h);
+          }
+        }
+      }
+
+      ctx.fillStyle = C.player;
+      ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
+      ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
+
+      for (let a of invAliens) {
+        ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
+        ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(a.x + 6, a.y + 6, 3, 3);
+        ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
+      }
+
+      if (invUfo) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.ellipse(invUfo.x + invUfo.w / 2, invUfo.y + invUfo.h / 2, invUfo.w / 2, invUfo.h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(invUfo.x + invUfo.w / 2 - 4, invUfo.y + 4, 8, 4);
+      }
+
+      for (let m of invMissiles) {
+        ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
+        ctx.fillRect(m.x, m.y, m.w, m.h);
+      }
+    }
+
+    /* =========================================================================
+       ENGINE 4: ELEVATOR ACTION (CONTINUOUS SHAFTS, RED DOORS, DUCKING)
     ========================================================================= */
     let spy = { x: 50, y: 110, vx: 0, duck: false, w: 20, h: 36, inRoomTimer: 0, activeRoom: null };
     let spyBullets = [];
@@ -1725,17 +1501,244 @@ Key Engine Rules:
       }
     }
 
+    /* =========================================================================
+       ENGINE 5: FROGGER (5 HIGH-CONTRAST DOCKS, HALF-SPEED PACING, DRIFTING LOGS)
+    ========================================================================= */
+    const FROG_GRID = 40;
+    let frog = { x: 7, y: 14, px: 7 * 40, py: 14 * 40 };
+    let frogHopLock = false;
+    let frogDocks = [false, false, false, false, false];
+
+    let frogTrafficLanes = [
+      { y: 13, speed: -0.85, w: 36, gap: 190, color: '#f43f5e', items: [] },
+      { y: 12, speed: 1.05,  w: 48, gap: 230, color: '#fbbf24', items: [] },
+      { y: 11, speed: -1.25, w: 32, gap: 210, color: '#ec4899', items: [] },
+      { y: 10, speed: 0.90,  w: 38, gap: 200, color: '#38bdf8', items: [] },
+      { y: 9,  speed: -0.95, w: 56, gap: 250, color: '#4ade80', items: [] }
+    ];
+
+    let frogRiverLanes = [
+      { y: 7, speed: -0.85, w: 105, gap: 230, type: 'log', items: [] },
+      { y: 6, speed: 0.95,  w: 75,  gap: 210, type: 'turtle', items: [] },
+      { y: 5, speed: -1.20, w: 135, gap: 280, type: 'log', items: [] },
+      { y: 4, speed: 0.85,  w: 80,  gap: 220, type: 'turtle', items: [] },
+      { y: 3, speed: -0.90, w: 95,  gap: 240, type: 'log', items: [] }
+    ];
+
+    function initFroggerEngine() {
+      frog.x = 7;
+      frog.y = 14;
+      frog.px = 7 * FROG_GRID;
+      frog.py = 14 * FROG_GRID;
+      frogDocks = [false, false, false, false, false];
+
+      [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+        lane.items = [];
+        for (let x = 0; x < 600; x += lane.gap) {
+          lane.items.push({ x });
+        }
+      });
+    }
+
+    function updateFrogger() {
+      const up = keys['arrowup'] || keys['w'];
+      const down = keys['arrowdown'] || keys['s'];
+      const left = keys['arrowleft'] || keys['a'];
+      const right = keys['arrowright'] || keys['d'];
+
+      if (!frogHopLock) {
+        let moved = false;
+        if (up && frog.y > 1) { frog.y--; moved = true; }
+        else if (down && frog.y < 14) { frog.y++; moved = true; }
+        else if (left && frog.x > 0) { frog.x--; moved = true; }
+        else if (right && frog.x < 14) { frog.x++; moved = true; }
+
+        if (moved) {
+          frogHopLock = true;
+          frog.px = frog.x * FROG_GRID;
+          frog.py = frog.y * FROG_GRID;
+          activeScore += 10;
+          playBeep(680, 'triangle', 0.04, 0.08);
+        }
+      }
+
+      if (!up && !down && !left && !right) {
+        frogHopLock = false;
+      }
+
+      [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+        for (let it of lane.items) {
+          it.x += lane.speed;
+          if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
+          if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
+        }
+      });
+
+      const frogCenterX = frog.px + FROG_GRID / 2;
+
+      const road = frogTrafficLanes.find(l => l.y === frog.y);
+      if (road) {
+        for (let it of road.items) {
+          if (frogCenterX > it.x + 4 && frogCenterX < it.x + road.w - 4) {
+            frogDeath();
+            return;
+          }
+        }
+      }
+
+      const river = frogRiverLanes.find(l => l.y === frog.y);
+      if (river) {
+        let onLog = false;
+        for (let it of river.items) {
+          if (frogCenterX > it.x - 4 && frogCenterX < it.x + river.w + 4) {
+            onLog = true;
+            frog.px += river.speed;
+            frog.x = Math.round(frog.px / FROG_GRID);
+            break;
+          }
+        }
+        if (!onLog || frog.px < -10 || frog.px > 590) {
+          frogDeath();
+          return;
+        }
+      }
+
+      if (frog.y === 1) {
+        let inDockIndex = -1;
+        const dockCols = [1, 4, 7, 10, 13];
+        dockCols.forEach((col, idx) => {
+          const dockCenterX = col * FROG_GRID + FROG_GRID / 2;
+          if (Math.abs(frogCenterX - dockCenterX) < 22) {
+            inDockIndex = idx;
+          }
+        });
+
+        if (inDockIndex !== -1 && !frogDocks[inDockIndex]) {
+          frogDocks[inDockIndex] = true;
+          activeScore += 500;
+          playBeep(920, 'triangle', 0.2, 0.15);
+          frog.x = 7;
+          frog.y = 14;
+          frog.px = 7 * FROG_GRID;
+          frog.py = 14 * FROG_GRID;
+
+          if (frogDocks.every(Boolean)) {
+            activeScore += 1500;
+            frogDocks = [false, false, false, false, false];
+          }
+        } else {
+          frogDeath();
+        }
+      }
+    }
+
+    function frogDeath() {
+      activeLives--;
+      playBeep(140, 'sawtooth', 0.3, 0.2);
+      frog.x = 7;
+      frog.y = 14;
+      frog.px = 7 * FROG_GRID;
+      frog.py = 14 * FROG_GRID;
+      if (activeLives <= 0) activeGameOver = true;
+    }
+
+    function drawFrogger() {
+      const C = getColorPalette();
+
+      ctx.fillStyle = '#064e3b';
+      ctx.fillRect(0, 0, 600, FROG_GRID * 2);
+
+      const dockCols = [1, 4, 7, 10, 13];
+      dockCols.forEach((col, idx) => {
+        const dx = col * FROG_GRID;
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
+
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
+
+        if (frogDocks[idx]) {
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#d97706';
+          ctx.fillRect(dx + FROG_GRID / 2 - 3, FROG_GRID + FROG_GRID / 2 - 3, 6, 6);
+        } else {
+          ctx.fillStyle = '#4ade80';
+          ctx.beginPath();
+          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
+          ctx.lineTo(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = '#f43f5e';
+          ctx.beginPath();
+          ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      ctx.fillStyle = '#0a2540';
+      ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
+
+      for (let l of frogRiverLanes) {
+        for (let it of l.items) {
+          if (l.type === 'log') {
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(it.x + 4, l.y * FROG_GRID + 10, l.w - 8, 4);
+          } else {
+            ctx.fillStyle = '#0d9488';
+            ctx.fillRect(it.x, l.y * FROG_GRID + 8, l.w, FROG_GRID - 16);
+            ctx.fillStyle = '#14b8a6';
+            ctx.fillRect(it.x + 4, l.y * FROG_GRID + 12, l.w - 8, 4);
+          }
+        }
+      }
+
+      ctx.fillStyle = '#166534';
+      ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
+
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
+
+      for (let l of frogTrafficLanes) {
+        ctx.fillStyle = l.color;
+        for (let it of l.items) {
+          ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(it.x + 4, l.y * FROG_GRID + 9, 6, 6);
+        }
+      }
+
+      ctx.fillStyle = '#166534';
+      ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
+
+      ctx.fillStyle = C.player;
+      ctx.beginPath();
+      ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(frog.px + FROG_GRID / 2 - 4, frog.py + FROG_GRID / 2 - 4, 8, 8);
+    }
+
+    /* =========================================================================
+       MASTER ENGINE CONTROLLER & MAIN ANIMATION LOOP
+    ========================================================================= */
     function initSelectedEngine() {
       activeScore = 0;
       activeLives = (document.getElementById('cfgDifficulty').value === 'casual') ? 5 : 3;
       activeGameOver = false;
       isPaused = false;
 
-      if (currentGame === 'invaders') initSpaceInvadersEngine();
-      else if (currentGame === 'frogger') initFroggerEngine();
-      else if (currentGame === 'pacman') initPacmanEngine();
+      if (currentGame === 'pacman') initPacmanEngine();
       else if (currentGame === 'kong') initKongEngine();
+      else if (currentGame === 'invaders') initSpaceInvadersEngine();
       else if (currentGame === 'elevator') initElevatorEngine();
+      else if (currentGame === 'frogger') initFroggerEngine();
     }
 
     function restartActiveGame() {
@@ -1767,22 +1770,22 @@ Key Engine Rules:
 
     function masterGameLoop() {
       if (!isPaused && !activeGameOver) {
-        if (currentGame === 'invaders') updateSpaceInvaders();
-        else if (currentGame === 'frogger') updateFrogger();
-        else if (currentGame === 'pacman') updatePacman();
+        if (currentGame === 'pacman') updatePacman();
         else if (currentGame === 'kong') updateKong();
+        else if (currentGame === 'invaders') updateSpaceInvaders();
         else if (currentGame === 'elevator') updateElevator();
+        else if (currentGame === 'frogger') updateFrogger();
       }
 
       const C = getColorPalette();
       ctx.fillStyle = C.bg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (currentGame === 'invaders') drawSpaceInvaders();
-      else if (currentGame === 'frogger') drawFrogger();
-      else if (currentGame === 'pacman') drawPacman();
+      if (currentGame === 'pacman') drawPacman();
       else if (currentGame === 'kong') drawKong();
+      else if (currentGame === 'invaders') drawSpaceInvaders();
       else if (currentGame === 'elevator') drawElevator();
+      else if (currentGame === 'frogger') drawFrogger();
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       ctx.fillRect(0, 0, canvas.width, 28);
@@ -1820,7 +1823,7 @@ Key Engine Rules:
     }
 
     window.addEventListener('load', () => {
-      selectClassicGame('invaders');
+      selectClassicGame('pacman');
       requestAnimationFrame(masterGameLoop);
     });
   </script>
@@ -1837,289 +1840,7 @@ Key Engine Rules:
       let engineUpdateCode = '';
       let engineDrawCode = '';
 
-      if (gameKey === 'invaders') {
-        engineInitCode = `
-          let invPlayer = { x: 285, y: 540, w: 30, h: 16 };
-          let invMissiles = [];
-          let invAliens = [];
-          let invAlienDir = 1;
-          let invAlienTimer = 0;
-          let invUfo = null;
-          let invUfoTimer = 0;
-          let invBunkers = [];
-
-          function initEngine() {
-            invPlayer.x = 285; invPlayer.y = 540;
-            invMissiles = []; invAliens = [];
-            invAlienDir = 1; invAlienTimer = 0;
-            invUfo = null; invUfoTimer = 0;
-            for (let r = 0; r < 5; r++) {
-              for (let c = 0; c < 8; c++) {
-                invAliens.push({ x: 75 + c * 56, y: 70 + r * 36, w: 26, h: 20, type: r, score: (5 - r) * 10 });
-              }
-            }
-            invBunkers = [];
-            const bunkerXPos = [70, 205, 340, 475];
-            bunkerXPos.forEach(bx => {
-              const blocks = [];
-              for (let r = 0; r < 5; r++) {
-                for (let c = 0; c < 8; c++) {
-                  if (r >= 3 && (c === 3 || c === 4)) continue;
-                  if (r === 0 && (c === 0 || c === 7)) continue;
-                  blocks.push({ x: bx + c * 6, y: 440 + r * 6, w: 6, h: 6, alive: true });
-                }
-              }
-              invBunkers.push({ blocks });
-            });
-          }
-        `;
-        engineUpdateCode = `
-          const spd = 4.2;
-          if (keys['arrowleft'] || keys['a']) invPlayer.x -= spd;
-          if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
-          invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
-
-          if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
-            invMissiles.push({ x: invPlayer.x + invPlayer.w / 2 - 2, y: invPlayer.y - 6, vy: -8, w: 4, h: 12, fromPlayer: true });
-            beep(880, 'square', 0.05, 0.09);
-          }
-
-          invAlienTimer++;
-          const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
-          if (invAlienTimer >= marchInterval) {
-            invAlienTimer = 0;
-            let hitEdge = false;
-            for (let a of invAliens) {
-              a.x += invAlienDir * 12;
-              if (a.x < 25 || a.x + a.w > 575) hitEdge = true;
-            }
-            if (hitEdge) {
-              invAlienDir *= -1;
-              for (let a of invAliens) {
-                a.y += 16;
-                if (a.y + a.h >= invPlayer.y) gameOver = true;
-              }
-            }
-            beep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
-
-            if (Math.random() < 0.45 && invAliens.length > 0) {
-              const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
-              invMissiles.push({ x: shooter.x + shooter.w / 2 - 2, y: shooter.y + shooter.h, vy: 4.5, w: 4, h: 10, fromPlayer: false });
-            }
-          }
-
-          invUfoTimer++;
-          if (!invUfo && invUfoTimer > 600) {
-            invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
-            invUfoTimer = 0;
-            beep(920, 'sine', 0.15, 0.1);
-          }
-          if (invUfo) {
-            invUfo.x += invUfo.vx;
-            if (invUfo.x > 620) invUfo = null;
-          }
-
-          for (let i = invMissiles.length - 1; i >= 0; i--) {
-            const m = invMissiles[i];
-            m.y += m.vy;
-            if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
-              score += 300; invUfo = null; invMissiles.splice(i, 1); beep(990, 'sine', 0.25, 0.15); continue;
-            }
-            if (m.fromPlayer) {
-              let alienHit = false;
-              for (let j = invAliens.length - 1; j >= 0; j--) {
-                const a = invAliens[j];
-                if (m.x + m.w > a.x && m.x < a.x + a.w && m.y < a.y + a.h && m.y + m.h > a.y) {
-                  score += a.score; invAliens.splice(j, 1); invMissiles.splice(i, 1);
-                  beep(260, 'sawtooth', 0.07, 0.12); alienHit = true;
-                  if (invAliens.length === 0) { score += 1000; initEngine(); }
-                  break;
-                }
-              }
-              if (alienHit) continue;
-            } else {
-              if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
-                lives--; invMissiles.splice(i, 1); beep(120, 'sawtooth', 0.35, 0.2);
-                if (lives <= 0) gameOver = true;
-                continue;
-              }
-            }
-            let hitBunker = false;
-            for (let b of invBunkers) {
-              for (let blk of b.blocks) {
-                if (blk.alive && m.x + m.w > blk.x && m.x < blk.x + blk.w && m.y + m.h > blk.y && m.y < blk.y + blk.h) {
-                  blk.alive = false; invMissiles.splice(i, 1); beep(180, 'square', 0.03, 0.06); hitBunker = true; break;
-                }
-              }
-              if (hitBunker) break;
-            }
-            if (hitBunker) continue;
-            if (m.y < 20 || m.y > 580) invMissiles.splice(i, 1);
-          }
-        `;
-        engineDrawCode = `
-          ctx.fillStyle = C.bunker;
-          for (let b of invBunkers) {
-            for (let blk of b.blocks) {
-              if (blk.alive) ctx.fillRect(blk.x, blk.y, blk.w, blk.h);
-            }
-          }
-          ctx.fillStyle = C.player;
-          ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
-          ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
-
-          for (let a of invAliens) {
-            ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
-            ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(a.x + 6, a.y + 6, 3, 3);
-            ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
-          }
-          if (invUfo) {
-            ctx.fillStyle = '#ef4444';
-            ctx.beginPath();
-            ctx.ellipse(invUfo.x + invUfo.w / 2, invUfo.y + invUfo.h / 2, invUfo.w / 2, invUfo.h / 2, 0, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          for (let m of invMissiles) {
-            ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
-            ctx.fillRect(m.x, m.y, m.w, m.h);
-          }
-        `;
-      } else if (gameKey === 'frogger') {
-        engineInitCode = `
-          const FROG_GRID = 40;
-          let frog = { x: 7, y: 14, px: 7 * 40, py: 14 * 40 };
-          let frogHopLock = false;
-          let frogDocks = [false, false, false, false, false];
-          let frogTrafficLanes = [
-            { y: 13, speed: -0.85, w: 36, gap: 190, color: '#f43f5e', items: [] },
-            { y: 12, speed: 1.05,  w: 48, gap: 230, color: '#fbbf24', items: [] },
-            { y: 11, speed: -1.25, w: 32, gap: 210, color: '#ec4899', items: [] },
-            { y: 10, speed: 0.90,  w: 38, gap: 200, color: '#38bdf8', items: [] },
-            { y: 9,  speed: -0.95, w: 56, gap: 250, color: '#4ade80', items: [] }
-          ];
-          let frogRiverLanes = [
-            { y: 7, speed: -0.85, w: 105, gap: 230, type: 'log', items: [] },
-            { y: 6, speed: 0.95,  w: 75,  gap: 210, type: 'turtle', items: [] },
-            { y: 5, speed: -1.20, w: 135, gap: 280, type: 'log', items: [] },
-            { y: 4, speed: 0.85,  w: 80,  gap: 220, type: 'turtle', items: [] },
-            { y: 3, speed: -0.90, w: 95,  gap: 240, type: 'log', items: [] }
-          ];
-          function initEngine() {
-            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
-            frogDocks = [false, false, false, false, false];
-            [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
-              lane.items = [];
-              for (let x = 0; x < 600; x += lane.gap) lane.items.push({ x });
-            });
-          }
-          function frogDeath() {
-            lives--; beep(140, 'sawtooth', 0.3, 0.2);
-            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
-            if (lives <= 0) gameOver = true;
-          }
-        `;
-        engineUpdateCode = `
-          const up = keys['arrowup'] || keys['w'];
-          const down = keys['arrowdown'] || keys['s'];
-          const left = keys['arrowleft'] || keys['a'];
-          const right = keys['arrowright'] || keys['d'];
-
-          if (!frogHopLock) {
-            let moved = false;
-            if (up && frog.y > 1) { frog.y--; moved = true; }
-            else if (down && frog.y < 14) { frog.y++; moved = true; }
-            else if (left && frog.x > 0) { frog.x--; moved = true; }
-            else if (right && frog.x < 14) { frog.x++; moved = true; }
-            if (moved) {
-              frogHopLock = true;
-              frog.px = frog.x * FROG_GRID; frog.py = frog.y * FROG_GRID;
-              score += 10; beep(680, 'triangle', 0.04, 0.08);
-            }
-          }
-          if (!up && !down && !left && !right) frogHopLock = false;
-
-          [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
-            for (let it of lane.items) {
-              it.x += lane.speed;
-              if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
-              if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
-            }
-          });
-
-          const frogCenterX = frog.px + FROG_GRID / 2;
-          const road = frogTrafficLanes.find(l => l.y === frog.y);
-          if (road) {
-            for (let it of road.items) {
-              if (frogCenterX > it.x + 4 && frogCenterX < it.x + road.w - 4) { frogDeath(); return; }
-            }
-          }
-          const river = frogRiverLanes.find(l => l.y === frog.y);
-          if (river) {
-            let onLog = false;
-            for (let it of river.items) {
-              if (frogCenterX > it.x - 4 && frogCenterX < it.x + river.w + 4) {
-                onLog = true; frog.px += river.speed; frog.x = Math.round(frog.px / FROG_GRID); break;
-              }
-            }
-            if (!onLog || frog.px < -10 || frog.px > 590) { frogDeath(); return; }
-          }
-          if (frog.y === 1) {
-            let inDockIndex = -1;
-            const dockCols = [1, 4, 7, 10, 13];
-            dockCols.forEach((col, idx) => {
-              if (Math.abs(frogCenterX - (col * FROG_GRID + FROG_GRID / 2)) < 22) inDockIndex = idx;
-            });
-            if (inDockIndex !== -1 && !frogDocks[inDockIndex]) {
-              frogDocks[inDockIndex] = true; score += 500; beep(920, 'triangle', 0.2, 0.15);
-              frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
-              if (frogDocks.every(Boolean)) { score += 1500; frogDocks = [false, false, false, false, false]; }
-            } else { frogDeath(); }
-          }
-        `;
-        engineDrawCode = `
-          ctx.fillStyle = '#064e3b';
-          ctx.fillRect(0, 0, 600, FROG_GRID * 2);
-          const dockCols = [1, 4, 7, 10, 13];
-          dockCols.forEach((col, idx) => {
-            const dx = col * FROG_GRID;
-            ctx.fillStyle = '#020617';
-            ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
-            ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2;
-            ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
-            if (frogDocks[idx]) {
-              ctx.fillStyle = '#fbbf24';
-              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
-            } else {
-              ctx.fillStyle = '#4ade80';
-              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
-              ctx.lineTo(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2); ctx.closePath(); ctx.fill();
-              ctx.fillStyle = '#f43f5e';
-              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 4, 0, Math.PI * 2); ctx.fill();
-            }
-          });
-          ctx.fillStyle = '#0a2540'; ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
-          for (let l of frogRiverLanes) {
-            for (let it of l.items) {
-              ctx.fillStyle = l.type === 'log' ? '#78350f' : '#0d9488';
-              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
-            }
-          }
-          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
-          ctx.fillStyle = '#111827'; ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
-          for (let l of frogTrafficLanes) {
-            ctx.fillStyle = l.color;
-            for (let it of l.items) {
-              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
-              ctx.fillStyle = '#ffffff'; ctx.fillRect(it.x + 4, l.y * FROG_GRID + 9, 6, 6);
-            }
-          }
-          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
-          ctx.fillStyle = C.player;
-          ctx.beginPath(); ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
-        `;
-      } else if (gameKey === 'pacman') {
+      if (gameKey === 'pacman') {
         engineInitCode = `
           const PAC_TILE = 40, PAC_COLS = 15, PAC_ROWS = 15;
           const pacRawMaze = [
@@ -2338,6 +2059,155 @@ Key Engine Rules:
           ctx.fillStyle = '#b45309';
           for (let b of dkBarrels) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill(); }
         `;
+      } else if (gameKey === 'invaders') {
+        engineInitCode = `
+          let invPlayer = { x: 285, y: 540, w: 30, h: 16 };
+          let invMissiles = [];
+          let invAliens = [];
+          let invAlienDir = 1;
+          let invAlienTimer = 0;
+          let invUfo = null;
+          let invUfoTimer = 0;
+          let invBunkers = [];
+
+          function initEngine() {
+            invPlayer.x = 285; invPlayer.y = 540;
+            invMissiles = []; invAliens = [];
+            invAlienDir = 1; invAlienTimer = 0;
+            invUfo = null; invUfoTimer = 0;
+            for (let r = 0; r < 5; r++) {
+              for (let c = 0; c < 8; c++) {
+                invAliens.push({ x: 75 + c * 56, y: 70 + r * 36, w: 26, h: 20, type: r, score: (5 - r) * 10 });
+              }
+            }
+            invBunkers = [];
+            const bunkerXPos = [70, 205, 340, 475];
+            bunkerXPos.forEach(bx => {
+              const blocks = [];
+              for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 8; c++) {
+                  if (r >= 3 && (c === 3 || c === 4)) continue;
+                  if (r === 0 && (c === 0 || c === 7)) continue;
+                  blocks.push({ x: bx + c * 6, y: 440 + r * 6, w: 6, h: 6, alive: true });
+                }
+              }
+              invBunkers.push({ blocks });
+            });
+          }
+        `;
+        engineUpdateCode = `
+          const spd = 4.2;
+          if (keys['arrowleft'] || keys['a']) invPlayer.x -= spd;
+          if (keys['arrowright'] || keys['d']) invPlayer.x += spd;
+          invPlayer.x = Math.max(20, Math.min(550, invPlayer.x));
+
+          if (keys[' '] && invMissiles.filter(m => m.fromPlayer).length === 0) {
+            invMissiles.push({ x: invPlayer.x + invPlayer.w / 2 - 2, y: invPlayer.y - 6, vy: -8, w: 4, h: 12, fromPlayer: true });
+            beep(880, 'square', 0.05, 0.09);
+          }
+
+          invAlienTimer++;
+          const marchInterval = Math.max(3, 34 - Math.floor((40 - invAliens.length) * 0.75));
+          if (invAlienTimer >= marchInterval) {
+            invAlienTimer = 0;
+            let hitEdge = false;
+            for (let a of invAliens) {
+              a.x += invAlienDir * 12;
+              if (a.x < 25 || a.x + a.w > 575) hitEdge = true;
+            }
+            if (hitEdge) {
+              invAlienDir *= -1;
+              for (let a of invAliens) {
+                a.y += 16;
+                if (a.y + a.h >= invPlayer.y) gameOver = true;
+              }
+            }
+            beep(120 + (invAliens.length % 4) * 35, 'triangle', 0.04, 0.08);
+
+            if (Math.random() < 0.45 && invAliens.length > 0) {
+              const shooter = invAliens[Math.floor(Math.random() * invAliens.length)];
+              invMissiles.push({ x: shooter.x + shooter.w / 2 - 2, y: shooter.y + shooter.h, vy: 4.5, w: 4, h: 10, fromPlayer: false });
+            }
+          }
+
+          invUfoTimer++;
+          if (!invUfo && invUfoTimer > 600) {
+            invUfo = { x: -45, y: 38, vx: 2.5, w: 42, h: 16 };
+            invUfoTimer = 0;
+            beep(920, 'sine', 0.15, 0.1);
+          }
+          if (invUfo) {
+            invUfo.x += invUfo.vx;
+            if (invUfo.x > 620) invUfo = null;
+          }
+
+          for (let i = invMissiles.length - 1; i >= 0; i--) {
+            const m = invMissiles[i];
+            m.y += m.vy;
+            if (m.fromPlayer && invUfo && m.x + m.w > invUfo.x && m.x < invUfo.x + invUfo.w && m.y < invUfo.y + invUfo.h && m.y + m.h > invUfo.y) {
+              score += 300; invUfo = null; invMissiles.splice(i, 1); beep(990, 'sine', 0.25, 0.15); continue;
+            }
+            if (m.fromPlayer) {
+              let alienHit = false;
+              for (let j = invAliens.length - 1; j >= 0; j--) {
+                const a = invAliens[j];
+                if (m.x + m.w > a.x && m.x < a.x + a.w && m.y < a.y + a.h && m.y + m.h > a.y) {
+                  score += a.score; invAliens.splice(j, 1); invMissiles.splice(i, 1);
+                  beep(260, 'sawtooth', 0.07, 0.12); alienHit = true;
+                  if (invAliens.length === 0) { score += 1000; initEngine(); }
+                  break;
+                }
+              }
+              if (alienHit) continue;
+            } else {
+              if (m.x + m.w > invPlayer.x && m.x < invPlayer.x + invPlayer.w && m.y + m.h > invPlayer.y && m.y < invPlayer.y + invPlayer.h) {
+                lives--; invMissiles.splice(i, 1); beep(120, 'sawtooth', 0.35, 0.2);
+                if (lives <= 0) gameOver = true;
+                continue;
+              }
+            }
+            let hitBunker = false;
+            for (let b of invBunkers) {
+              for (let blk of b.blocks) {
+                if (blk.alive && m.x + m.w > blk.x && m.x < blk.x + blk.w && m.y + m.h > blk.y && m.y < blk.y + blk.h) {
+                  blk.alive = false; invMissiles.splice(i, 1); beep(180, 'square', 0.03, 0.06); hitBunker = true; break;
+                }
+              }
+              if (hitBunker) break;
+            }
+            if (hitBunker) continue;
+            if (m.y < 20 || m.y > 580) invMissiles.splice(i, 1);
+          }
+        `;
+        engineDrawCode = `
+          ctx.fillStyle = C.bunker;
+          for (let b of invBunkers) {
+            for (let blk of b.blocks) {
+              if (blk.alive) ctx.fillRect(blk.x, blk.y, blk.w, blk.h);
+            }
+          }
+          ctx.fillStyle = C.player;
+          ctx.fillRect(invPlayer.x, invPlayer.y + 6, invPlayer.w, invPlayer.h - 6);
+          ctx.fillRect(invPlayer.x + invPlayer.w / 2 - 3, invPlayer.y, 6, 6);
+
+          for (let a of invAliens) {
+            ctx.fillStyle = (a.type === 0 ? '#ef4444' : (a.type < 3 ? '#22d3ee' : '#a855f7'));
+            ctx.fillRect(a.x + 2, a.y + 2, a.w - 4, a.h - 4);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(a.x + 6, a.y + 6, 3, 3);
+            ctx.fillRect(a.x + a.w - 9, a.y + 6, 3, 3);
+          }
+          if (invUfo) {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.ellipse(invUfo.x + invUfo.w / 2, invUfo.y + invUfo.h / 2, invUfo.w / 2, invUfo.h / 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          for (let m of invMissiles) {
+            ctx.fillStyle = m.fromPlayer ? '#fde047' : '#f43f5e';
+            ctx.fillRect(m.x, m.y, m.w, m.h);
+          }
+        `;
       } else if (gameKey === 'elevator') {
         engineInitCode = `
           let spy = { x: 50, y: 94, vx: 0, duck: false, w: 20, h: 36, inRoomTimer: 0, activeRoom: null };
@@ -2413,6 +2283,139 @@ Key Engine Rules:
           else ctx.fillRect(spy.x, spy.y, spy.w, spy.h);
           ctx.fillStyle = '#facc15';
           for (let b of spyBullets) ctx.fillRect(b.x - 3, b.y - 2, 6, 4);
+        `;
+      } else if (gameKey === 'frogger') {
+        engineInitCode = `
+          const FROG_GRID = 40;
+          let frog = { x: 7, y: 14, px: 7 * 40, py: 14 * 40 };
+          let frogHopLock = false;
+          let frogDocks = [false, false, false, false, false];
+          let frogTrafficLanes = [
+            { y: 13, speed: -0.85, w: 36, gap: 190, color: '#f43f5e', items: [] },
+            { y: 12, speed: 1.05,  w: 48, gap: 230, color: '#fbbf24', items: [] },
+            { y: 11, speed: -1.25, w: 32, gap: 210, color: '#ec4899', items: [] },
+            { y: 10, speed: 0.90,  w: 38, gap: 200, color: '#38bdf8', items: [] },
+            { y: 9,  speed: -0.95, w: 56, gap: 250, color: '#4ade80', items: [] }
+          ];
+          let frogRiverLanes = [
+            { y: 7, speed: -0.85, w: 105, gap: 230, type: 'log', items: [] },
+            { y: 6, speed: 0.95,  w: 75,  gap: 210, type: 'turtle', items: [] },
+            { y: 5, speed: -1.20, w: 135, gap: 280, type: 'log', items: [] },
+            { y: 4, speed: 0.85,  w: 80,  gap: 220, type: 'turtle', items: [] },
+            { y: 3, speed: -0.90, w: 95,  gap: 240, type: 'log', items: [] }
+          ];
+          function initEngine() {
+            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+            frogDocks = [false, false, false, false, false];
+            [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+              lane.items = [];
+              for (let x = 0; x < 600; x += lane.gap) lane.items.push({ x });
+            });
+          }
+          function frogDeath() {
+            lives--; beep(140, 'sawtooth', 0.3, 0.2);
+            frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+            if (lives <= 0) gameOver = true;
+          }
+        `;
+        engineUpdateCode = `
+          const up = keys['arrowup'] || keys['w'];
+          const down = keys['arrowdown'] || keys['s'];
+          const left = keys['arrowleft'] || keys['a'];
+          const right = keys['arrowright'] || keys['d'];
+
+          if (!frogHopLock) {
+            let moved = false;
+            if (up && frog.y > 1) { frog.y--; moved = true; }
+            else if (down && frog.y < 14) { frog.y++; moved = true; }
+            else if (left && frog.x > 0) { frog.x--; moved = true; }
+            else if (right && frog.x < 14) { frog.x++; moved = true; }
+            if (moved) {
+              frogHopLock = true;
+              frog.px = frog.x * FROG_GRID; frog.py = frog.y * FROG_GRID;
+              score += 10; beep(680, 'triangle', 0.04, 0.08);
+            }
+          }
+          if (!up && !down && !left && !right) frogHopLock = false;
+
+          [...frogTrafficLanes, ...frogRiverLanes].forEach(lane => {
+            for (let it of lane.items) {
+              it.x += lane.speed;
+              if (lane.speed > 0 && it.x > 600) it.x = -lane.w;
+              if (lane.speed < 0 && it.x < -lane.w) it.x = 600;
+            }
+          });
+
+          const frogCenterX = frog.px + FROG_GRID / 2;
+          const road = frogTrafficLanes.find(l => l.y === frog.y);
+          if (road) {
+            for (let it of road.items) {
+              if (frogCenterX > it.x + 4 && frogCenterX < it.x + road.w - 4) { frogDeath(); return; }
+            }
+          }
+          const river = frogRiverLanes.find(l => l.y === frog.y);
+          if (river) {
+            let onLog = false;
+            for (let it of river.items) {
+              if (frogCenterX > it.x - 4 && frogCenterX < it.x + river.w + 4) {
+                onLog = true; frog.px += river.speed; frog.x = Math.round(frog.px / FROG_GRID); break;
+              }
+            }
+            if (!onLog || frog.px < -10 || frog.px > 590) { frogDeath(); return; }
+          }
+          if (frog.y === 1) {
+            let inDockIndex = -1;
+            const dockCols = [1, 4, 7, 10, 13];
+            dockCols.forEach((col, idx) => {
+              if (Math.abs(frogCenterX - (col * FROG_GRID + FROG_GRID / 2)) < 22) inDockIndex = idx;
+            });
+            if (inDockIndex !== -1 && !frogDocks[inDockIndex]) {
+              frogDocks[inDockIndex] = true; score += 500; beep(920, 'triangle', 0.2, 0.15);
+              frog.x = 7; frog.y = 14; frog.px = 7 * FROG_GRID; frog.py = 14 * FROG_GRID;
+              if (frogDocks.every(Boolean)) { score += 1500; frogDocks = [false, false, false, false, false]; }
+            } else { frogDeath(); }
+          }
+        `;
+        engineDrawCode = `
+          ctx.fillStyle = '#064e3b';
+          ctx.fillRect(0, 0, 600, FROG_GRID * 2);
+          const dockCols = [1, 4, 7, 10, 13];
+          dockCols.forEach((col, idx) => {
+            const dx = col * FROG_GRID;
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(dx + 2, FROG_GRID + 2, FROG_GRID - 4, FROG_GRID - 4);
+            ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2;
+            ctx.strokeRect(dx + 3, FROG_GRID + 3, FROG_GRID - 6, FROG_GRID - 6);
+            if (frogDocks[idx]) {
+              ctx.fillStyle = '#fbbf24';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
+            } else {
+              ctx.fillStyle = '#4ade80';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 12, 0, Math.PI * 1.85);
+              ctx.lineTo(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2); ctx.closePath(); ctx.fill();
+              ctx.fillStyle = '#f43f5e';
+              ctx.beginPath(); ctx.arc(dx + FROG_GRID / 2, FROG_GRID + FROG_GRID / 2, 4, 0, Math.PI * 2); ctx.fill();
+            }
+          });
+          ctx.fillStyle = '#0a2540'; ctx.fillRect(0, FROG_GRID * 2, 600, FROG_GRID * 6);
+          for (let l of frogRiverLanes) {
+            for (let it of l.items) {
+              ctx.fillStyle = l.type === 'log' ? '#78350f' : '#0d9488';
+              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+            }
+          }
+          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 8, 600, FROG_GRID);
+          ctx.fillStyle = '#111827'; ctx.fillRect(0, FROG_GRID * 9, 600, FROG_GRID * 5);
+          for (let l of frogTrafficLanes) {
+            ctx.fillStyle = l.color;
+            for (let it of l.items) {
+              ctx.fillRect(it.x, l.y * FROG_GRID + 6, l.w, FROG_GRID - 12);
+              ctx.fillStyle = '#ffffff'; ctx.fillRect(it.x + 4, l.y * FROG_GRID + 9, 6, 6);
+            }
+          }
+          ctx.fillStyle = '#166534'; ctx.fillRect(0, FROG_GRID * 14, 600, FROG_GRID);
+          ctx.fillStyle = C.player;
+          ctx.beginPath(); ctx.arc(frog.px + FROG_GRID / 2, frog.py + FROG_GRID / 2, 13, 0, Math.PI * 2); ctx.fill();
         `;
       }
 
