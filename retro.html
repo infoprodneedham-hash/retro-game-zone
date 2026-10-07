@@ -81,7 +81,7 @@
       <div class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#22d3ee]"></div>
       <div>
         <h1 class="retro-font text-xs sm:text-sm text-cyan-300 neon-text-cyan flex items-center gap-2">
-          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">AUTHENTIC PHYSICS v3.0</span>
+          <span>🕹️</span> RETRO-FORGE 1982 <span class="text-[9px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded">AUTHENTIC PHYSICS v4.0</span>
         </h1>
         <p class="text-[11px] text-slate-400">Pac-Man • Donkey Kong • Space Invaders • Elevator Action • Frogger</p>
       </div>
@@ -109,7 +109,7 @@
       <div>
         <label class="block text-[11px] font-bold text-cyan-400 mb-2 uppercase tracking-wider flex items-center justify-between">
           <span>SELECT CLASSIC ARCADE ENGINE</span>
-          <span class="text-[10px] text-emerald-400 font-mono">CALIBRATED CONTROLS</span>
+          <span class="text-[10px] text-emerald-400 font-mono">CONTINUOUS GHOST AI</span>
         </label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
           <button onclick="selectClassicGame('pacman')" id="tab-pacman" class="game-tab py-2 px-1 text-[10px] retro-font text-center rounded border border-cyan-500 bg-cyan-950/70 text-cyan-200 transition shadow">
@@ -320,13 +320,13 @@
           <div><span class="text-amber-400 font-bold">REVERSE:</span> <span class="text-slate-300">Instant 180° turn anytime</span></div>
         `,
         tuningNotes: `
-          <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Physics & Progressive Ghost Release:</div>
-          <div>• Door sequence: Pinky (pink) sits directly below door and exits first (~2.5s), Inky (cyan) steps inward & rises second (~6.5s), Clyde (orange) follows third (~11s). Blinky starts in active patrol outside.</div>
-          <div>• Zero-Stuck Gate: Wall collision is strictly bypassed during gate ascension until ghosts reach Y=180, guaranteeing 100% departure reliability.</div>
-          <div>• Dynamic Gravitation & Speed: Ghosts track Pac-Man's coordinates at intersections; speed dynamically ramps from 1.6 to 3.0 px/frame as dots are cleared!</div>
-          <div>• Eye Revival: Defeated eyes zip back to pen, revive, and immediately re-emerge into the maze.</div>
+          <div class="text-amber-400 font-bold">✓ Calibrated Pac-Man Physics & Continuous Ghost Patrol:</div>
+          <div>• Guaranteed Continuous Movement: Active ghosts never stop or stall. If a straight corridor ends, perpendicular turns are immediately chosen.</div>
+          <div>• Staggered Departure: Pinky exits first (~2s), Inky second (~5.5s), Clyde third (~9.5s). Blinky actively chases from the start.</div>
+          <div>• Progressive Cruise Elroy Acceleration: Ghost movement escalates dynamically from 1.7 to 3.2 px/frame as dots are cleared!</div>
+          <div>• Intelligent Gravitation: Ghosts evaluate open corridor branches toward Pac-Man without entering walls or the ghost house gate from above.</div>
         `,
-        promptTheme: "Pac-Man arcade maze with strict cardinal inputs, staggered ghost house release with Pinky exiting first, Inky second, and Clyde third, progressive speed ramping as dots decrease, intersection gravitation AI, and 8-bit chiptune sound synthesis."
+        promptTheme: "Pac-Man arcade maze with strict cardinal inputs, continuous non-stalling ghost movement with staggered house departures, progressive Elroy speed ramping, corridor gravitation pursuit, and chiptune sound effects."
       },
       kong: {
         id: 'kong',
@@ -435,7 +435,7 @@ Core Gameplay Mechanics & Physics Fixes:
 - Difficulty Setting: ${diff.toUpperCase()}
 - Bonus Modifier: ${mod.toUpperCase()}
 Strict Gameplay Rules:
-1. Pac-Man navigation: Absolute cardinal screen-relative inputs (Up=North, Down=South, Left=West, Right=East) with instant 180° reversing and corridor-centered corner pre-buffers.
+1. Pac-Man navigation & Ghost AI: Absolute screen-relative inputs (Up=North, Down=South, Left=West, Right=East) with instant 180° reversing. Continuous, perpetual ghost movement (dx/dy never stalls at zero) with guaranteed cornering, progressive Cruise Elroy acceleration, and staggered departures.
 2. Donkey Kong: Barrels roll strictly along girder inclines and drop down at girder ends.
 3. Elevator Action: Authentic continuous elevator shafts, zero door teleportation (enter and exit red secret rooms at identical position), ducking under bullets.
 4. Frogger: Halved speeds and widened gaps between cars and logs.
@@ -604,13 +604,13 @@ Strict Gameplay Rules:
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
     /* =========================================================================
-       1. PAC-MAN - REWRITTEN HIGH-PRECISION CARDINAL MOVEMENT ENGINE
+       1. PAC-MAN - ROBUST CONTINUOUS GHOST STEERING & SCREEN-RELATIVE MOVEMENT
     ========================================================================= */
     const TILE = 40;
     const COLS = 15;
     const ROWS = 13;
 
-    // 0: Empty/Warp corridor, 1: Wall, 2: Dot, 3: Energizer, 4: Ghost Gate (Ghosts only)
+    // 0: Empty/Warp corridor, 1: Wall, 2: Dot, 3: Energizer, 4: Ghost Gate
     const rawMaze = [
       "111111111111111",
       "122222212222221",
@@ -648,16 +648,8 @@ Strict Gameplay Rules:
       if (col < 0 || col >= COLS) return false; // Side warp tunnel
       const tile = maze[row][col];
       if (tile === 1) return true;
-      if (tile === 4) return !forGhost; // Ghost gate: ghosts can pass when authorized
+      if (tile === 4) return !forGhost;
       return false;
-    }
-
-    function canMoveInDir(px, py, dx, dy) {
-      const col = Math.floor(px / TILE);
-      const row = Math.floor(py / TILE);
-      const targetCol = col + dx;
-      const targetRow = row + dy;
-      return !isWall(targetCol, targetRow, false);
     }
 
     function handlePacmanKeyDown(k) {
@@ -668,7 +660,7 @@ Strict Gameplay Rules:
       else if (k === 'arrowdown' || k === 's')  { reqX = 0;  reqY = 1; }
       else return;
 
-      // 1. Instant 180-degree U-turn reversal anywhere in corridor
+      // Instant 180-degree reversal
       if (reqX !== 0 && reqX === -pacman.dirX) {
         pacman.dirX = reqX;
         pacman.dirY = 0;
@@ -684,11 +676,9 @@ Strict Gameplay Rules:
         return;
       }
 
-      // 2. Buffer request for turning at upcoming intersection
       pacman.nextDirX = reqX;
       pacman.nextDirY = reqY;
 
-      // If currently stopped, try to start immediately
       if (pacman.dirX === 0 && pacman.dirY === 0) {
         const col = Math.floor(pacman.x / TILE);
         const row = Math.floor(pacman.y / TILE);
@@ -720,17 +710,14 @@ Strict Gameplay Rules:
       pacman.mouthDir = 1;
       energizerTimer = 0;
 
-      // Calibrated ghost house layout:
-      // Door threshold is centered at (x: 300, y: 220) opening to main corridor at y: 180.
-      // - Blinky (Red): Starts outside pen at (300, 180) in immediate active patrol.
-      // - Pinky (Pink): Centered directly under the exit at (300, 260), bobs and departs first (~150 ticks / 2.5s).
-      // - Inky (Cyan): Positioned left at (260, 260), steps inward to 300 then up (~380 ticks / 6.3s).
-      // - Clyde (Orange): Positioned right at (340, 260), steps inward to 300 then up (~680 ticks / 11.3s).
+      // Blinky starts outside patrolling right away.
+      // Pinky sits directly below the gate (x: 300) and departs first.
+      // Inky and Clyde follow sequentially.
       ghosts = [
-        { name: 'Blinky', x: 300, y: 180, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, bobPhase: 0, homeX: 300 },
-        { name: 'Pinky',  x: 300, y: 260, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 150, bobPhase: 1, homeX: 300 },
-        { name: 'Inky',   x: 260, y: 260, dirX: 0,  dirY: 1,  color: '#06b6d4', state: 'in_house', exitTimer: 380, bobPhase: 2, homeX: 260 },
-        { name: 'Clyde',  x: 340, y: 260, dirX: 0,  dirY: -1, color: '#f97316', state: 'in_house', exitTimer: 680, bobPhase: 3, homeX: 340 }
+        { name: 'Blinky', x: 300, y: 180, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, bobPhase: 0, lastCol: 7, lastRow: 4 },
+        { name: 'Pinky',  x: 300, y: 260, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 120, bobPhase: 1, lastCol: 7, lastRow: 6 },
+        { name: 'Inky',   x: 260, y: 260, dirX: 0,  dirY: 1,  color: '#06b6d4', state: 'in_house', exitTimer: 320, bobPhase: 2, lastCol: 6, lastRow: 6 },
+        { name: 'Clyde',  x: 340, y: 260, dirX: 0,  dirY: -1, color: '#f97316', state: 'in_house', exitTimer: 560, bobPhase: 3, lastCol: 8, lastRow: 6 }
       ];
     }
 
@@ -744,12 +731,11 @@ Strict Gameplay Rules:
       if (pacman.nextDirX !== 0 || pacman.nextDirY !== 0) {
         const distToCenter = Math.hypot(pacman.x - cellCenterX, pacman.y - cellCenterY);
 
-        if (distToCenter <= (pacman.speed + 2)) {
+        if (distToCenter <= (pacman.speed + 3)) {
           const targetCol = curCol + pacman.nextDirX;
           const targetRow = curRow + pacman.nextDirY;
 
           if (!isWall(targetCol, targetRow, false)) {
-            // Commit to buffered turn and snap perpendicular axis to corridor center
             pacman.x = cellCenterX;
             pacman.y = cellCenterY;
             pacman.dirX = pacman.nextDirX;
@@ -766,7 +752,6 @@ Strict Gameplay Rules:
         const nextRow = curRow + pacman.dirY;
 
         if (isWall(nextCol, nextRow, false)) {
-          // Stop cleanly at tile center when facing a wall
           if (pacman.dirX === 1 && pacman.x >= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
           else if (pacman.dirX === -1 && pacman.x <= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
           else if (pacman.dirY === 1 && pacman.y >= cellCenterY) { pacman.y = cellCenterY; pacman.dirY = 0; }
@@ -774,7 +759,6 @@ Strict Gameplay Rules:
         }
       }
 
-      // Move along active vector
       pacman.x += pacman.dirX * pacman.speed;
       pacman.y += pacman.dirY * pacman.speed;
 
@@ -801,14 +785,14 @@ Strict Gameplay Rules:
         } else if (maze[eatRow][eatCol] === 3) {
           maze[eatRow][eatCol] = 0;
           score += (MOD === 'doublescore' ? 100 : 50);
-          energizerTimer = 400; // ~6.6 seconds
+          energizerTimer = 400;
           beep(880, 'square', 0.15, 0.12);
         }
       }
 
       if (energizerTimer > 0) energizerTimer--;
 
-      // Count remaining dots to calculate progressive difficulty ramp
+      // Count remaining dots
       let remainingDots = 0;
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
@@ -816,17 +800,17 @@ Strict Gameplay Rules:
         }
       }
 
-      // Dynamic ghost speed: starts at 1.6, accelerates smoothly up to 3.0 px/frame as dots vanish
+      // Cruise Elroy speed escalation: 1.7 -> 3.2 px/frame
       const dotRatio = initialDotCount > 0 ? (1 - (remainingDots / initialDotCount)) : 0;
-      const baseGhostSpeed = 1.6 + (dotRatio * 1.4); // 1.6 -> 3.0 px/frame
-      const ghostSpd = energizerTimer > 0 ? 1.15 : (DIFF === 'turbo' ? baseGhostSpeed * 1.25 : baseGhostSpeed);
+      const baseSpeed = 1.7 + (dotRatio * 1.5);
+      const ghostSpd = energizerTimer > 0 ? 1.25 : (DIFF === 'turbo' ? baseSpeed * 1.25 : baseSpeed);
 
       const houseExitX = 300; // Center column 7
-      const mazeEntranceY = 180; // Row 4 center corridor
+      const mazeEntranceY = 180; // Row 4 corridor
 
-      // ================= GHOSTS STATE MACHINE & AI =================
+      // ================= CONTINUOUS FOOLPROOF GHOST MOVEMENT =================
       for (let g of ghosts) {
-        // 1. GHOST IN HOUSE: gentle bobbing and countdown
+        // 1. IN GHOST HOUSE
         if (g.state === 'in_house') {
           g.exitTimer--;
           g.bobPhase = (g.bobPhase || 0) + 0.08;
@@ -838,10 +822,9 @@ Strict Gameplay Rules:
           continue;
         }
 
-        // 2. GHOST EXITING HOUSE: Guaranteed passage through gate (ignores wall collision)
+        // 2. EXITING THROUGH THE GATE (Guaranteed no-stuck vertical climb)
         if (g.state === 'exiting') {
-          // Align horizontally to center column door (X: 300)
-          if (Math.abs(g.x - houseExitX) > 2) {
+          if (Math.abs(g.x - houseExitX) > 2.5) {
             g.dirX = g.x < houseExitX ? 1 : -1;
             g.dirY = 0;
             g.x += g.dirX * 2.0;
@@ -849,29 +832,30 @@ Strict Gameplay Rules:
             g.x = houseExitX;
             g.dirX = 0;
             g.dirY = -1;
-            g.y -= 2.0; // Rise directly through gate into corridor
+            g.y -= 2.0;
 
             if (g.y <= mazeEntranceY) {
               g.y = mazeEntranceY;
               g.state = 'active';
-              // Head left or right away from gate
-              g.dirX = Math.random() < 0.5 ? -1 : 1;
+              // Explicit strong departure direction into corridor
+              g.dirX = (g.name === 'Pinky' || g.name === 'Blinky') ? -1 : 1;
               g.dirY = 0;
+              g.lastCol = -1;
+              g.lastRow = -1;
             }
           }
           continue;
         }
 
-        // 3. GHOST DEAD EYES: Rapid return to ghost house pen, revive, and immediately step back out
+        // 3. DEAD EYES: Rapid return to pen and immediate re-emergence
         if (g.state === 'dead_eyes') {
-          const eyeSpeed = 4.5;
+          const eyeSpeed = 4.8;
           if (Math.abs(g.x - houseExitX) > 4) {
             g.x += g.x < houseExitX ? eyeSpeed : -eyeSpeed;
           } else if (g.y < 260) {
             g.x = houseExitX;
             g.y += eyeSpeed;
           } else {
-            // Arrived back in pen: immediately revive and re-emerge
             g.y = 260;
             g.state = 'exiting';
             beep(520, 'triangle', 0.1, 0.1);
@@ -879,69 +863,98 @@ Strict Gameplay Rules:
           continue;
         }
 
-        // 4. GHOST ACTIVE: Progressive gravitation toward Pac-Man with corridor navigation
+        // 4. ACTIVE GHOST: Guaranteed continuous non-zero velocity
+        if (g.dirX === 0 && g.dirY === 0) {
+          g.dirX = -1;
+          g.dirY = 0;
+        }
+
+        // Advance ghost position along current trajectory
         g.x += g.dirX * ghostSpd;
         g.y += g.dirY * ghostSpd;
+
+        // Screen warp tunnels for ghosts
+        if (g.x < -10) g.x = 600 + 10;
+        else if (g.x > 600 + 10) g.x = -10;
 
         const gCol = Math.floor(g.x / TILE);
         const gRow = Math.floor(g.y / TILE);
         const gCenterX = gCol * TILE + 20;
         const gCenterY = gRow * TILE + 20;
 
-        // Arrived near tile center: evaluate available turns
-        if (Math.hypot(g.x - gCenterX, g.y - gCenterY) <= (ghostSpd + 1)) {
+        // Check if facing a wall directly ahead right now
+        const wallAhead = isWall(gCol + g.dirX, gRow + g.dirY, true);
+
+        // Turn evaluation occurs when approaching tile center, or when forward path hits a wall
+        const nearCenter = Math.hypot(g.x - gCenterX, g.y - gCenterY) <= (ghostSpd + 2.0);
+        const isNewTile = (gCol !== g.lastCol || gRow !== g.lastRow);
+
+        if ((nearCenter && isNewTile) || wallAhead) {
+          // Snap to corridor center when executing intersection checks
           g.x = gCenterX;
           g.y = gCenterY;
+          g.lastCol = gCol;
+          g.lastRow = gRow;
 
-          const dirs = [
+          const cardinalMoves = [
             { x: 1, y: 0 },
             { x: -1, y: 0 },
             { x: 0, y: 1 },
             { x: 0, y: -1 }
           ];
 
-          // Valid paths: no walls, no gate entry from above, no immediate 180° turn unless blocked
-          const valid = dirs.filter(d => {
-            const nextC = gCol + d.x;
-            const nextR = gRow + d.y;
+          // 1. Gather all strictly valid moves: no walls, no gate entry from corridor
+          const validMoves = cardinalMoves.filter(m => {
+            const nextC = gCol + m.x;
+            const nextR = gRow + m.y;
             if (isWall(nextC, nextR, true)) return false;
-            // Prevent entering back down through ghost house gate from above
-            if (gRow === 4 && gCol === 7 && d.y === 1) return false;
-            return !(d.x === -g.dirX && d.y === -g.dirY);
+            // Prevent entering back down through ghost house gate from main corridor
+            if (gRow === 4 && gCol === 7 && m.y === 1) return false;
+            // Strict rule: no immediate 180-degree reversing unless it's a dead end
+            return !(m.x === -g.dirX && m.y === -g.dirY);
           });
 
-          if (valid.length > 0) {
-            if (energizerTimer > 0) {
-              // Frightened: flee directly away from Pac-Man
-              valid.sort((a, b) => {
-                const distA = Math.hypot((gCol + a.x) * TILE - pacman.x, (gRow + a.y) * TILE - pacman.y);
-                const distB = Math.hypot((gCol + b.x) * TILE - pacman.x, (gRow + b.y) * TILE - pacman.y);
-                return distB - distA;
+          // Determine target coordinates for gravitation
+          let targetX = pacman.x;
+          let targetY = pacman.y;
+
+          if (energizerTimer > 0) {
+            // Frightened: target is opposite side of the screen
+            targetX = 600 - pacman.x;
+            targetY = 520 - pacman.y;
+          }
+
+          if (validMoves.length > 0) {
+            // Personality-based chase accuracy
+            let chaseWeight = 0.80;
+            if (g.name === 'Blinky') chaseWeight = 0.85;
+            else if (g.name === 'Pinky') chaseWeight = 0.80;
+            else if (g.name === 'Inky') chaseWeight = 0.65;
+            else if (g.name === 'Clyde') chaseWeight = 0.50;
+
+            if (Math.random() < chaseWeight) {
+              validMoves.sort((a, b) => {
+                const distA = Math.hypot((gCol + a.x) * TILE + 20 - targetX, (gRow + a.y) * TILE + 20 - targetY);
+                const distB = Math.hypot((gCol + b.x) * TILE + 20 - targetX, (gRow + b.y) * TILE + 20 - targetY);
+                return distA - distB;
               });
-              g.dirX = valid[0].x;
-              g.dirY = valid[0].y;
+              g.dirX = validMoves[0].x;
+              g.dirY = validMoves[0].y;
             } else {
-              // Active Pursuit: intelligent gravitation toward Pac-Man
-              // Blinky & Pinky chase aggressively (85% target gravitation), Inky & Clyde roam with 60% gravitation
-              const chaseChance = (g.name === 'Blinky' || g.name === 'Pinky') ? 0.85 : 0.65;
-              if (Math.random() < chaseChance) {
-                valid.sort((a, b) => {
-                  const distA = Math.hypot((gCol + a.x) * TILE - pacman.x, (gRow + a.y) * TILE - pacman.y);
-                  const distB = Math.hypot((gCol + b.x) * TILE - pacman.x, (gRow + b.y) * TILE - pacman.y);
-                  return distA - distB;
-                });
-                g.dirX = valid[0].x;
-                g.dirY = valid[0].y;
-              } else {
-                const pick = valid[Math.floor(Math.random() * valid.length)];
-                g.dirX = pick.x;
-                g.dirY = pick.y;
-              }
+              const pick = validMoves[Math.floor(Math.random() * validMoves.length)];
+              g.dirX = pick.x;
+              g.dirY = pick.y;
             }
           } else {
-            // Dead end: force reverse
+            // Dead end reached: reverse immediately
             g.dirX = -g.dirX;
             g.dirY = -g.dirY;
+          }
+
+          // Invariant safeguard: velocity must never stay at zero
+          if (g.dirX === 0 && g.dirY === 0) {
+            g.dirX = -1;
+            g.dirY = 0;
           }
         }
 
@@ -989,7 +1002,6 @@ Strict Gameplay Rules:
             ctx.lineWidth = 1;
             ctx.strokeRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
           } else if (val === 4) {
-            // Ghost House Gate
             ctx.fillStyle = '#ec4899';
             ctx.fillRect(c * TILE + 4, r * TILE + 16, TILE - 8, 8);
           } else if (val === 2) {
@@ -1012,10 +1024,6 @@ Strict Gameplay Rules:
       else if (pacman.dirX === -1) angle = Math.PI;
       else if (pacman.dirY === 1) angle = Math.PI / 2;
       else if (pacman.dirY === -1) angle = (3 * Math.PI) / 2;
-      else if (pacman.nextDirX === 1) angle = 0;
-      else if (pacman.nextDirX === -1) angle = Math.PI;
-      else if (pacman.nextDirY === 1) angle = Math.PI / 2;
-      else if (pacman.nextDirY === -1) angle = (3 * Math.PI) / 2;
 
       ctx.fillStyle = C.player;
       ctx.beginPath();
@@ -1041,7 +1049,6 @@ Strict Gameplay Rules:
       // Ghosts
       for (let g of ghosts) {
         if (g.state === 'dead_eyes') {
-          // Render only eyes traveling back to base
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
           ctx.arc(g.x - 4, g.y - 3, 4, 0, Math.PI * 2);
@@ -1069,7 +1076,7 @@ Strict Gameplay Rules:
         ctx.closePath();
         ctx.fill();
 
-        // Eyes
+        // Ghost Eyes
         if (!isFrightened) {
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
@@ -1089,7 +1096,7 @@ Strict Gameplay Rules:
         }
       }
 
-      // Visual directional helper banner (HUD)
+      // HUD overlay
       ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
       ctx.fillRect(10, 8, 130, 24);
       ctx.strokeStyle = C.border;
@@ -1106,442 +1113,10 @@ Strict Gameplay Rules:
       ctx.fillText('DIR: ' + dirStr, 14, 24);
     }
 
-    function canMoveInDir(px, py, dx, dy) {
-      const col = Math.floor(px / TILE);
-      const row = Math.floor(py / TILE);
-      const targetCol = col + dx;
-      const targetRow = row + dy;
-      return !isWall(targetCol, targetRow, false);
-    }
-
-    function handlePacmanKeyDown(k) {
-      let reqX = 0, reqY = 0;
-      if (k === 'arrowleft' || k === 'a')  { reqX = -1; reqY = 0; }
-      else if (k === 'arrowright' || k === 'd') { reqX = 1;  reqY = 0; }
-      else if (k === 'arrowup' || k === 'w')    { reqX = 0;  reqY = -1; }
-      else if (k === 'arrowdown' || k === 's')  { reqX = 0;  reqY = 1; }
-      else return;
-
-      // 1. Instant 180-degree U-turn reversal anywhere in corridor
-      if (reqX !== 0 && reqX === -pacman.dirX) {
-        pacman.dirX = reqX;
-        pacman.dirY = 0;
-        pacman.nextDirX = 0;
-        pacman.nextDirY = 0;
-        return;
-      }
-      if (reqY !== 0 && reqY === -pacman.dirY) {
-        pacman.dirX = 0;
-        pacman.dirY = reqY;
-        pacman.nextDirX = 0;
-        pacman.nextDirY = 0;
-        return;
-      }
-
-      // 2. Buffer request for turning at upcoming intersection
-      pacman.nextDirX = reqX;
-      pacman.nextDirY = reqY;
-
-      // If currently stopped, try to start immediately
-      if (pacman.dirX === 0 && pacman.dirY === 0) {
-        const col = Math.floor(pacman.x / TILE);
-        const row = Math.floor(pacman.y / TILE);
-        if (!isWall(col + reqX, row + reqY, false)) {
-          pacman.dirX = reqX;
-          pacman.dirY = reqY;
-          pacman.nextDirX = 0;
-          pacman.nextDirY = 0;
-        }
-      }
-    }
-
-    function initPacman() {
-      maze = rawMaze.map(row => row.split('').map(Number));
-      pacman.x = 7 * TILE + 20;
-      pacman.y = 8 * TILE + 20;
-      pacman.dirX = 0;
-      pacman.dirY = 0;
-      pacman.nextDirX = 0;
-      pacman.nextDirY = 0;
-      pacman.mouth = 0.2;
-      pacman.mouthDir = 1;
-      energizerTimer = 0;
-
-      // State machine for ghosts:
-      // 'active' : hunting in maze
-      // 'in_house' : bobbing vertically in quarters awaiting exit timer
-      // 'exiting' : traversing to house center (7*TILE+20) and ascending out through gate to (4*TILE+20)
-      // 'dead_eyes' : returning to house to respawn
-      ghosts = [
-        { name: 'Blinky', x: 7 * TILE + 20, y: 4 * TILE + 20, dirX: -1, dirY: 0, color: '#ef4444', state: 'active', exitTimer: 0, bobPhase: 0 },
-        { name: 'Pinky',  x: 7 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: -1, color: '#ec4899', state: 'in_house', exitTimer: 70, bobPhase: 1 },
-        { name: 'Inky',   x: 6 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: 1,  color: '#06b6d4', state: 'in_house', exitTimer: 180, bobPhase: 2 },
-        { name: 'Clyde',  x: 8 * TILE + 20, y: 6 * TILE + 20, dirX: 0,  dirY: -1, color: '#f97316', state: 'in_house', exitTimer: 300, bobPhase: 3 }
-      ];
-    }
-
-    function updatePacman() {
-      const curCol = Math.floor(pacman.x / TILE);
-      const curRow = Math.floor(pacman.y / TILE);
-      const cellCenterX = curCol * TILE + 20;
-      const cellCenterY = curRow * TILE + 20;
-
-      // Turning & corner pre-buffering
-      if (pacman.nextDirX !== 0 || pacman.nextDirY !== 0) {
-        const distToCenter = Math.hypot(pacman.x - cellCenterX, pacman.y - cellCenterY);
-
-        if (distToCenter <= (pacman.speed + 2)) {
-          const targetCol = curCol + pacman.nextDirX;
-          const targetRow = curRow + pacman.nextDirY;
-
-          if (!isWall(targetCol, targetRow, false)) {
-            // Commit to buffered turn and snap perpendicular axis to corridor center
-            pacman.x = cellCenterX;
-            pacman.y = cellCenterY;
-            pacman.dirX = pacman.nextDirX;
-            pacman.dirY = pacman.nextDirY;
-            pacman.nextDirX = 0;
-            pacman.nextDirY = 0;
-          }
-        }
-      }
-
-      // Check forward wall collision
-      if (pacman.dirX !== 0 || pacman.dirY !== 0) {
-        const nextCol = curCol + pacman.dirX;
-        const nextRow = curRow + pacman.dirY;
-
-        if (isWall(nextCol, nextRow, false)) {
-          // Stop cleanly at tile center when facing a wall
-          if (pacman.dirX === 1 && pacman.x >= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
-          else if (pacman.dirX === -1 && pacman.x <= cellCenterX) { pacman.x = cellCenterX; pacman.dirX = 0; }
-          else if (pacman.dirY === 1 && pacman.y >= cellCenterY) { pacman.y = cellCenterY; pacman.dirY = 0; }
-          else if (pacman.dirY === -1 && pacman.y <= cellCenterY) { pacman.y = cellCenterY; pacman.dirY = 0; }
-        }
-      }
-
-      // Move along active vector
-      pacman.x += pacman.dirX * pacman.speed;
-      pacman.y += pacman.dirY * pacman.speed;
-
-      // Screen warp tunnels
-      if (pacman.x < -10) pacman.x = 600 + 10;
-      else if (pacman.x > 600 + 10) pacman.x = -10;
-
-      // Chomp animation
-      if (pacman.dirX !== 0 || pacman.dirY !== 0) {
-        pacman.mouth += 0.04 * pacman.mouthDir;
-        if (pacman.mouth > 0.42 || pacman.mouth < 0.04) {
-          pacman.mouthDir *= -1;
-        }
-      }
-
-      // Eat Dots & Energizers
-      const eatCol = Math.floor(pacman.x / TILE);
-      const eatRow = Math.floor(pacman.y / TILE);
-      if (eatCol >= 0 && eatCol < COLS && eatRow >= 0 && eatRow < ROWS) {
-        if (maze[eatRow][eatCol] === 2) {
-          maze[eatRow][eatCol] = 0;
-          score += (MOD === 'doublescore' ? 20 : 10);
-          beep(620, 'triangle', 0.03, 0.05);
-        } else if (maze[eatRow][eatCol] === 3) {
-          maze[eatRow][eatCol] = 0;
-          score += (MOD === 'doublescore' ? 100 : 50);
-          energizerTimer = 400; // ~6.6 seconds
-          beep(880, 'square', 0.15, 0.12);
-        }
-      }
-
-      if (energizerTimer > 0) energizerTimer--;
-
-      // ================= GHOSTS STATE MACHINE & AI =================
-      const ghostSpd = energizerTimer > 0 ? 1.1 : (DIFF === 'turbo' ? 2.2 : 1.7);
-      const houseExitX = 7 * TILE + 20; // 300
-      const mazeEntranceY = 4 * TILE + 20; // 180
-
-      for (let g of ghosts) {
-        // 1. Ghost inside house: countdown and gentle bobbing
-        if (g.state === 'in_house') {
-          g.exitTimer--;
-          g.bobPhase = (g.bobPhase || 0) + 0.08;
-          g.y = (6 * TILE + 20) + Math.sin(g.bobPhase) * 6;
-
-          if (g.exitTimer <= 0) {
-            g.state = 'exiting';
-          }
-          continue;
-        }
-
-        // 2. Ghost exiting house: move horizontally to center gate, then ascend into corridor
-        if (g.state === 'exiting') {
-          if (Math.abs(g.x - houseExitX) > 1.5) {
-            g.dirX = g.x < houseExitX ? 1 : -1;
-            g.dirY = 0;
-            g.x += g.dirX * 1.5;
-          } else {
-            g.x = houseExitX;
-            g.dirX = 0;
-            g.dirY = -1;
-            g.y -= 1.8;
-
-            if (g.y <= mazeEntranceY) {
-              g.y = mazeEntranceY;
-              g.state = 'active';
-              g.dirX = Math.random() < 0.5 ? -1 : 1;
-              g.dirY = 0;
-            }
-          }
-          continue;
-        }
-
-        // 3. Ghost dead eyes returning to house after being eaten
-        if (g.state === 'dead_eyes') {
-          const eyeSpeed = 4.0;
-          if (Math.abs(g.x - houseExitX) > 4) {
-            g.x += g.x < houseExitX ? eyeSpeed : -eyeSpeed;
-          } else if (g.y < 6 * TILE + 20) {
-            g.x = houseExitX;
-            g.y += eyeSpeed;
-          } else {
-            // Re-entered pen: short reload before emerging
-            g.y = 6 * TILE + 20;
-            g.state = 'exiting';
-          }
-          continue;
-        }
-
-        // 4. Ghost active: standard maze navigation & cornering
-        g.x += g.dirX * ghostSpd;
-        g.y += g.dirY * ghostSpd;
-
-        const gCol = Math.floor(g.x / TILE);
-        const gRow = Math.floor(g.y / TILE);
-        const gCenterX = gCol * TILE + 20;
-        const gCenterY = gRow * TILE + 20;
-
-        if (Math.hypot(g.x - gCenterX, g.y - gCenterY) <= (ghostSpd + 1)) {
-          g.x = gCenterX;
-          g.y = gCenterY;
-
-          const dirs = [
-            { x: 1, y: 0 },
-            { x: -1, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: -1 }
-          ];
-
-          // Disallow moving through wall or returning down through gate into house while active
-          const valid = dirs.filter(d => {
-            const nextC = gCol + d.x;
-            const nextR = gRow + d.y;
-            if (isWall(nextC, nextR, true)) return false;
-            // Prevent going down into ghost house from the entrance corridor
-            if (gRow === 4 && gCol === 7 && d.y === 1) return false;
-            // Prevent instant 180° reverse unless no other way
-            return !(d.x === -g.dirX && d.y === -g.dirY);
-          });
-
-          if (valid.length > 0) {
-            if (energizerTimer > 0) {
-              // Flee from Pac-Man
-              valid.sort((a, b) => {
-                const distA = Math.hypot((gCol + a.x) * TILE - pacman.x, (gRow + a.y) * TILE - pacman.y);
-                const distB = Math.hypot((gCol + b.x) * TILE - pacman.x, (gRow + b.y) * TILE - pacman.y);
-                return distB - distA;
-              });
-              g.dirX = valid[0].x;
-              g.dirY = valid[0].y;
-            } else if (Math.random() < 0.7) {
-              // Chase Pac-Man
-              valid.sort((a, b) => {
-                const distA = Math.hypot((gCol + a.x) * TILE - pacman.x, (gRow + a.y) * TILE - pacman.y);
-                const distB = Math.hypot((gCol + b.x) * TILE - pacman.x, (gRow + b.y) * TILE - pacman.y);
-                return distA - distB;
-              });
-              g.dirX = valid[0].x;
-              g.dirY = valid[0].y;
-            } else {
-              const pick = valid[Math.floor(Math.random() * valid.length)];
-              g.dirX = pick.x;
-              g.dirY = pick.y;
-            }
-          } else {
-            g.dirX = -g.dirX;
-            g.dirY = -g.dirY;
-          }
-        }
-
-        // Ghost collision with Pac-Man
-        if (Math.hypot(pacman.x - g.x, pacman.y - g.y) < 18) {
-          if (energizerTimer > 0) {
-            score += 200;
-            g.state = 'dead_eyes';
-            beep(440, 'sine', 0.2, 0.15);
-          } else {
-            lives--;
-            beep(180, 'sawtooth', 0.35, 0.2);
-            if (lives <= 0) {
-              gameOver = true;
-            } else {
-              pacman.x = 7 * TILE + 20;
-              pacman.y = 8 * TILE + 20;
-              pacman.dirX = 0;
-              pacman.dirY = 0;
-              pacman.nextDirX = 0;
-              pacman.nextDirY = 0;
-            }
-            break;
-          }
-        }
-      }
-
-      // Check maze clear
-      let remaining = 0;
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (maze[r][c] === 2 || maze[r][c] === 3) remaining++;
-        }
-      }
-      if (remaining === 0) {
-        score += 1500;
-        beep(950, 'triangle', 0.4, 0.2);
-        initPacman();
-      }
-    }
-
-    function drawPacman() {
-      // Maze Tiles
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          const val = maze[r][c];
-          if (val === 1) {
-            ctx.fillStyle = C.wall;
-            ctx.fillRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
-            ctx.strokeStyle = C.border;
-            ctx.lineWidth = 1;
-            ctx.strokeRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
-          } else if (val === 4) {
-            // Ghost House Gate
-            ctx.fillStyle = '#ec4899';
-            ctx.fillRect(c * TILE + 4, r * TILE + 16, TILE - 8, 8);
-          } else if (val === 2) {
-            ctx.fillStyle = C.accent;
-            ctx.beginPath();
-            ctx.arc(c * TILE + 20, r * TILE + 20, 3, 0, Math.PI * 2);
-            ctx.fill();
-          } else if (val === 3) {
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(c * TILE + 20, r * TILE + 20, 7, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-      }
-
-      // Pac-Man facing angle
-      let angle = 0;
-      if (pacman.dirX === 1) angle = 0;
-      else if (pacman.dirX === -1) angle = Math.PI;
-      else if (pacman.dirY === 1) angle = Math.PI / 2;
-      else if (pacman.dirY === -1) angle = (3 * Math.PI) / 2;
-      else if (pacman.nextDirX === 1) angle = 0;
-      else if (pacman.nextDirX === -1) angle = Math.PI;
-      else if (pacman.nextDirY === 1) angle = Math.PI / 2;
-      else if (pacman.nextDirY === -1) angle = (3 * Math.PI) / 2;
-
-      ctx.fillStyle = C.player;
-      ctx.beginPath();
-      ctx.arc(
-        pacman.x,
-        pacman.y,
-        14,
-        angle + pacman.mouth * Math.PI,
-        angle + (2 - pacman.mouth) * Math.PI
-      );
-      ctx.lineTo(pacman.x, pacman.y);
-      ctx.closePath();
-      ctx.fill();
-
-      // Eye
-      ctx.fillStyle = '#05070c';
-      const eyeOffsetX = Math.cos(angle + 1.2) * 8;
-      const eyeOffsetY = Math.sin(angle + 1.2) * 8;
-      ctx.beginPath();
-      ctx.arc(pacman.x + eyeOffsetX, pacman.y + eyeOffsetY, 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Ghosts
-      for (let g of ghosts) {
-        if (g.state === 'dead_eyes') {
-          // Render only eyes traveling back to base
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(g.x - 4, g.y - 3, 4, 0, Math.PI * 2);
-          ctx.arc(g.x + 4, g.y - 3, 4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#1e3a8a';
-          ctx.beginPath();
-          ctx.arc(g.x - 4, g.y - 3, 2, 0, Math.PI * 2);
-          ctx.arc(g.x + 4, g.y - 3, 2, 0, Math.PI * 2);
-          ctx.fill();
-          continue;
-        }
-
-        const isFrightened = energizerTimer > 0 && g.state === 'active';
-        const isFlashing = isFrightened && energizerTimer < 100 && (Math.floor(energizerTimer / 10) % 2 === 0);
-
-        ctx.fillStyle = isFlashing ? '#ffffff' : (isFrightened ? '#2563eb' : g.color);
-        ctx.beginPath();
-        ctx.arc(g.x, g.y - 2, 12, Math.PI, 0, false);
-        ctx.lineTo(g.x + 12, g.y + 10);
-        ctx.lineTo(g.x + 6, g.y + 6);
-        ctx.lineTo(g.x, g.y + 10);
-        ctx.lineTo(g.x - 6, g.y + 6);
-        ctx.lineTo(g.x - 12, g.y + 10);
-        ctx.closePath();
-        ctx.fill();
-
-        // Eyes
-        if (!isFrightened) {
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(g.x - 4, g.y - 3, 3.5, 0, Math.PI * 2);
-          ctx.arc(g.x + 4, g.y - 3, 3.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#1e3a8a';
-          ctx.beginPath();
-          ctx.arc(g.x - 4 + g.dirX * 1.5, g.y - 3 + g.dirY * 1.5, 1.8, 0, Math.PI * 2);
-          ctx.arc(g.x + 4 + g.dirX * 1.5, g.y - 3 + g.dirY * 1.5, 1.8, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          ctx.fillStyle = '#fde047';
-          ctx.fillRect(g.x - 5, g.y - 4, 3, 3);
-          ctx.fillRect(g.x + 2, g.y - 4, 3, 3);
-        }
-      }
-
-      // Visual directional helper banner (HUD)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-      ctx.fillRect(10, 8, 120, 24);
-      ctx.strokeStyle = C.border;
-      ctx.strokeRect(10, 8, 120, 24);
-
-      let dirStr = 'STOPPED';
-      if (pacman.dirX === 1) dirStr = 'EAST [→]';
-      else if (pacman.dirX === -1) dirStr = 'WEST [←]';
-      else if (pacman.dirY === 1) dirStr = 'SOUTH [↓]';
-      else if (pacman.dirY === -1) dirStr = 'NORTH [↑]';
-
-      ctx.fillStyle = C.player;
-      ctx.font = '10px Courier New';
-      ctx.fillText('DIR: ' + dirStr, 16, 24);
-    }
-
     /* =========================================================================
        2. DONKEY KONG (STRICT GIRDER INCLINES, ROLLING BARRELS & LADDERS)
     ========================================================================= */
-    let mario = { x: 50, y: 478, vx: 0, vy: 0, w: 18, h: 22, onLadder: false };
+    let mario = { x: 50, y: 478, vx: 0, vy: 0, w: 18, h: 22, onLadder: false, onGround: true };
     let barrels = [];
     let barrelTimer = 0;
 
