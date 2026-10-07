@@ -1286,6 +1286,7 @@ Verified Physics Rules:
     const MAZE_W = 15;
     const MAZE_H = 13;
     const TILE = 40;
+    // 0: empty, 1: wall, 2: dot, 3: energizer
     const rawMaze = [
       "111111111111111",
       "122222212222221",
@@ -1302,149 +1303,367 @@ Verified Physics Rules:
       "111111111111111"
     ];
     let maze = [];
-    let pacman = { px: 7*40, py: 8*40, dir: {x:0, y:0}, nextDir: {x:0, y:0}, mouth: 0.2, mouthDir: 1 };
+    let pacman = {
+      x: 7 * 40,
+      y: 8 * 40,
+      dirX: 0,
+      dirY: 0,
+      nextDirX: 0,
+      nextDirY: 0,
+      speed: 2.5,
+      mouth: 0.2,
+      mouthDir: 1
+    };
     let ghosts = [];
     let energizerTimer = 0;
 
+    function isWallTile(tx, ty) {
+      if (ty < 0 || ty >= MAZE_H) return true;
+      if (tx < 0 || tx >= MAZE_W) return false; // Side warp tunnel
+      return maze[ty][tx] === 1;
+    }
+
     function initPacman() {
       maze = rawMaze.map(row => row.split('').map(Number));
-      pacman.px = 7 * TILE;
-      pacman.py = 8 * TILE;
-      pacman.dir = {x: 0, y: 0};
-      pacman.nextDir = {x: 0, y: 0};
+      pacman.x = 7 * TILE;
+      pacman.y = 8 * TILE;
+      pacman.dirX = 0;
+      pacman.dirY = 0;
+      pacman.nextDirX = 0;
+      pacman.nextDirY = 0;
+      pacman.mouth = 0.2;
+      pacman.mouthDir = 1;
+      energizerTimer = 0;
+
       ghosts = [
-        { x: 7*TILE, y: 6*TILE, color: '#ef4444', dir: {x: 1, y: 0} },
-        { x: 6*TILE, y: 6*TILE, color: '#ec4899', dir: {x: -1, y: 0} },
-        { x: 8*TILE, y: 6*TILE, color: '#06b6d4', dir: {x: 0, y: -1} },
-        { x: 7*TILE, y: 5*TILE, color: '#f97316', dir: {x: 0, y: 1} }
+        { x: 7 * TILE, y: 5 * TILE, dirX: 1,  dirY: 0,  color: '#ef4444' }, // Blinky (Red)
+        { x: 6 * TILE, y: 6 * TILE, dirX: -1, dirY: 0,  color: '#ec4899' }, // Pinky (Pink)
+        { x: 8 * TILE, y: 6 * TILE, dirX: 0,  dirY: -1, color: '#06b6d4' }, // Inky (Cyan)
+        { x: 7 * TILE, y: 6 * TILE, dirX: 0,  dirY: 1,  color: '#f97316' }  // Clyde (Orange)
       ];
     }
 
     function updatePacman() {
-      if (keys['arrowleft'] || keys['a']) pacman.nextDir = {x: -1, y: 0};
-      if (keys['arrowright'] || keys['d']) pacman.nextDir = {x: 1, y: 0};
-      if (keys['arrowup'] || keys['w']) pacman.nextDir = {x: 0, y: -1};
-      if (keys['arrowdown'] || keys['s']) pacman.nextDir = {x: 0, y: 1};
+      // 1. Strict Screen-Relative Key Capture (UP: North, DOWN: South, LEFT: West, RIGHT: East)
+      if (keys['arrowleft'] || keys['a']) {
+        pacman.nextDirX = -1;
+        pacman.nextDirY = 0;
+      } else if (keys['arrowright'] || keys['d']) {
+        pacman.nextDirX = 1;
+        pacman.nextDirY = 0;
+      } else if (keys['arrowup'] || keys['w']) {
+        pacman.nextDirX = 0;
+        pacman.nextDirY = -1;
+      } else if (keys['arrowdown'] || keys['s']) {
+        pacman.nextDirX = 0;
+        pacman.nextDirY = 1;
+      }
 
-      const spd = 2.4;
-      const curTileX = Math.round(pacman.px / TILE);
-      const curTileY = Math.round(pacman.py / TILE);
+      // 2. Immediate Reverse U-Turn (No need to wait for a tile intersection!)
+      if (pacman.nextDirX !== 0 && pacman.nextDirX === -pacman.dirX) {
+        pacman.dirX = pacman.nextDirX;
+        pacman.dirY = 0;
+      } else if (pacman.nextDirY !== 0 && pacman.nextDirY === -pacman.dirY) {
+        pacman.dirX = 0;
+        pacman.dirY = pacman.nextDirY;
+      }
 
-      if (Math.abs(pacman.px - curTileX * TILE) < 3 && Math.abs(pacman.py - curTileY * TILE) < 3) {
-        const nextX = curTileX + pacman.nextDir.x;
-        const nextY = curTileY + pacman.nextDir.y;
-        if (nextX >= 0 && nextX < MAZE_W && nextY >= 0 && nextY < MAZE_H && maze[nextY][nextX] !== 1) {
-          pacman.dir = pacman.nextDir;
-          pacman.px = curTileX * TILE;
-          pacman.py = curTileY * TILE;
+      // 3. Grid Alignment and Turn Buffering
+      const centerTileX = Math.round(pacman.x / TILE);
+      const centerTileY = Math.round(pacman.y / TILE);
+      const distFromCenterX = pacman.x - centerTileX * TILE;
+      const distFromCenterY = pacman.y - centerTileY * TILE;
+
+      // When near the center of a tile cell, check if buffered turn can execute
+      if (Math.abs(distFromCenterX) <= 4 && Math.abs(distFromCenterY) <= 4) {
+        if (pacman.nextDirX !== 0 || pacman.nextDirY !== 0) {
+          const targetTileX = centerTileX + pacman.nextDirX;
+          const targetTileY = centerTileY + pacman.nextDirY;
+
+          if (!isWallTile(targetTileX, targetTileY)) {
+            // Commit to requested turn and snap perpendicular axis to center of corridor
+            pacman.dirX = pacman.nextDirX;
+            pacman.dirY = pacman.nextDirY;
+            if (pacman.dirX !== 0) pacman.y = centerTileY * TILE;
+            if (pacman.dirY !== 0) pacman.x = centerTileX * TILE;
+          }
         }
       }
 
-      pacman.px += pacman.dir.x * spd;
-      pacman.py += pacman.dir.y * spd;
+      // 4. Wall collision checking along current movement vector
+      if (pacman.dirX !== 0 || pacman.dirY !== 0) {
+        const nextStepTileX = centerTileX + pacman.dirX;
+        const nextStepTileY = centerTileY + pacman.dirY;
 
-      // Tunnel wrap
-      if (pacman.px < -TILE/2) pacman.px = (MAZE_W - 1) * TILE;
-      if (pacman.px > (MAZE_W - 0.5) * TILE) pacman.px = 0;
+        if (isWallTile(nextStepTileX, nextStepTileY)) {
+          // Stop cleanly at tile center when facing a wall
+          if (pacman.dirX === 1 && pacman.x >= centerTileX * TILE) {
+            pacman.x = centerTileX * TILE;
+            pacman.dirX = 0;
+          } else if (pacman.dirX === -1 && pacman.x <= centerTileX * TILE) {
+            pacman.x = centerTileX * TILE;
+            pacman.dirX = 0;
+          } else if (pacman.dirY === 1 && pacman.y >= centerTileY * TILE) {
+            pacman.y = centerTileY * TILE;
+            pacman.dirY = 0;
+          } else if (pacman.dirY === -1 && pacman.y <= centerTileY * TILE) {
+            pacman.y = centerTileY * TILE;
+            pacman.dirY = 0;
+          }
+        }
+      }
 
-      // Mouth chomp
-      pacman.mouth += 0.03 * pacman.mouthDir;
-      if (pacman.mouth > 0.45 || pacman.mouth < 0.05) pacman.mouthDir *= -1;
+      // 5. Update Position
+      pacman.x += pacman.dirX * pacman.speed;
+      pacman.y += pacman.dirY * pacman.speed;
 
-      // Eat dot
-      const tx = Math.floor((pacman.px + TILE/2) / TILE);
-      const ty = Math.floor((pacman.py + TILE/2) / TILE);
-      if (tx >= 0 && tx < MAZE_W && ty >= 0 && ty < MAZE_H) {
-        if (maze[ty][tx] === 2) {
-          maze[ty][tx] = 0;
-          score += 10;
+      // 6. Tunnel Wrap-around (Left / Right screen edge)
+      if (pacman.x < -TILE / 2) {
+        pacman.x = (MAZE_W - 0.5) * TILE;
+      } else if (pacman.x > (MAZE_W - 0.5) * TILE) {
+        pacman.x = -TILE / 2;
+      }
+
+      // 7. Mouth Chomp Animation
+      if (pacman.dirX !== 0 || pacman.dirY !== 0) {
+        pacman.mouth += 0.04 * pacman.mouthDir;
+        if (pacman.mouth > 0.45 || pacman.mouth < 0.04) {
+          pacman.mouthDir *= -1;
+        }
+      }
+
+      // 8. Eating Pellets & Energizers
+      const currentGridX = Math.round(pacman.x / TILE);
+      const currentGridY = Math.round(pacman.y / TILE);
+
+      if (currentGridX >= 0 && currentGridX < MAZE_W && currentGridY >= 0 && currentGridY < MAZE_H) {
+        if (maze[currentGridY][currentGridX] === 2) {
+          maze[currentGridY][currentGridX] = 0;
+          score += (MOD === 'doublescore' ? 20 : 10);
           beep(620, 'triangle', 0.03, 0.05);
-        } else if (maze[ty][tx] === 3) {
-          maze[ty][tx] = 0;
-          score += 50;
-          energizerTimer = 350;
+        } else if (maze[currentGridY][currentGridX] === 3) {
+          maze[currentGridY][currentGridX] = 0;
+          score += (MOD === 'doublescore' ? 100 : 50);
+          energizerTimer = 400; // ~6.6 seconds of blue ghosts
           beep(880, 'square', 0.15, 0.12);
         }
       }
 
       if (energizerTimer > 0) energizerTimer--;
 
+      // 9. Ghost AI and Movement Logic
+      const ghostSpd = energizerTimer > 0 ? 1.1 : (DIFF === 'turbo' ? 2.2 : 1.7);
+
       for (let g of ghosts) {
-        g.x += g.dir.x * (energizerTimer > 0 ? 1.0 : 1.8);
-        g.y += g.dir.y * (energizerTimer > 0 ? 1.0 : 1.8);
+        g.x += g.dirX * ghostSpd;
+        g.y += g.dirY * ghostSpd;
 
         const gx = Math.round(g.x / TILE);
         const gy = Math.round(g.y / TILE);
-        if (Math.abs(g.x - gx * TILE) < 2 && Math.abs(g.y - gy * TILE) < 2) {
-          const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-          const valid = dirs.filter(d => {
-            const nx = gx + d.x;
-            const ny = gy + d.y;
-            return nx >= 0 && nx < MAZE_W && ny >= 0 && ny < MAZE_H && maze[ny][nx] !== 1 && !(d.x === -g.dir.x && d.y === -g.dir.y);
+        const gDistX = Math.abs(g.x - gx * TILE);
+        const gDistY = Math.abs(g.y - gy * TILE);
+
+        // Ghosts choose navigation at tile centers
+        if (gDistX < 2 && gDistY < 2) {
+          g.x = gx * TILE;
+          g.y = gy * TILE;
+
+          const options = [
+            { x: 1,  y: 0 },
+            { x: -1, y: 0 },
+            { x: 0,  y: 1 },
+            { x: 0,  y: -1 }
+          ];
+
+          // Valid paths: non-wall and not immediately doubling back
+          const validMoves = options.filter(opt => {
+            const nx = gx + opt.x;
+            const ny = gy + opt.y;
+            return !isWallTile(nx, ny) && !(opt.x === -g.dirX && opt.y === -g.dirY);
           });
-          if (valid.length > 0) {
-            g.dir = valid[Math.floor(Math.random() * valid.length)];
-            g.x = gx * TILE;
-            g.y = gy * TILE;
+
+          if (validMoves.length > 0) {
+            // Intelligent branch: chase or flee when cornering
+            if (energizerTimer > 0) {
+              // Flee furthest from Pac-Man
+              validMoves.sort((a, b) => {
+                const distA = Math.hypot((gx + a.x) * TILE - pacman.x, (gy + a.y) * TILE - pacman.y);
+                const distB = Math.hypot((gx + b.x) * TILE - pacman.x, (gy + b.y) * TILE - pacman.y);
+                return distB - distA;
+              });
+              g.dirX = validMoves[0].x;
+              g.dirY = validMoves[0].y;
+            } else if (Math.random() < 0.65) {
+              // Chase Pac-Man
+              validMoves.sort((a, b) => {
+                const distA = Math.hypot((gx + a.x) * TILE - pacman.x, (gy + a.y) * TILE - pacman.y);
+                const distB = Math.hypot((gx + b.x) * TILE - pacman.x, (gy + b.y) * TILE - pacman.y);
+                return distA - distB;
+              });
+              g.dirX = validMoves[0].x;
+              g.dirY = validMoves[0].y;
+            } else {
+              const pick = validMoves[Math.floor(Math.random() * validMoves.length)];
+              g.dirX = pick.x;
+              g.dirY = pick.y;
+            }
+          } else {
+            // Dead-end turnaround
+            g.dirX = -g.dirX;
+            g.dirY = -g.dirY;
           }
         }
 
-        if (Math.hypot((pacman.px + TILE/2) - (g.x + TILE/2), (pacman.py + TILE/2) - (g.y + TILE/2)) < 18) {
+        // Collision with Pac-Man
+        const pCenterX = pacman.x + TILE / 2;
+        const pCenterY = pacman.y + TILE / 2;
+        const gCenterX = g.x + TILE / 2;
+        const gCenterY = g.y + TILE / 2;
+
+        if (Math.hypot(pCenterX - gCenterX, pCenterY - gCenterY) < 18) {
           if (energizerTimer > 0) {
+            // Eat ghost
             score += 200;
             g.x = 7 * TILE;
             g.y = 6 * TILE;
-            beep(440, 'sine', 0.2, 0.15);
+            g.dirX = 0;
+            g.dirY = -1;
+            beep(440, 'sine', 0.25, 0.15);
           } else {
+            // Pac-Man caught
             lives--;
             beep(180, 'sawtooth', 0.35, 0.2);
-            if (lives <= 0) gameOver = true;
-            else { pacman.px = 7 * TILE; pacman.py = 8 * TILE; pacman.dir = {x: 0, y: 0}; }
+            if (lives <= 0) {
+              gameOver = true;
+            } else {
+              pacman.x = 7 * TILE;
+              pacman.y = 8 * TILE;
+              pacman.dirX = 0;
+              pacman.dirY = 0;
+              pacman.nextDirX = 0;
+              pacman.nextDirY = 0;
+            }
+            break;
           }
         }
+      }
+
+      // Check win condition (all dots cleared)
+      let remainingDots = 0;
+      for (let r = 0; r < MAZE_H; r++) {
+        for (let c = 0; c < MAZE_W; c++) {
+          if (maze[r][c] === 2 || maze[r][c] === 3) remainingDots++;
+        }
+      }
+      if (remainingDots === 0) {
+        score += 1500;
+        beep(950, 'triangle', 0.4, 0.2);
+        initPacman();
       }
     }
 
     function drawPacman() {
+      // 1. Draw Maze Walls and Pellets
       for (let r = 0; r < MAZE_H; r++) {
         for (let c = 0; c < MAZE_W; c++) {
           const val = maze[r][c];
           if (val === 1) {
             ctx.fillStyle = C.wall;
             ctx.fillRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
+            ctx.strokeStyle = C.border;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(c * TILE + 2, r * TILE + 2, TILE - 4, TILE - 4);
           } else if (val === 2) {
             ctx.fillStyle = C.accent;
             ctx.beginPath();
-            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 3, 0, Math.PI * 2);
+            ctx.arc(c * TILE + TILE / 2, r * TILE + TILE / 2, 3, 0, Math.PI * 2);
             ctx.fill();
           } else if (val === 3) {
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(c * TILE + TILE/2, r * TILE + TILE/2, 7, 0, Math.PI * 2);
+            ctx.arc(c * TILE + TILE / 2, r * TILE + TILE / 2, 7, 0, Math.PI * 2);
             ctx.fill();
           }
         }
       }
 
-      const cx = pacman.px + TILE/2;
-      const cy = pacman.py + TILE/2;
+      // 2. Draw Pac-Man with Precise Screen Orientation
+      const cx = pacman.x + TILE / 2;
+      const cy = pacman.y + TILE / 2;
       let angle = 0;
-      if (pacman.dir.x === 1) angle = 0;
-      else if (pacman.dir.x === -1) angle = Math.PI;
-      else if (pacman.dir.y === 1) angle = Math.PI/2;
-      else if (pacman.dir.y === -1) angle = -Math.PI/2;
+
+      // Absolute Screen Orientations:
+      // RIGHT = 0 rad, DOWN = PI/2, LEFT = PI, UP = 3*PI/2
+      if (pacman.dirX === 1) angle = 0;
+      else if (pacman.dirX === -1) angle = Math.PI;
+      else if (pacman.dirY === 1) angle = Math.PI / 2;
+      else if (pacman.dirY === -1) angle = (3 * Math.PI) / 2;
+      else if (pacman.nextDirX === -1) angle = Math.PI;
+      else if (pacman.nextDirY === -1) angle = (3 * Math.PI) / 2;
+      else if (pacman.nextDirY === 1) angle = Math.PI / 2;
 
       ctx.fillStyle = C.player;
       ctx.beginPath();
-      ctx.arc(cx, cy, 14, angle + pacman.mouth * Math.PI, angle + (2 - pacman.mouth) * Math.PI);
+      ctx.arc(
+        cx,
+        cy,
+        14,
+        angle + pacman.mouth * Math.PI,
+        angle + (2 - pacman.mouth) * Math.PI
+      );
       ctx.lineTo(cx, cy);
+      ctx.closePath();
       ctx.fill();
 
+      // Eye
+      ctx.fillStyle = '#05070c';
+      const eyeOffsetX = Math.cos(angle + 1.2) * 8;
+      const eyeOffsetY = Math.sin(angle + 1.2) * 8;
+      ctx.beginPath();
+      ctx.arc(cx + eyeOffsetX, cy + eyeOffsetY, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Draw Ghosts
       for (let g of ghosts) {
-        ctx.fillStyle = energizerTimer > 0 ? '#3b82f6' : g.color;
+        const isFrightened = energizerTimer > 0;
+        const isFlashing = energizerTimer > 0 && energizerTimer < 100 && (Math.floor(energizerTimer / 10) % 2 === 0);
+
+        ctx.fillStyle = isFlashing ? '#ffffff' : (isFrightened ? '#2563eb' : g.color);
+        const gx = g.x + TILE / 2;
+        const gy = g.y + TILE / 2;
+
+        // Ghost Dome
         ctx.beginPath();
-        ctx.arc(g.x + TILE/2, g.y + TILE/2, 12, 0, Math.PI * 2);
+        ctx.arc(gx, gy - 2, 12, Math.PI, 0, false);
+        ctx.lineTo(gx + 12, gy + 10);
+        // Wavy Skirt
+        ctx.lineTo(gx + 6, gy + 6);
+        ctx.lineTo(gx, gy + 10);
+        ctx.lineTo(gx - 6, gy + 6);
+        ctx.lineTo(gx - 12, gy + 10);
+        ctx.closePath();
         ctx.fill();
+
+        // Eyes
+        if (!isFrightened) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(gx - 4, gy - 3, 3.5, 0, Math.PI * 2);
+          ctx.arc(gx + 4, gy - 3, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Pupils looking in moving direction
+          ctx.fillStyle = '#1e3a8a';
+          ctx.beginPath();
+          ctx.arc(gx - 4 + g.dirX * 1.5, gy - 3 + g.dirY * 1.5, 1.8, 0, Math.PI * 2);
+          ctx.arc(gx + 4 + g.dirX * 1.5, gy - 3 + g.dirY * 1.5, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Frightened Expression
+          ctx.fillStyle = '#fde047';
+          ctx.fillRect(gx - 5, gy - 4, 3, 3);
+          ctx.fillRect(gx + 2, gy - 4, 3, 3);
+        }
       }
     }
 
