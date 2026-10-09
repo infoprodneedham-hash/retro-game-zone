@@ -1,332 +1,681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blast into the past!!!</title>
-    <style>
-        /* Import an 8-bit retro font */
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Galaxy Arcade - Blast Into The Past</title>
+  <!-- Google Fonts for Retro Arcade Vibe -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons for Arcade UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        :root {
-            --bg-color: #0b0b1a;
-            --text-color: #00ffcc;
-            --card-bg: #16162c;
-            --accent-color: #ff0055;
-            --hero-border: #ffff00;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Press Start 2P', monospace;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden;
-            line-height: 1.6;
-            position: relative;
-        }
-
-        /* Subtle CRT scanline effect overlaid on the screen */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 100;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-
-        header {
-            text-align: center;
-            padding: 3rem 1rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 4px 4px 0 var(--accent-color);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); text-shadow: 4px 4px 0 var(--accent-color); }
-            50% { transform: scale(1.02); text-shadow: 4px 4px 15px var(--accent-color); }
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem 4rem 2rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* --- Hero Section (Game 1) --- */
-        .hero-card {
-            display: block;
-            width: 100%;
-            height: 400px;
-            /* Placeholder background - replace URL with your featured game image */
-            background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80') center/cover;
-            border: 4px solid var(--hero-border);
-            border-radius: 8px;
-            margin-bottom: 3rem;
-            position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
-        }
-
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
-        }
-
-        .hero-card:hover {
-            transform: scale(1.01);
-            box-shadow: 0 0 25px var(--hero-border);
-        }
-
-        .hero-content {
-            position: absolute;
-            bottom: 2rem;
-            left: 2rem;
-            z-index: 2;
-        }
-
-        .hero-content h2 {
-            font-size: 2rem;
-            color: #fff;
-            margin-bottom: 0.8rem;
-            text-shadow: 3px 3px 0 #000;
-        }
-
-        .badge {
-            background: var(--hero-border);
-            color: #000;
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        /* --- Grid Section (Games 2-13) --- */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
-
-        .game-card {
-            background-color: var(--card-bg);
-            border: 2px solid #333;
-            border-radius: 8px;
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            padding: 1rem;
-        }
-
-        .game-card:hover {
-            border-color: var(--text-color);
-            background-color: #1f1f3d;
-            box-shadow: 0 0 15px var(--text-color);
-            transform: translateY(-5px);
-        }
-
-        .game-card span {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            z-index: 2;
-        }
-
-        /* --- Retro Icons Background --- */
-        #retro-icons {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .icon {
-            position: absolute;
-            opacity: 0.15;
-            animation: float linear infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(110vh) rotate(0deg); }
-            100% { transform: translateY(-20vh) rotate(360deg); }
-        }
-
-        /* --- Responsive Design --- */
-        @media (max-width: 1024px) {
-            .game-grid {
-                grid-template-columns: repeat(3, 1fr);
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            arcade: {
+              purple: '#120524',
+              dark: '#08020e',
+              neonPink: '#ff007f',
+              neonCyan: '#00f0ff',
+              neonYellow: '#ffe600',
+              neonGreen: '#39ff14',
+              surface: '#1d0b38'
             }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            orbitron: ['"Orbitron"', 'sans-serif'],
+            body: ['"Rajdhani"', 'sans-serif']
+          }
         }
+      }
+    }
+  </script>
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.5rem;
-            }
-            .hero-card {
-                height: 300px;
-            }
-            .hero-content h2 {
-                font-size: 1.3rem;
-            }
-            .game-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-        }
+  <style>
+    /* CRT Scanline and Glow Styling */
+    body {
+      background-color: #08020e;
+      color: #e2e8f0;
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+    }
 
-        @media (max-width: 480px) {
-            .game-grid {
-                grid-template-columns: 1fr;
-            }
-            header h1 {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
+    .crt-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* Glow utilities */
+    .glow-cyan {
+      text-shadow: 0 0 8px #00f0ff, 0 0 20px rgba(0, 240, 255, 0.6);
+    }
+    .glow-pink {
+      text-shadow: 0 0 8px #ff007f, 0 0 22px rgba(255, 0, 127, 0.65);
+    }
+    .glow-yellow {
+      text-shadow: 0 0 8px #ffe600, 0 0 20px rgba(255, 230, 0, 0.6);
+    }
+    .box-glow-pink {
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.15);
+    }
+    .box-glow-cyan {
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.35), inset 0 0 10px rgba(0, 240, 255, 0.1);
+    }
+
+    /* Synthwave Grid Horizon Animation */
+    .synth-grid {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 45vh;
+      background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.18) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 0, 127, 0.18) 1px, transparent 1px);
+      background-size: 45px 35px;
+      transform: perspective(300px) rotateX(60deg);
+      transform-origin: bottom center;
+      mask-image: linear-gradient(to top, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Pulse button animation */
+    @keyframes neonPulse {
+      0%, 100% {
+        box-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 35px rgba(255, 0, 127, 0.7);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 18px #00f0ff, 0 0 32px #00f0ff, 0 0 45px rgba(0, 240, 255, 0.85);
+        transform: scale(1.02);
+      }
+    }
+    .animate-neon-pulse {
+      animation: neonPulse 2.2s infinite ease-in-out;
+    }
+
+    /* Custom smooth transition for drawers */
+    .drawer-transition {
+      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    }
+  </style>
 </head>
-<body>
-    <!-- Container for random JS generated icons -->
-    <div id="retro-icons"></div>
 
-    <header>
-        <h1>Blast into the past!!!</h1>
-    </header>
+<body class="relative min-h-screen flex flex-col selection:bg-pink-500 selection:text-white">
+  <!-- CRT Screen overlay for authentic arcade ambience -->
+  <div class="crt-overlay"></div>
 
-    <main>
-        <!-- Featured Game (Link 1) -->
-        <a href="/four/index.html" class="hero-card">
-            <div class="hero-content">
-                <span class="badge">Insert Coin</span>
-                <h2>Featured Retro Title - Flight Risk</h2>
-            </div>
-        </a>
-<!-- Centered Button Container with Top & Bottom Spacing -->
-<div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 30px 0; padding: 10px 0; width: 100%; box-sizing: border-box;">
-  
-  <!-- Left Button: Robot Escape -->
-  <a href="https://fps-iota-taupe.vercel.app" 
-     target="_blank" 
-     rel="noopener noreferrer" 
-     style="display: inline-block; padding: 16px 32px; font-size: 18px; font-weight: 600; font-family: inherit; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 8px; border: none; text-align: center; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;"
-     onmouseover="this.style.backgroundColor='#0056b3'"
-     onmouseout="this.style.backgroundColor='#007bff'">
-    Robot Escape
-  </a>
+  <!-- Background Space Canvas -->
+  <canvas id="starfieldCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+  <div class="synth-grid"></div>
 
-<a href="retro.html" 
-     target="_blank" 
-     rel="noopener noreferrer" 
-     style="display: inline-block; padding: 16px 32px; font-size: 18px; font-weight: 600; font-family: inherit; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 8px; border: none; text-align: center; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;"
-     onmouseover="this.style.backgroundColor='#0056b3'"
-     onmouseout="this.style.backgroundColor='#007bff'">
-    Retro Game Maker
-  </a>
+  <!-- Top Drawer Entrance Curtain Section -->
+  <aside id="welcomeDrawer" class="drawer-transition fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/95 backdrop-blur-xl border-b-4 border-arcade-neonPink">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-arcade-dark/80 to-black pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-2xl w-full bg-slate-900/90 border-2 border-arcade-neonCyan rounded-2xl p-6 sm:p-10 shadow-2xl text-center box-glow-cyan">
+      
+      <!-- Coin Slot Badge -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-arcade-neonYellow/60 bg-arcade-neonYellow/10 text-arcade-neonYellow text-xs font-pixel mb-4 tracking-wider animate-pulse">
+        <i class="fa-solid fa-coins"></i> 100% FREE TO PLAY • NO COIN REQUIRED
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold font-orbitron tracking-wider text-white glow-pink uppercase leading-tight">
+        BLAST INTO <span class="text-arcade-neonCyan glow-cyan">THE PAST</span>
+      </h1>
+
+      <p class="font-pixel text-[11px] sm:text-xs text-arcade-neonYellow mt-3 tracking-widest uppercase">
+        === ARCADE VAULT ONLINE ===
+      </p>
+
+      <div class="my-6 p-4 rounded-xl bg-purple-950/50 border border-purple-800/60 text-slate-200 text-base sm:text-lg leading-relaxed">
+        <p class="font-medium">
+          Welcome player! Dive into an authentic suite of <span class="text-arcade-neonCyan font-bold">free-to-play retro web games</span>—from high-octane 3D drifters and fast-paced FPS arenas to deep interstellar space combat.
+        </p>
+        <p class="mt-2 text-sm text-pink-300 font-semibold">
+          🚀 Instant load in-browser. Zero downloads. Blast right into the action!
+        </p>
+      </div>
+
+      <!-- Proceed Button to Dismiss Drawer -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
+        <button id="btnProceed" type="button" class="w-full sm:w-auto animate-neon-pulse inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-arcade-neonPink via-purple-600 to-arcade-neonCyan text-white font-pixel text-xs sm:text-sm tracking-widest uppercase cursor-pointer hover:brightness-125 transition-all active:scale-95">
+          <i class="fa-solid fa-gamepad text-lg"></i>
+          <span>PROCEED &bull; ENTER ARCADE</span>
+        </button>
+      </div>
+
+      <div class="mt-5 flex items-center justify-center gap-6 text-xs text-slate-400 font-mono">
+        <span><i class="fa-solid fa-bolt text-arcade-neonYellow"></i> 8 Nostalgic Games</span>
+        <span><i class="fa-solid fa-shield-halved text-arcade-neonGreen"></i> 100% Free Access</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Top Navigation Bar -->
+  <header class="relative z-30 w-full border-b border-purple-800/60 bg-arcade-dark/80 backdrop-blur-md sticky top-0 px-4 sm:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-arcade-neonPink to-arcade-neonCyan flex items-center justify-center text-white text-lg shadow-lg">
+        <i class="fa-solid fa-rocket"></i>
+      </div>
+      <div>
+        <span class="font-orbitron font-extrabold text-xl text-white tracking-wider glow-cyan">RETRO<span class="text-arcade-neonPink">SPACE</span></span>
+        <span class="hidden sm:inline-block ml-2 px-2 py-0.5 rounded text-[10px] font-pixel bg-arcade-neonGreen/20 text-arcade-neonGreen border border-arcade-neonGreen/40">FREE HUB</span>
+      </div>
+    </div>
+
+    <!-- Controls: Sound FX Toggle & Info Drawer Opener -->
+    <div class="flex items-center gap-3">
+      <button id="btnAudioToggle" title="Toggle 8-bit sound effects" class="px-3 py-2 rounded-lg border border-purple-700 bg-purple-950/60 text-slate-200 hover:text-arcade-neonCyan hover:border-arcade-neonCyan text-xs flex items-center gap-2 transition-all">
+        <i id="audioIcon" class="fa-solid fa-volume-high"></i>
+        <span class="hidden md:inline font-mono">SFX ON</span>
+      </button>
+
+      <button id="btnOpenWelcome" title="Read Arcade Info & Mission" class="px-3 py-2 rounded-lg border border-arcade-neonPink/60 bg-arcade-neonPink/10 text-arcade-neonPink hover:bg-arcade-neonPink hover:text-white text-xs font-semibold flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>ABOUT / MISSION</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Hub -->
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-36">
     
-  <!-- Right Button: Drive to Survive -->
-  <a href="https://drive-alpha-ten.vercel.app" 
-     target="_blank" 
-     rel="noopener noreferrer" 
-     style="display: inline-block; padding: 16px 32px; font-size: 18px; font-weight: 600; font-family: inherit; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 8px; border: none; text-align: center; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;"
-     onmouseover="this.style.backgroundColor='#0056b3'"
-     onmouseout="this.style.backgroundColor='#007bff'">
-    Drive to Survive
-  </a>
+    <!-- Hero Title Banner -->
+    <section class="text-center my-6">
+      <h2 class="font-orbitron text-2xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-arcade-neonCyan via-pink-400 to-arcade-neonYellow tracking-wider uppercase">
+        SELECT YOUR SIMULATION
+      </h2>
+      <p class="font-body text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto mt-2">
+        Jump directly into any classic game cartridge below. Uncapped frame rates, pure web-speed nostalgia.
+      </p>
 
-</div>
-
-        <!-- Grid for Games 2 to 13 -->
-        <div class="game-grid">
-            <a href="/two/index.html" class="game-card"><span>Cool Pool</span></a>
-            <a href="/three/index.html" class="game-card"><span>Dart Fun</span></a>
-            <a href="/one/index.html" class="game-card"><span>Tap Hoops</span></a>
-            <a href="/five/index.html" class="game-card"><span>Space Jet</span></a>
-            <a href="/six/index.html" class="game-card"><span>Launch Guy</span></a>
-            <a href="/seven/index.html" class="game-card"><span>Pin Ball</span></a>
-            <a href="/eight/index.html" class="game-card"><span>Night Scope</span></a>
-            <a href="/nine/index.html" class="game-card"><span>Target Practice</span></a>
-            <a href="/ten/index.html" class="game-card"><span>Robo Spy</span></a>
-            <a href="/eleven/index.html" class="game-card"><span>Star Ship</span></a>
-            <a href="/twelve/index.html" class="game-card"><span>Jump And Dash</span></a>
-            <a href="/thirteen/index.html" class="game-card"><span>Sword Wars</span></a>
+      <!-- Category Filter Tabs & Search -->
+      <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
+        <div class="flex flex-wrap items-center justify-center gap-2" id="filterContainer">
+          <button data-filter="all" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-arcade-neonCyan bg-arcade-neonCyan text-black font-bold shadow-md transition-all">ALL (8)</button>
+          <button data-filter="racing" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">DRIVING</button>
+          <button data-filter="fps" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">FPS ARENA</button>
+          <button data-filter="space" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">SPACE FLEET</button>
         </div>
-    </main>
 
-    <script>
-        // --- Retro Background Icon Generator ---
-        const iconsContainer = document.getElementById('retro-icons');
-        // Array of classic arcade-style emojis to act as characters
-        const icons = ['👾', '👻', '🛸', '🍒', '🚀', '🍄', '💎', '🕹️', '💣'];
+        <div class="relative w-full md:w-64">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-purple-400 text-sm"></i>
+          <input type="text" id="gameSearch" placeholder="Search games..." class="w-full bg-slate-900/80 border border-purple-700 rounded-full pl-9 pr-4 py-1.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-arcade-neonPink transition-all" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 Games Interactive Grid -->
+    <div id="gamesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <!-- Game Cards will be injected dynamically via JS for clean management -->
+    </div>
+  </main>
+
+  <!-- Slide-Out Affiliate Links Banner at the Bottom -->
+  <aside id="affiliateBanner" class="drawer-transition fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-slate-950 via-slate-900 to-purple-950/95 border-t-2 border-arcade-neonCyan shadow-2xl backdrop-blur-xl">
+    
+    <!-- Header / Toggle Tab Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between border-b border-purple-800/40">
+      <div class="flex items-center gap-2">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-arcade-neonGreen opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-arcade-neonGreen"></span>
+        </span>
+        <span class="font-orbitron font-bold text-xs sm:text-sm text-arcade-neonYellow tracking-wider uppercase">
+          PARTNER DEALS & RETRO GEAR
+        </span>
+        <span class="hidden sm:inline-block text-[11px] text-slate-400">| Exclusive discounts for retro gamers</span>
+      </div>
+
+      <!-- Quick Tuck Away / Show Button -->
+      <button id="btnToggleAffiliate" class="px-3 py-1 rounded bg-purple-900/60 border border-purple-600 hover:border-arcade-neonCyan text-white text-xs font-orbitron flex items-center gap-1.5 transition-all">
+        <span id="affiliateToggleText">Tuck Away Deals</span>
+        <i id="affiliateChevron" class="fa-solid fa-chevron-down text-arcade-neonCyan text-xs"></i>
+      </button>
+    </div>
+
+    <!-- Sliding Content Tray -->
+    <div id="affiliateContent" class="max-w-7xl mx-auto px-4 py-4 transition-all duration-300">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         
-        function createIcon() {
-            const iconElement = document.createElement('div');
-            iconElement.classList.add('icon');
-            
-            // Randomly select an icon character
-            iconElement.innerText = icons[Math.floor(Math.random() * icons.length)];
-            
-            // Randomize styling (Size, X-Position)
-            const size = Math.random() * 2.5 + 1.5; // Between 1.5rem and 4rem
-            iconElement.style.fontSize = `${size}rem`;
-            iconElement.style.left = `${Math.random() * 100}vw`;
-            
-            // Randomize floating speed to simulate depth (slower = further away)
-            const duration = Math.random() * 12 + 8; // Between 8s and 20s
-            iconElement.style.animationDuration = `${duration}s`;
-            
-            // Append to DOM
-            iconsContainer.appendChild(iconElement);
-            
-            // Remove the DOM element once it floats off the top of the screen
-            setTimeout(() => {
-                iconElement.remove();
-            }, duration * 1000);
-        }
+        <!-- Affiliate Item 1 -->
+        <a href="https://amazon.com" target="_blank" rel="noopener sponsored" class="affiliate-card group block p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 hover:border-arcade-neonPink hover:bg-purple-900/30 transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-arcade-neonPink group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-gamepad text-lg"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-white group-hover:text-arcade-neonPink truncate">8BitDo Ultimate Controller</span>
+                <span class="text-[9px] bg-arcade-neonPink/20 text-arcade-neonPink px-1 rounded font-mono">20% OFF</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate">Lag-free retro wireless gamepad</p>
+            </div>
+          </div>
+        </a>
 
-        // Initially populate the screen with a few icons
-        for (let i = 0; i < 12; i++) {
-            setTimeout(createIcon, Math.random() * 3000);
-        }
+        <!-- Affiliate Item 2 -->
+        <a href="https://nordvpn.com" target="_blank" rel="noopener sponsored" class="affiliate-card group block p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 hover:border-arcade-neonCyan hover:bg-purple-900/30 transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-arcade-neonCyan group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-shield-halved text-lg"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-white group-hover:text-arcade-neonCyan truncate">Arcade VPN Speed Shield</span>
+                <span class="text-[9px] bg-arcade-neonCyan/20 text-arcade-neonCyan px-1 rounded font-mono">SAVE 68%</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate">Ultra-low ping online gaming security</p>
+            </div>
+          </div>
+        </a>
 
-        // Keep spawning new icons continuously
-        setInterval(createIcon, 1500);
-    </script>
+        <!-- Affiliate Item 3 -->
+        <a href="https://store.steampowered.com" target="_blank" rel="noopener sponsored" class="affiliate-card group block p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 hover:border-arcade-neonYellow hover:bg-purple-900/30 transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-arcade-neonYellow group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-headset text-lg"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-white group-hover:text-arcade-neonYellow truncate">Surround Sound Retro Pro</span>
+                <span class="text-[9px] bg-arcade-neonYellow/20 text-arcade-neonYellow px-1 rounded font-mono">TOP PICK</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate">Custom chiptune acoustic tuning</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Affiliate Item 4 -->
+        <a href="https://etsy.com" target="_blank" rel="noopener sponsored" class="affiliate-card group block p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 hover:border-arcade-neonGreen hover:bg-purple-900/30 transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center justify-center text-arcade-neonGreen group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-shirt text-lg"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-white group-hover:text-arcade-neonGreen truncate">Pixel Synthwave Apparel</span>
+                <span class="text-[9px] bg-arcade-neonGreen/20 text-arcade-neonGreen px-1 rounded font-mono">LIMITED</span>
+              </div>
+              <p class="text-[11px] text-slate-400 truncate">Handcrafted 80s arcade tees & neon caps</p>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="mt-2 text-center text-[10px] text-slate-500">
+        Disclosure: Purchases through partner links help keep all 8 games free and hosted for the community at no extra cost to you.
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    /* Game Dataset with provided URLs, icons, palettes and descriptions */
+    const GAMES = [
+      {
+        id: 'drive',
+        title: 'Turbo Drift 3D',
+        url: 'https://drive-alpha-ten.vercel.app/',
+        category: 'racing',
+        categoryLabel: 'DRIVING / RACING',
+        badge: 'POPULAR',
+        badgeColor: 'border-arcade-neonYellow text-arcade-neonYellow',
+        desc: 'Precision cornering, high-speed asphalt drift mechanics, and heart-pounding 3D synth engine physics.',
+        icon: 'fa-car-side',
+        accent: 'from-amber-500 to-pink-600',
+        stats: '60 FPS • Full 3D'
+      },
+      {
+        id: 'fps',
+        title: 'Retro FPS Arena',
+        url: 'https://fps-iota-taupe.vercel.app/',
+        category: 'fps',
+        categoryLabel: 'FIRST-PERSON SHOOTER',
+        badge: 'ACTION',
+        badgeColor: 'border-arcade-neonPink text-arcade-neonPink',
+        desc: 'Fast-paced combat reminiscent of classic 90s corridor shooters with rapid strafing and weapon pick-ups.',
+        icon: 'fa-crosshairs',
+        accent: 'from-red-600 to-purple-600',
+        stats: 'Arena Mode • WASD'
+      },
+      {
+        id: 'space-two',
+        title: 'Space Arcade: Sector Two',
+        url: 'https://retrospacearcade.com/two/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'STAGE II',
+        badgeColor: 'border-arcade-neonCyan text-arcade-neonCyan',
+        desc: 'Initiate defensive perimeter protocols against rogue alien swarms across the secondary quadrant.',
+        icon: 'fa-shuttle-space',
+        accent: 'from-cyan-500 to-blue-600',
+        stats: 'Vector Shields • High Score'
+      },
+      {
+        id: 'space-three',
+        title: 'Space Arcade: Mission Three',
+        url: 'https://retrospacearcade.com/three/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'MISSION III',
+        badgeColor: 'border-arcade-neonCyan text-arcade-neonCyan',
+        desc: 'Deep orbital interception with upgraded plasma cannons and dense asteroid belt navigation.',
+        icon: 'fa-satellite',
+        accent: 'from-blue-600 to-indigo-700',
+        stats: 'Hyperjump Ready • Solo'
+      },
+      {
+        id: 'space-five',
+        title: 'Space Arcade: Deep Five',
+        url: 'https://retrospacearcade.com/five/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'SECTOR V',
+        badgeColor: 'border-purple-400 text-purple-400',
+        desc: 'Penetrate deep enemy mothership territory with rapid-fire photon lasers and boss battles.',
+        icon: 'fa-meteor',
+        accent: 'from-purple-600 to-pink-500',
+        stats: 'Boss Raid • Hardcore'
+      },
+      {
+        id: 'space-seven',
+        title: 'Space Arcade: Star Seven',
+        url: 'https://retrospacearcade.com/seven/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'SYSTEM VII',
+        badgeColor: 'border-arcade-neonGreen text-arcade-neonGreen',
+        desc: 'Defend stellar mining colonies under heavy planetary siege in this high-intensity space conflict.',
+        icon: 'fa-ring',
+        accent: 'from-emerald-500 to-teal-700',
+        stats: 'Multi-Wave • Turbo'
+      },
+      {
+        id: 'space-eleven',
+        title: 'Space Arcade: Protocol Eleven',
+        url: 'https://retrospacearcade.com/eleven/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'PROT. 11',
+        badgeColor: 'border-arcade-neonYellow text-arcade-neonYellow',
+        desc: 'Advanced tactical dreadnought showdowns demanding nimble evasion and target lock accuracy.',
+        icon: 'fa-brain',
+        accent: 'from-amber-600 to-orange-700',
+        stats: 'Overdrive • Infinite'
+      },
+      {
+        id: 'space-thirteen',
+        title: 'Space Arcade: Omega Thirteen',
+        url: 'https://retrospacearcade.com/thirteen/index.html',
+        category: 'space',
+        categoryLabel: 'SPACE FLEET',
+        badge: 'FINAL XIII',
+        badgeColor: 'border-rose-500 text-rose-400',
+        desc: 'The ultimate interstellar climax. Face the apex armada in the outer darkness of the galaxy.',
+        icon: 'fa-skull-crossbones',
+        accent: 'from-rose-600 to-pink-700',
+        stats: 'Apex Challenge • Extreme'
+      }
+    ];
+
+    let audioEnabled = true;
+    let audioCtx = null;
+
+    function playBeep(freq = 440, type = 'square', duration = 0.1, gainVal = 0.08) {
+      if (!audioEnabled) return;
+      try {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (err) {
+        // Audio error suppression
+      }
+    }
+
+    function playInsertCoinSfx() {
+      playBeep(987.77, 'sine', 0.08, 0.1);
+      setTimeout(() => playBeep(1318.51, 'sine', 0.25, 0.12), 90);
+    }
+
+    function playBlipSfx() {
+      playBeep(520, 'square', 0.05, 0.05);
+    }
+
+    const canvas = document.getElementById('starfieldCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    const NUM_STARS = 120;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < NUM_STARS; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2,
+        speed: 0.2 + Math.random() * 0.8,
+        color: ['#ffffff', '#00f0ff', '#ff007f', '#ffe600'][Math.floor(Math.random() * 4)]
+      });
+    }
+
+    function renderStarfield() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.fillStyle = star.color;
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+      }
+      requestAnimationFrame(renderStarfield);
+    }
+    requestAnimationFrame(renderStarfield);
+
+    const gamesGrid = document.getElementById('gamesGrid');
+    const searchInput = document.getElementById('gameSearch');
+    let currentFilter = 'all';
+
+    function renderCards(filter = 'all', searchQuery = '') {
+      gamesGrid.innerHTML = '';
+      const query = searchQuery.trim().toLowerCase();
+
+      const filtered = GAMES.filter(game => {
+        const matchesCategory = filter === 'all' || game.category === filter;
+        const matchesSearch = !query || 
+          game.title.toLowerCase().includes(query) || 
+          game.desc.toLowerCase().includes(query) ||
+          game.categoryLabel.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        gamesGrid.innerHTML = `
+          <div class="col-span-full py-16 text-center">
+            <i class="fa-solid fa-gamepad text-5xl text-purple-600 mb-4 animate-bounce"></i>
+            <h3 class="font-orbitron text-xl text-white">NO GAMES FOUND</h3>
+            <p class="text-slate-400 text-sm mt-1">Try tweaking your search term or switch filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(game => {
+        const card = document.createElement('div');
+        card.className = "group relative rounded-2xl bg-slate-900/80 border border-purple-800/80 hover:border-arcade-neonCyan p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_25px_rgba(0,240,255,0.25)]";
+
+        card.innerHTML = `
+          <div>
+            <!-- Header Badges -->
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${game.badgeColor} bg-black/40 font-bold uppercase tracking-wider">
+                ${game.badge}
+              </span>
+              <span class="text-[11px] font-orbitron font-semibold text-slate-400 tracking-wider">
+                ${game.categoryLabel}
+              </span>
+            </div>
+
+            <!-- Arcade Cabinet Visual Graphic -->
+            <div class="w-full h-36 rounded-xl bg-gradient-to-br ${game.accent} p-0.5 mb-4 shadow-inner relative overflow-hidden group-hover:scale-[1.02] transition-transform">
+              <div class="w-full h-full bg-slate-950/70 rounded-[10px] flex flex-col items-center justify-center p-3 text-center relative">
+                <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <i class="fa-solid ${game.icon} text-4xl text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.7)] mb-2"></i>
+                <span class="font-pixel text-[10px] text-arcade-neonCyan tracking-wider uppercase">READY TO LAUNCH</span>
+              </div>
+            </div>
+
+            <h3 class="font-orbitron text-lg font-bold text-white group-hover:text-arcade-neonCyan transition-colors">
+              ${game.title}
+            </h3>
+
+            <p class="text-slate-300 text-xs mt-2 line-clamp-3 leading-relaxed">
+              ${game.desc}
+            </p>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-purple-900/60">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-3 font-mono">
+              <span><i class="fa-solid fa-gamepad text-purple-400"></i> Free Access</span>
+              <span class="text-arcade-neonGreen">${game.stats}</span>
+            </div>
+
+            <a href="${game.url}" target="_blank" rel="noopener noreferrer" class="play-btn w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-arcade-neonPink to-purple-600 hover:from-arcade-neonCyan hover:to-blue-600 text-white font-orbitron text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-cyan-500/30 transition-all active:scale-95">
+              <span>PLAY NOW</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          </div>
+        `;
+
+        gamesGrid.appendChild(card);
+      });
+
+      // Attach audio feedback to launch buttons
+      document.querySelectorAll('.play-btn').forEach(btn => {
+        btn.addEventListener('click', () => playInsertCoinSfx());
+      });
+    }
+
+    // Filter Buttons Interaction
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        playBlipSfx();
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('bg-arcade-neonCyan', 'text-black', 'border-arcade-neonCyan', 'font-bold');
+          b.classList.add('bg-purple-950/40', 'text-slate-300', 'border-purple-700');
+        });
+        btn.classList.remove('bg-purple-950/40', 'text-slate-300', 'border-purple-700');
+        btn.classList.add('bg-arcade-neonCyan', 'text-black', 'border-arcade-neonCyan', 'font-bold');
+        currentFilter = btn.dataset.filter;
+        renderCards(currentFilter, searchInput.value);
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      renderCards(currentFilter, e.target.value);
+    });
+
+    const welcomeDrawer = document.getElementById('welcomeDrawer');
+    const btnProceed = document.getElementById('btnProceed');
+    const btnOpenWelcome = document.getElementById('btnOpenWelcome');
+
+    // Slide up / tuck away welcome curtain
+    function hideWelcomeDrawer() {
+      playInsertCoinSfx();
+      welcomeDrawer.style.transform = 'translateY(-100%)';
+      welcomeDrawer.style.opacity = '0';
+      welcomeDrawer.style.pointerEvents = 'none';
+    }
+
+    // Show welcome curtain on demand
+    function showWelcomeDrawer() {
+      playBlipSfx();
+      welcomeDrawer.style.transform = 'translateY(0%)';
+      welcomeDrawer.style.opacity = '1';
+      welcomeDrawer.style.pointerEvents = 'auto';
+    }
+
+    btnProceed.addEventListener('click', hideWelcomeDrawer);
+    btnOpenWelcome.addEventListener('click', showWelcomeDrawer);
+
+    // Slide-out Affiliate Drawer Toggle
+    const affiliateBanner = document.getElementById('affiliateBanner');
+    const affiliateContent = document.getElementById('affiliateContent');
+    const btnToggleAffiliate = document.getElementById('btnToggleAffiliate');
+    const affiliateToggleText = document.getElementById('affiliateToggleText');
+    const affiliateChevron = document.getElementById('affiliateChevron');
+    let isAffiliateOpen = true;
+
+    btnToggleAffiliate.addEventListener('click', () => {
+      playBlipSfx();
+      isAffiliateOpen = !isAffiliateOpen;
+
+      if (isAffiliateOpen) {
+        affiliateContent.classList.remove('hidden');
+        affiliateToggleText.textContent = 'Tuck Away Deals';
+        affiliateChevron.classList.remove('fa-chevron-up');
+        affiliateChevron.classList.add('fa-chevron-down');
+      } else {
+        affiliateContent.classList.add('hidden');
+        affiliateToggleText.textContent = 'Show Deals';
+        affiliateChevron.classList.remove('fa-chevron-down');
+        affiliateChevron.classList.add('fa-chevron-up');
+      }
+    });
+
+    // Sound Toggle Button
+    const btnAudioToggle = document.getElementById('btnAudioToggle');
+    const audioIcon = document.getElementById('audioIcon');
+
+    btnAudioToggle.addEventListener('click', () => {
+      audioEnabled = !audioEnabled;
+      if (audioEnabled) {
+        audioIcon.className = "fa-solid fa-volume-high";
+        btnAudioToggle.querySelector('span').textContent = 'SFX ON';
+        playBlipSfx();
+      } else {
+        audioIcon.className = "fa-solid fa-volume-xmark text-slate-500";
+        btnAudioToggle.querySelector('span').textContent = 'SFX OFF';
+      }
+    });
+
+    // Initial render
+    renderCards();
+  </script>
 </body>
 </html>
