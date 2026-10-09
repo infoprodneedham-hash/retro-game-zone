@@ -209,6 +209,8 @@
           <button data-filter="all" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-arcade-neonCyan bg-arcade-neonCyan text-black font-bold shadow-md transition-all">ALL (8)</button>
           <button data-filter="racing" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">DRIVING</button>
           <button data-filter="fps" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">FPS ARENA</button>
+          <button data-filter="sports" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">SPORTS & PUBS</button>
+          <button data-filter="arcade" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">CLASSIC ARCADE</button>
           <button data-filter="space" class="filter-btn px-4 py-2 rounded-full font-orbitron text-xs tracking-wider border border-purple-700 bg-purple-950/40 text-slate-300 hover:border-arcade-neonCyan hover:text-white transition-all">SPACE FLEET</button>
         </div>
 
@@ -325,7 +327,7 @@
   </aside>
 
   <script>
-    /* Game Dataset with provided URLs, icons, palettes and descriptions */
+    /* Game Dataset with updated titles, icons, palettes and customized descriptions */
     const GAMES = [
       {
         id: 'drive',
@@ -355,81 +357,81 @@
       },
       {
         id: 'space-two',
-        title: 'Space Arcade: Sector Two',
+        title: 'Cool Pool',
         url: 'https://retrospacearcade.com/two/index.html',
-        category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'STAGE II',
+        category: 'sports',
+        categoryLabel: 'RETRO BILLIARDS',
+        badge: '8-BALL',
         badgeColor: 'border-arcade-neonCyan text-arcade-neonCyan',
-        desc: 'Initiate defensive perimeter protocols against rogue alien swarms across the secondary quadrant.',
-        icon: 'fa-shuttle-space',
-        accent: 'from-cyan-500 to-blue-600',
-        stats: 'Vector Shields • High Score'
+        desc: 'Chalk up your cue stick for classic 8-ball billiards. Master bank shots, spin physics, and clear the table.',
+        icon: 'fa-bowling-ball',
+        accent: 'from-teal-500 to-emerald-700',
+        stats: 'Pure Physics • Trick Shots'
       },
       {
         id: 'space-three',
-        title: 'Space Arcade: Mission Three',
+        title: 'Dart Challenge',
         url: 'https://retrospacearcade.com/three/index.html',
-        category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'MISSION III',
-        badgeColor: 'border-arcade-neonCyan text-arcade-neonCyan',
-        desc: 'Deep orbital interception with upgraded plasma cannons and dense asteroid belt navigation.',
-        icon: 'fa-satellite',
-        accent: 'from-blue-600 to-indigo-700',
-        stats: 'Hyperjump Ready • Solo'
+        category: 'sports',
+        categoryLabel: 'PRECISION TARGET',
+        badge: 'BULLSEYE',
+        badgeColor: 'border-arcade-neonYellow text-arcade-neonYellow',
+        desc: 'Test your aim and steady hand in this retro dart throwing tournament. Aim for the treble 20 and nail the 501 finish.',
+        icon: 'fa-bullseye',
+        accent: 'from-amber-500 to-red-600',
+        stats: 'Precision Aim • High Score'
       },
       {
         id: 'space-five',
-        title: 'Space Arcade: Deep Five',
+        title: 'Alien Force',
         url: 'https://retrospacearcade.com/five/index.html',
         category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'SECTOR V',
+        categoryLabel: 'ALIEN COMBAT',
+        badge: 'INVADERS',
         badgeColor: 'border-purple-400 text-purple-400',
-        desc: 'Penetrate deep enemy mothership territory with rapid-fire photon lasers and boss battles.',
-        icon: 'fa-meteor',
-        accent: 'from-purple-600 to-pink-500',
-        stats: 'Boss Raid • Hardcore'
+        desc: 'Rogue extraterrestrial fleets are descending upon the quadrant. Power up plasma cannons and destroy enemy swarms.',
+        icon: 'fa-spaghetti-monster-flying',
+        accent: 'from-purple-600 to-indigo-700',
+        stats: 'Swarm Waves • Boss Raid'
       },
       {
         id: 'space-seven',
-        title: 'Space Arcade: Star Seven',
+        title: 'Pinball Mega',
         url: 'https://retrospacearcade.com/seven/index.html',
-        category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'SYSTEM VII',
+        category: 'arcade',
+        categoryLabel: 'ARCADE PINBALL',
+        badge: 'HIGH ROLLER',
         badgeColor: 'border-arcade-neonGreen text-arcade-neonGreen',
-        desc: 'Defend stellar mining colonies under heavy planetary siege in this high-intensity space conflict.',
-        icon: 'fa-ring',
-        accent: 'from-emerald-500 to-teal-700',
-        stats: 'Multi-Wave • Turbo'
+        desc: 'Classic arcade silver-ball madness! Fire bumpers, trigger multizone ramps, and keep the ball in play with quick flipper reflexes.',
+        icon: 'fa-gamepad',
+        accent: 'from-lime-500 to-emerald-700',
+        stats: 'Multi-Ball • Jackpot'
       },
       {
         id: 'space-eleven',
-        title: 'Space Arcade: Protocol Eleven',
+        title: 'Asteroid Blaster',
         url: 'https://retrospacearcade.com/eleven/index.html',
         category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'PROT. 11',
+        categoryLabel: 'SPACE BLASTER',
+        badge: 'SURVIVAL',
         badgeColor: 'border-arcade-neonYellow text-arcade-neonYellow',
-        desc: 'Advanced tactical dreadnought showdowns demanding nimble evasion and target lock accuracy.',
-        icon: 'fa-brain',
-        accent: 'from-amber-600 to-orange-700',
-        stats: 'Overdrive • Infinite'
+        desc: 'Navigate dangerous deep space boulder fields. Blast giant tumbling asteroids into dust and dodge cosmic debris.',
+        icon: 'fa-meteor',
+        accent: 'from-yellow-500 to-orange-700',
+        stats: 'Vector Thrust • 360° Blast'
       },
       {
         id: 'space-thirteen',
-        title: 'Space Arcade: Omega Thirteen',
+        title: 'Neon Wars',
         url: 'https://retrospacearcade.com/thirteen/index.html',
-        category: 'space',
-        categoryLabel: 'SPACE FLEET',
-        badge: 'FINAL XIII',
+        category: 'arcade',
+        categoryLabel: 'NEON COMBAT',
+        badge: 'GLOW WAR',
         badgeColor: 'border-rose-500 text-rose-400',
-        desc: 'The ultimate interstellar climax. Face the apex armada in the outer darkness of the galaxy.',
-        icon: 'fa-skull-crossbones',
+        desc: 'Futuristic vector neon dogfights. High-speed chromatic particle lasers and synthwave geometry warfare.',
+        icon: 'fa-shield-halved',
         accent: 'from-rose-600 to-pink-700',
-        stats: 'Apex Challenge • Extreme'
+        stats: 'Neon Overdrive • Apex Score'
       }
     ];
 
