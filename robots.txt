@@ -1,0 +1,7 @@
+# robots.txt for https://retrospacearcade.com/
+
+User-agent: *
+Allow: /
+
+# Direct search engine crawlers to the XML sitemap
+Sitemap: https://retrospacearcade.com/sitemap.xml
